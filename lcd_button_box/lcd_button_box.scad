@@ -21,6 +21,7 @@ screw_thickness = 2;
 screw_spacing = 5.5;
 screw_column_thickess = screw_diameter + (screw_thickness * 2);
 bottom_screw_height = 5;
+screw_head_diameter = 6;
 
 y_reinforcement_count = 3;
 x_reinforcement_count = 2;
@@ -53,24 +54,37 @@ module top_screw_holes(height = 10) {
 }
 
 /* Bottom Screws */
-module bottom_screws_columns(height = 10) {
+module bottom_screws_column(height = 10) {
     translate([(pcb_width / 2) - screw_spacing, (pcb_height / 2) - screw_spacing, 0]) {
         difference()
         {   
             union() {
                 cylinder( h = height, d = screw_column_thickess, center = true, $fn=80);
-                translate([0, 0, - (box_bottom_thickness / 2) + (bottom_screw_height / 2)]) cylinder( h = bottom_screw_height, d1 = screw_column_thickess + screw_spacing, d = screw_column_thickess, center = true, $fn=80);
+                translate([0, 0, - (box_bottom_thickness / 2) + (bottom_screw_height / 2)]) cylinder( h = bottom_screw_height, d1 = screw_column_thickess + screw_spacing, d = screw_column_thickess + (screw_spacing / 2), center = true, $fn=80);
            }
             cylinder( h = height, d = screw_diameter, center = true, $fn=80);
         }
     }
 }
 
-module bottom_screw_holes(height = 10) {
-    bottom_screws_columns(height);
-    mirror([1,0,0]) bottom_screws_columns(height);
-    mirror([0,1,0]) bottom_screws_columns(height);
-    mirror([0,1,0]) mirror([1,0,0]) bottom_screws_columns(height);
+module bottom_screw_columns(height = 10) {
+    bottom_screws_column(height);
+    mirror([1,0,0]) bottom_screws_column(height);
+    mirror([0,1,0]) bottom_screws_column(height);
+    mirror([0,1,0]) mirror([1,0,0]) bottom_screws_column(height);
+}
+
+module bottom_screws_hole(height = 10) {
+    translate([(pcb_width / 2) - screw_spacing, (pcb_height / 2) - screw_spacing, 0]) {
+            color([0, 1, 1]) cylinder( h = box_thickness, d1 = screw_head_diameter, d2 = screw_head_diameter, center = true, $fn=80);
+        }
+}
+
+module bottom_screw_holes() {
+    bottom_screws_hole();
+    mirror([1,0,0]) bottom_screws_hole();
+    mirror([0,1,0]) bottom_screws_hole();
+    mirror([0,1,0]) mirror([1,0,0]) bottom_screws_hole();
 }
 
 
@@ -140,9 +154,11 @@ module box_bottom() {
             color([1, 1, 0]) roundedcube([pcb_width + (box_thickness * 2), pcb_height + (box_thickness * 2), box_bottom_thickness + box_thickness], true, 1.75, "zmin");
 
             translate ([0, 0, box_thickness/2]) color([1, 0, 0]) cube([pcb_width, pcb_height, box_bottom_thickness], true);
+            
+        translate ([0, 0,  - (box_bottom_thickness / 2)]) bottom_screw_holes();
         }
         bottom_side_reinforcements();
-        translate ([0, 0, (box_thickness / 2)]) bottom_screw_holes(box_bottom_thickness);
+        translate ([0, 0, (box_thickness / 2)]) bottom_screw_columns(box_bottom_thickness);
     }
 }
 
