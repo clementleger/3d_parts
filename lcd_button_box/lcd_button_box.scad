@@ -1,9 +1,9 @@
-use <roundedcube.scad>;
+use <../common/roundedcube.scad>;
 use <usb.scad>;
 
 pcb_width = 70;
 pcb_height = 87;
-pcb_thickness = 1;
+pcb_thickness = 1.5;
 lcd_button_thickness = 6;
 box_thickness = 1.5;
 box_bottom_thickness = 25;
@@ -12,7 +12,7 @@ lcd_width = 51;
 lcd_height = 19;
 lcd_top_spacing = 14.5;
 lcd_x_offset = 0.25;
-button_x_offset = 1;
+button_x_offset = 0.5;
 
 button_diameter = 36;
 border_spacing = 4.5;
@@ -62,7 +62,7 @@ module bottom_screws_column(height = 10) {
                 cylinder( h = height, d = screw_column_thickess, center = true, $fn=80);
                 translate([0, 0, - (box_bottom_thickness / 2) + (bottom_screw_height / 2)]) cylinder( h = bottom_screw_height, d1 = screw_column_thickess + screw_spacing, d = screw_column_thickess + (screw_spacing / 2), center = true, $fn=80);
            }
-            cylinder( h = height, d = screw_diameter, center = true, $fn=80);
+            cylinder( h = height, d = screw_diameter + 1, center = true, $fn=80);
         }
     }
 }
@@ -162,6 +162,6 @@ module box_bottom() {
     }
 }
 
-//box_top();
-translate([0, 0, -40]) box_bottom();
+box_top();
+//translate([0, 0, -40]) box_bottom();
 

@@ -1,7 +1,7 @@
 // Parametric S-Hook
 // Made by Lucian Brandus
 // lucianbrandus@gmail.com
-include <roundedcube.scad>
+include <../common/roundedcube.scad>
 
 // User adjustable parameters
 hook_thickness = 4;

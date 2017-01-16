@@ -1,4 +1,4 @@
-include <roundedcube.scad>;
+include <../common/roundedcube.scad>;
 
 roundedcube([3.5, 11, 4], true, 1.75, "z");
 

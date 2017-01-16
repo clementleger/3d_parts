@@ -8,9 +8,9 @@ top_lid_thickness = 2;
 thread_thickness = 2.5;
 text_height = 0.5;
 thread_height = lid_height - smooth_height - top_lid_thickness;
-font_style = "Sugarpunch DEMO:style=Regular";
+font_style = "Arial:style=Regular";
 lid_text_1 = "Yaourt !";
-lid_text_2 = "CL";
+lid_text_2 = "Maman";
 /* Lid itself */
 difference() {
 
