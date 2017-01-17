@@ -2,16 +2,18 @@ include <../common/roundedcube.scad>;
 include <../common/prism.scad>;
 
 WHEEL_WIDTH = 28;
-WHEEL_THICKNESS = 65;
+WHEEL_THICKNESS = 70;
 
 PLATE_THICKNESS = 8;
 PLATE_WIDTH = WHEEL_WIDTH + 2 * PLATE_THICKNESS;
-PLATE_HEIGHT = 100;
+PLATE_HEIGHT = 110;
 HOOK_THICKNESS = 40;
 
 SCREW_SIZE = 5;
 SCREW_HEAD_SIZE = 8;
 SCREW_HEAD_THICKNESS = 3;
+
+$fn = 100;
 
 /**
  * Module PIE
@@ -85,20 +87,50 @@ module hook(hook_diameter, hook_thickness, hook_width, hook_angle, hook_tail, ho
 	}
 }
 
-
-union () {
+module rounded_joint () {
     difference () {
-        union (){
-            cube ([PLATE_HEIGHT, PLATE_WIDTH, PLATE_THICKNESS], center = true);
-        translate ([PLATE_HEIGHT / 2, PLATE_WIDTH / 2 - PLATE_THICKNESS, PLATE_THICKNESS / 2]) rotate([0, 0, 90]) prism(PLATE_THICKNESS, PLATE_HEIGHT - HOOK_THICKNESS, WHEEL_THICKNESS);
-          translate ([- PLATE_HEIGHT / 2 + HOOK_THICKNESS / 2, PLATE_WIDTH / 2 - PLATE_THICKNESS / 2, WHEEL_THICKNESS / 2 + PLATE_THICKNESS / 2]) cube ([HOOK_THICKNESS, PLATE_THICKNESS, WHEEL_THICKNESS], center = true);
-        }
+color ("orange") translate([-PLATE_HEIGHT / 2, PLATE_WIDTH / 2 -  PLATE_THICKNESS * 2, PLATE_THICKNESS/2]) cube ([PLATE_HEIGHT, PLATE_THICKNESS, PLATE_THICKNESS]);
 
+color ("red") translate([- PLATE_HEIGHT / 2, PLATE_WIDTH / 2 -  PLATE_THICKNESS * 2,  PLATE_THICKNESS + PLATE_THICKNESS / 2]) rotate ([0, 90, 0]) cylinder(h = PLATE_HEIGHT, d = PLATE_THICKNESS * 2 + 0.8);
+    
+        translate ([- (PLATE_HEIGHT / 2) + HOOK_THICKNESS , 0 , WHEEL_THICKNESS + PLATE_THICKNESS / 2]) rotate([180, 0, 90]) color("green") prism(PLATE_THICKNESS * 3, PLATE_HEIGHT - HOOK_THICKNESS, WHEEL_THICKNESS);
+}
+
+}
+
+module hook_plate() {
+    difference () {
+    union (){
+        cube ([PLATE_HEIGHT, PLATE_WIDTH, PLATE_THICKNESS], center = true);
+
+    }
         translate([-10, 0, - PLATE_THICKNESS / 2]) cylinder(h = PLATE_THICKNESS, d = SCREW_SIZE); 
         translate([-10, 0, PLATE_THICKNESS / 2 - SCREW_HEAD_THICKNESS]) cylinder(h = PLATE_THICKNESS, d = SCREW_HEAD_SIZE); 
         translate([PLATE_HEIGHT / 2 - 15, 0, - PLATE_THICKNESS / 2]) cylinder(h = PLATE_THICKNESS, d = SCREW_SIZE); 
         translate([PLATE_HEIGHT / 2 - 15, 0, PLATE_THICKNESS / 2 - SCREW_HEAD_THICKNESS]) cylinder(h = PLATE_THICKNESS, d = SCREW_HEAD_SIZE); 
     }
 
+}
+
+module hook_arm () {
+    difference() {
+        translate ([PLATE_HEIGHT / 2, PLATE_WIDTH / 2 - PLATE_THICKNESS, PLATE_THICKNESS / 2]) rotate([0, 0, 90]) prism(PLATE_THICKNESS, PLATE_HEIGHT - HOOK_THICKNESS, WHEEL_THICKNESS);
+     scale ([0.6, 1, 0.6]) translate ([PLATE_HEIGHT / 2, PLATE_WIDTH / 2 - PLATE_THICKNESS, PLATE_THICKNESS * 2]) rotate([0, 0, 90]) prism(PLATE_THICKNESS, PLATE_HEIGHT - HOOK_THICKNESS, WHEEL_THICKNESS);
+}
+
+    difference () {
+        translate ([- PLATE_HEIGHT / 2 + HOOK_THICKNESS / 2, PLATE_WIDTH / 2 - PLATE_THICKNESS / 2, WHEEL_THICKNESS / 2 + PLATE_THICKNESS / 2]) cube ([HOOK_THICKNESS, PLATE_THICKNESS, WHEEL_THICKNESS], center = true);
+    }
     translate([- PLATE_HEIGHT / 2 + HOOK_THICKNESS / 2,PLATE_WIDTH / 2 - PLATE_THICKNESS / 2, WHEEL_THICKNESS + PLATE_THICKNESS / 2 - 2]) rotate ([95, 1, -90]) hook(WHEEL_WIDTH, PLATE_THICKNESS, HOOK_THICKNESS, 180, 0, 10);
+}
+
+module bike_hook() {
+    hook_plate();
+    hook_arm();
+    rounded_joint();
+}
+
+difference() {
+    bike_hook();
+    translate([-(PLATE_HEIGHT / 2 + 5), 0, 0 ]) cube([10, 200, 200], center = true); 
 }
