@@ -2,7 +2,7 @@ include <../common/roundedcube.scad>;
 include <../common/prism.scad>;
 
 WHEEL_WIDTH = 28;
-WHEEL_THICKNESS = 70;
+WHEEL_THICKNESS = 75;
 
 PLATE_THICKNESS = 8;
 PLATE_WIDTH = WHEEL_WIDTH + 2 * PLATE_THICKNESS;
