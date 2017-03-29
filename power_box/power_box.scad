@@ -20,13 +20,25 @@ BOX_RADIUS = 2;
 FIX_WIDTH = 15;
 FIX_HEIGHT = 10;
 
+CABLE_DIAMETER = 6;
+
 BOX_WALL_THICKNESS = 2;
+
+
+module cable_hole () {
+    color("green") translate([0,BOX_LENGTH / 2,CABLE_DIAMETER/2]) rotate([0, 90, 0]) 
+    union () {
+        cylinder(d = CABLE_DIAMETER, h = BOX_WALL_THICKNESS * 2);
+        translate([0, -CABLE_DIAMETER/2, -1]) cube([CABLE_DIAMETER, CABLE_DIAMETER, BOX_WALL_THICKNESS * 2]);
+    }
+}
+
 
 module fix_part() {
     color("blue") {
         difference () {
             cube([FIX_WIDTH, FIX_HEIGHT, BOX_WALL_THICKNESS]);
-            translate ([FIX_WIDTH / 2, FIX_HEIGHT / 2, 0]) cylinder(d = PLUG_SCREW_DIAMETER, h = BOX_WALL_THICKNESS);
+            translate ([FIX_WIDTH / 2, FIX_HEIGHT / 2, -0.2]) cylinder(d = PLUG_SCREW_DIAMETER, h = BOX_WALL_THICKNESS);
         }
         translate([0, 0, BOX_WALL_THICKNESS]) prism(BOX_WALL_THICKNESS, FIX_HEIGHT, FIX_HEIGHT / 3 * 2);
         translate([FIX_WIDTH - BOX_WALL_THICKNESS, 0, BOX_WALL_THICKNESS]) prism(BOX_WALL_THICKNESS, FIX_HEIGHT, FIX_HEIGHT / 3 * 2);
@@ -52,9 +64,13 @@ module main_box() {
 
 
 union () {
-    main_box();
+    difference () {
+        main_box();
+        cable_hole();
+    }
     translate ([-FIX_HEIGHT, FIX_WIDTH + BOX_RADIUS, 0]) rotate([0, 0, -90]) fix_part();
     translate ([-FIX_HEIGHT, FIX_WIDTH + BOX_WIDTH, 0]) rotate([0, 0, -90]) fix_part();
     translate ([BOX_WIDTH + FIX_HEIGHT, BOX_WIDTH, 0]) rotate([0, 0, 90]) fix_part();
     translate ([BOX_WIDTH + FIX_HEIGHT,  BOX_RADIUS, 0]) rotate([0, 0, 90]) fix_part();
 }
+
