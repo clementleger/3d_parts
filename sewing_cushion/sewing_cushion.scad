@@ -13,6 +13,9 @@ WRIST_MOUNT_THICKNESS = 15;
 WRIST_MOUNT_WIDTH = 30;
 WRIST_MOUNT_HEIGHT = 30;
 
+BUILD_MAIN_BOX = 0;
+BUILD_INNER_RING = 0;
+
 $fn = 100;
 /* Main Box */
 module main_box() {
@@ -37,12 +40,6 @@ module inner_ring() {
     }
 }
 
-module wrist_mount() {
-    cube([20, 20, 2], center = true);
-    translate ([0, 9, 2]) cube([20, 2, 4], center = true);
-}
 
-//main_box();
-translate ([0, 0, 0])inner_ring();
-
-//wrist_mount();
+if (BUILD_MAIN_BOX == 1) main_box();
+if (BUILD_INNER_RING == 1) inner_ring();

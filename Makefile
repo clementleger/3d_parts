@@ -1,11 +1,14 @@
 
 
+SPACE := 
+all: list
 
-SCAD_FOLDER := power_box
+stls: _stl
 
-FOLDER_MAKEFILES := $(addsuffix /Makefile,$(SCAD_FOLDER))
+FOLDER_MAKEFILES := $(wildcard */Makefile)
 
 stl-target =
+output_stl =
 
 include $(FOLDER_MAKEFILES)
 
@@ -17,8 +20,16 @@ $($(1)-output): $($(1)-input)
 .PHONY: $(1)
 $(1): $($(1)-output)
 
+output_stl += $($(1)-output)
+
 endef
 
 $(foreach stl,$(stl-target),$(eval $(call gen_stl,$(stl))))
 
-all: $(stl-target)
+_stl: $(stl-target)
+clean:
+	rm -f $(output_stl)
+list:
+	@echo 'Use "make stls" to build all stl files (this may take a long time)'
+	@echo 'Otherwise, the following target can be individually built:'
+	@$(foreach stl,$(stl-target),echo '   - $(stl)';)
