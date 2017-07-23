@@ -1,5 +1,5 @@
 DIR := $(dir $(lastword $(MAKEFILE_LIST)))
-TEST_NAME := $(lastword $(subst /, ,$(DIR)))
+
 
 sewing_main_box-output := $(DIR)sewing_cushion_box.stl
 sewing_main_box-input := $(DIR)sewing_cushion.scad

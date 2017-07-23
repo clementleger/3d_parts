@@ -3,7 +3,7 @@ TUTOR_DIAMETER = 8; // [4:30]
 // Thickness of the cylinders 
 HOOK_THICKNESS = 2; // [1:10]
 // Thickness of the hook
-THICKNESS = 20; // [2:20]
+THICKNESS = 5; // [2:20]
 // Length of the neck between the two hooks
 TUTOR_LENGTH = 20; // [1:100]
 // Width of the neck

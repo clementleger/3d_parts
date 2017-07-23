@@ -1,14 +1,20 @@
 include <../common/chamfered_screw_hole.scad>
 include <../common/roundedcube.scad>
 
-CRANK_DIAMETER = 14.3;
+// Crank Diameter
+CRANK_DIAMETER = 14.3; // [4:40]
 HOOK_CRANK_THICKNESS = 4;
-HOOK_FIX_PLATE_WIDTH = 60;
-HOOK_FIX_PLATE_HEIGHT = 20;
-HOOK_FIX_PLATE_THICKNESS = 5;
-HOOK_NECK_LENGTH = 20;
+// Mounting Base Width
+HOOK_FIX_PLATE_WIDTH = 60; // [40:200]
+// Mounting Base Height
+HOOK_FIX_PLATE_HEIGHT = 20; // [10:200]
+// Mounting Base Thickness
+HOOK_FIX_PLATE_THICKNESS = 5; // [40:200]
+// Neck Length
+HOOK_NECK_LENGTH = 20; // [10:200]
 HOOK_NECK_WIDTH = HOOK_FIX_PLATE_HEIGHT/2;
-HOOK_NECK_HEIGHT = 12;
+HOOK_NECK_HEIGHT = HOOK_NECK_LENGTH / 3 * 2;
+
 SCREW_HEAD_DIAMETER = 8;
 SCREW_HEAD_LENGTH = 2;
 SCREW_DIAMETER = 4;
