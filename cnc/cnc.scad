@@ -12,23 +12,25 @@ X_ROD_LENGTH = 350;
 LM8UU_OUTER_DIAMETER = 15;
 LM8UU_LENGTH = 24;
 
-
+GANTRY_SIDE_WIDTH = 100;
 /* Thickness of joint at angle of chassis (were Y rod are attached) */
 CHASSIS_JOINT_THICKNESS = 2;
 
+
+PROFILE_WIDTH = 20;
 /* Start and end beam width */
-MAIN_BEAM_WIDTH = 18;
+MAIN_BEAM_WIDTH = PROFILE_WIDTH;
 /* Start and end beam height */
-MAIN_BEAM_HEIGHT = 80;
+MAIN_BEAM_HEIGHT = 3 * PROFILE_WIDTH;
+
+SIDE_BEAM_WIDTH = PROFILE_WIDTH;
+SIDE_BEAM_HEIGHT = PROFILE_WIDTH;
 
 /* Table MDF thickness */
 TABLE_THICKNESS = 16;
 
-Y_ROD_TOLERANCY = 0.4;
-Y_ROD_HOLDER_OPENING_THICKNESS = 1.5;
 Y_ROD_HOLDER_BEAM_OVERLAP = 20;
 Y_ROD_HOLDER_SCREW_HOLE_DIAMETER = 3;
-Y_SHAFT_DIAMETER = 8;
 
 /* Only useful for table preview */
 TABLE_HOLE_X_COUNT = 7;
@@ -72,20 +74,10 @@ MAIN_BEAM_LENGTH = X_ROD_LENGTH;
 Y_SHAFT_Z_OFFSET = PULLEY_BEARING_OUTER_DIAMETER + 15;
 
 /* Table */
-TABLE_WIDTH = Y_ROD_LENGTH - 2 * Y_ROD_HOLDER_THICKNESS + 2 * CHASSIS_JOINT_THICKNESS;
-TABLE_HEIGHT = MAIN_BEAM_LENGTH - Y_ROD_HOLDER_BEAM_OVERLAP * 2;
+TABLE_WIDTH = Y_ROD_LENGTH +  2 * MAIN_BEAM_WIDTH;
+TABLE_HEIGHT = MAIN_BEAM_LENGTH;
 TABLE_HOLE_X_SPACING = (TABLE_WIDTH - 2 * TABLE_HOLE_START_OFFSET) / (TABLE_HOLE_X_COUNT - 1);
 TABLE_HOLE_Y_SPACING = (TABLE_HEIGHT - 2 * TABLE_HOLE_START_OFFSET) / (TABLE_HOLE_Y_COUNT - 1);
-
-REAL_BEAM_HOLDER_WIDTH = MAIN_BEAM_WIDTH + 2 * CHASSIS_JOINT_THICKNESS;
-REAL_BEAM_HOLDER_HEIGHT = MAIN_BEAM_HEIGHT + 2 * CHASSIS_JOINT_THICKNESS;
-PULLEY_HOLDER_BASE = 10;
-PULLEY_HOLDER_HEIGHT = PULLEY_BEARING_OUTER_DIAMETER + PULLEY_BELT_THICKNESS * 2;
-PULLEY_TENSIONNER_FULL_THICKNESS = PULLEY_BEARING_THICKNESS + 2 * 2;
-PULLEY_HOLDER_WIDTH = PULLEY_HOLDER_THICKNESS * 2 + PULLEY_TENSIONNER_FULL_THICKNESS + PULLEY_TENSIONNER_TOLERANCY;
-PULLEY_BEARING_HOLE_DIAMETER = PULLEY_BEARING_OUTER_DIAMETER + PULLEY_BEARING_TOLERANCY * 2;
-
-UPPER_MAIN_BEAM_MIDDLE = TABLE_WIDTH + MAIN_BEAM_WIDTH / 2;
 
 /* Nema */
 NEMA_HOLE_SLOT_WIDTH = NEMA_SCREW_DIAMETER;
@@ -104,16 +96,20 @@ module y_beam()
 
 module y_beams()
 {
-    translate([0, 0, MAIN_BEAM_HEIGHT/2]) {
+    translate([MAIN_BEAM_WIDTH, 0, MAIN_BEAM_HEIGHT - SIDE_BEAM_WIDTH]) {
+   translate([0, - SIDE_BEAM_WIDTH/2 + TABLE_WIDTH/5, 0]) cube([Y_ROD_LENGTH, SIDE_BEAM_WIDTH, SIDE_BEAM_WIDTH]);
+   translate([0, - SIDE_BEAM_WIDTH/2 - TABLE_WIDTH/5, 0]) cube([Y_ROD_LENGTH, SIDE_BEAM_WIDTH, SIDE_BEAM_WIDTH]);
+    }
+    translate([MAIN_BEAM_WIDTH/2, 0, MAIN_BEAM_HEIGHT/2]) {
         y_beam();
-        translate([Y_ROD_LENGTH - MAIN_BEAM_WIDTH + 2 * CHASSIS_JOINT_THICKNESS, 0, 0]) y_beam();
+        translate([Y_ROD_LENGTH + MAIN_BEAM_WIDTH, 0, 0]) y_beam();
     }
 }
 
 module table()
 {
     color("BurlyWood")
-    translate([TABLE_WIDTH/2 + MAIN_BEAM_WIDTH / 2, 0, MAIN_BEAM_HEIGHT - TABLE_THICKNESS/2])
+    translate([TABLE_WIDTH/2, 0, MAIN_BEAM_HEIGHT + TABLE_THICKNESS/2])
     
     difference() {
         cube([TABLE_WIDTH, TABLE_HEIGHT, TABLE_THICKNESS], center = true);
@@ -126,87 +122,16 @@ module table()
 module y_rod()
 {
     color("white")
-    translate([-MAIN_BEAM_WIDTH/2 - CHASSIS_JOINT_THICKNESS, MAIN_BEAM_LENGTH/2 - Y_ROD_HOLDER_BEAM_OVERLAP / 2, 0 ])
+    translate([MAIN_BEAM_WIDTH, MAIN_BEAM_LENGTH/2 - Y_ROD_HOLDER_BEAM_OVERLAP / 2, 0 ])
     rotate([90, 0, 90]) cylinder(d = Y_ROD_DIAMETER, h = Y_ROD_LENGTH);
 }
 
 module y_rods()
 {
-    translate([0, 0, Y_ROD_FIX_X_OFFSET - CHASSIS_JOINT_THICKNESS]) {
+    translate([0, 0, MAIN_BEAM_HEIGHT - PROFILE_WIDTH / 2]) {
         y_rod();
         mirror([0, 1, 0]) y_rod();
     }
-}
-
-module y_bearing_shaft_support()
-{
-    difference() {
-        cube([PULLEY_BEARING_HOLE_DIAMETER + CHASSIS_JOINT_THICKNESS * 2, Y_ROD_HOLDER_BEAM_OVERLAP + CHASSIS_JOINT_THICKNESS , Y_SHAFT_Z_OFFSET]);
-        translate([PULLEY_BEARING_OUTER_DIAMETER/2 + CHASSIS_JOINT_THICKNESS, 0, Y_SHAFT_Z_OFFSET - CHASSIS_JOINT_THICKNESS - (PULLEY_BEARING_HOLE_DIAMETER / 2) ]) rotate([-90, 0, 0]) {
-            cylinder(d = PULLEY_BEARING_HOLE_DIAMETER, h = PULLEY_BEARING_THICKNESS);
-            cylinder(d = PULLEY_BEARING_INNER_DIAMETER + PULLEY_BEARING_TOLERANCY * 2, h = NEMA_LENGTH/2);
-        }
-    }
-}
-
-module beam_nesting_section()
-{
-        /* Beam nesting section */
-    translate ([0, -(Y_ROD_HOLDER_BEAM_OVERLAP + CHASSIS_JOINT_THICKNESS), 0])
-        difference() {
-            cube([MAIN_BEAM_HEIGHT + CHASSIS_JOINT_THICKNESS * 2, Y_ROD_HOLDER_BEAM_OVERLAP  + CHASSIS_JOINT_THICKNESS, MAIN_BEAM_WIDTH + CHASSIS_JOINT_THICKNESS * 2]);
-            translate([CHASSIS_JOINT_THICKNESS, 0, CHASSIS_JOINT_THICKNESS]) cube([MAIN_BEAM_HEIGHT, Y_ROD_HOLDER_BEAM_OVERLAP, MAIN_BEAM_WIDTH]);
-        }
-    translate([Y_ROD_FIX_X_OFFSET, - CHASSIS_JOINT_THICKNESS - Y_ROD_HOLDER_BEAM_OVERLAP/2, Y_ROD_HOLDER_THICKNESS / 2]) cube([Y_ROD_HOLDER_BEAM_OVERLAP, Y_ROD_HOLDER_BEAM_OVERLAP, Y_ROD_HOLDER_THICKNESS], center = true);
-}
-
-module y_rod_holder()
-{
-        /* Beam nesting section part */
-    difference() {
-        beam_nesting_section();
-        /* Y rod fix */
-        translate([Y_ROD_FIX_X_OFFSET, - CHASSIS_JOINT_THICKNESS - Y_ROD_HOLDER_BEAM_OVERLAP / 2, Y_ROD_HOLDER_THICKNESS / 2]) {
-            translate([0, 0, -Y_ROD_HOLDER_THICKNESS / 2]) cylinder(d = Y_ROD_DIAMETER + Y_ROD_TOLERANCY, h = Y_ROD_HOLDER_THICKNESS);
-            rotate([0, 90, 90]) cylinder(d = Y_ROD_HOLDER_SCREW_HOLE_DIAMETER, h = Y_ROD_HOLDER_THICKNESS);
-        }
-    }
-}
-
-module pulley_holder_side()
-{
-    translate([PULLEY_HOLDER_THICKNESS, 0, 0]) cube([REAL_BEAM_HOLDER_WIDTH - PULLEY_HOLDER_THICKNESS, PULLEY_HOLDER_THICKNESS, PULLEY_HOLDER_BASE]);
-    translate([REAL_BEAM_HOLDER_WIDTH, 0, PULLEY_HOLDER_BASE])  rotate([0, 0, 90]) prism(PULLEY_HOLDER_THICKNESS, REAL_BEAM_HOLDER_WIDTH - PULLEY_HOLDER_THICKNESS, PULLEY_HOLDER_HEIGHT - PULLEY_HOLDER_BASE);
-}
-
-
-module y_rod_holder_with_pulley()
-{
-    y_rod_holder();
-    translate([0, -Y_ROD_HOLDER_BEAM_OVERLAP - CHASSIS_JOINT_THICKNESS, -REAL_BEAM_HOLDER_WIDTH - CHASSIS_JOINT_THICKNESS * 2]) rotate([0, 90, 0]) mirror([1, 0, 0]) y_bearing_shaft_support();
-}
-
-module y_rod_holder_lower()
-{
-    color("green") translate([MAIN_BEAM_WIDTH / 2 + CHASSIS_JOINT_THICKNESS, 0, -CHASSIS_JOINT_THICKNESS]) rotate([0, -90, 0]) {
-        translate([0, MAIN_BEAM_LENGTH / 2 + CHASSIS_JOINT_THICKNESS, 0]) y_rod_holder_with_pulley();
-        mirror([0, 1, 0]) translate([0, MAIN_BEAM_LENGTH / 2 + CHASSIS_JOINT_THICKNESS, 0]) y_rod_holder_with_pulley();
-    }
-    translate([0, 0, MAIN_BEAM_HEIGHT/2]) y_beam();
-}
-
-
-module y_rod_holder_upper()
-{
-    translate([ Y_ROD_LENGTH - MAIN_BEAM_WIDTH - 2 * CHASSIS_JOINT_THICKNESS , 0, 0]) mirror([1, 0, 0]) {
-        color("green") translate([MAIN_BEAM_WIDTH / 2 + CHASSIS_JOINT_THICKNESS, 0, -CHASSIS_JOINT_THICKNESS]) rotate([0, -90, 0]) {
-            translate([0, MAIN_BEAM_LENGTH / 2 + CHASSIS_JOINT_THICKNESS, 0]) y_rod_holder();
-            mirror([0, 1, 0]) translate([0, MAIN_BEAM_LENGTH / 2 + CHASSIS_JOINT_THICKNESS, 0]) y_rod_holder();
-        }
-        /* Beam */
-        translate([0, 0, MAIN_BEAM_HEIGHT/2]) y_beam();
-    }
-    
 }
 
 module nema_attachment()
@@ -237,29 +162,19 @@ module y_nema_holder()
     }
 }
 
-
-module y_axis_transmission()
+module y_lm8uu_holder()
 {
-    color("LightBlue") translate([MAIN_BEAM_WIDTH/2 + CHASSIS_JOINT_THICKNESS * 2 + PULLEY_BEARING_HOLE_DIAMETER/2,  -Y_SHAFT_X_OVERHANG / 2, Y_SHAFT_Z_OFFSET - CHASSIS_JOINT_THICKNESS * 2 - PULLEY_BEARING_HOLE_DIAMETER / 2 ]) rotate([90, 0, 0]) cylinder(d = Y_SHAFT_DIAMETER, h = MAIN_BEAM_LENGTH + 2 * CHASSIS_JOINT_THICKNESS + Y_SHAFT_X_OVERHANG, center = true);
-}
-
-
-Y_LM8UU_SPACING = 10;
-
-module y_bearing() 
-{
-    rotate([90, 0, 0]) {
-    translate([0, 0, LM8UU_LENGTH + Y_LM8UU_SPACING]) cylinder(d = LM8UU_OUTER_DIAMETER, h = LM8UU_LENGTH);
-    cylinder(d = LM8UU_OUTER_DIAMETER, h = LM8UU_LENGTH);
+    color("blue") {
+    rotate([0, 90, 0]) cylinder(d = LM8UU_OUTER_DIAMETER, h = LM8UU_LENGTH);
+    translate([GANTRY_SIDE_WIDTH - LM8UU_LENGTH, 0, 0]) rotate([0, 90, 0]) cylinder(d = LM8UU_OUTER_DIAMETER, h = LM8UU_LENGTH);
+    /* Hole for rod */
+    rotate([0, 90, 0]) cylinder(d = Y_ROD_DIAMETER + 2 * 0.5, h = GANTRY_SIDE_WIDTH);
     }
 }
 
-y_bearing() ;
-/*
-y_nema_holder();
-y_axis_transmission();
-table();
-y_rod_holder_lower();
-y_rod_holder_upper();
+y_lm8uu_holder();
+//y_nema_holder();
+/*table();
+y_beams();
 y_rods();
 */
