@@ -3,10 +3,10 @@ include <../common/roundedcube.scad>
 BASE_WIDTH = 26;
 BASE_HEIGHT = 29;
 BASE_RADIUS = 4;
-BASE_LENGTH = 30;
+BASE_LENGTH = 35;
 
 WALL_THICKNESS = 2;
-CABLE_DIAMETER = 6;
+CABLE_DIAMETER = 8;
 CABLE_HOLDER_HEIGHT = 15;
 CABLE_HOLDER_WALL_THICKNESS = 1;
 
@@ -19,15 +19,16 @@ $fn=40;
 
 OUTSIDE_SIZE_WIDTH = BASE_WIDTH + 2 * WALL_THICKNESS;
 OUTSIDE_SIZE_HEIGHT = BASE_HEIGHT + 2 * WALL_THICKNESS;
+
 difference() {
     roundedcube([OUTSIDE_SIZE_WIDTH, OUTSIDE_SIZE_HEIGHT, BASE_LENGTH + WALL_THICKNESS], center = true, radius = BASE_RADIUS, apply_to="zmin");
    
     translate([0, 0, WALL_THICKNESS / 2]) roundedcube([BASE_WIDTH, BASE_HEIGHT, BASE_LENGTH], center = true, radius = BASE_RADIUS, apply_to="z");
-    
-    cylinder(d = CABLE_DIAMETER, h = BASE_LENGTH + WALL_THICKNESS, center = true);
+    #translate([0, 0, -(CABLE_HOLDER_HEIGHT / 2 + OUTSIDE_SIZE_HEIGHT / 2 + WALL_THICKNESS / 2)])
+    cylinder(d = CABLE_DIAMETER, h = CABLE_HOLDER_HEIGHT + WALL_THICKNESS - 0.2, center = true);
 }
 
-translate([0, 0, -(CABLE_HOLDER_HEIGHT / 2 + BASE_HEIGHT / 2)])
+translate([0, 0, -(CABLE_HOLDER_HEIGHT / 2 + OUTSIDE_SIZE_HEIGHT / 2 + WALL_THICKNESS / 2)])
 difference() {
     cylinder(d2 = CABLE_DIAMETER + 2 + CABLE_HOLDER_WALL_THICKNESS * 2, d1 = CABLE_DIAMETER + CABLE_HOLDER_WALL_THICKNESS * 2, h = CABLE_HOLDER_HEIGHT, center = true);
     
