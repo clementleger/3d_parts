@@ -1,0 +1,36 @@
+use <../common/roundedcube.scad>;
+use <../common/chamfered_screw_hole.scad>
+
+CABLE_STOP_DIAMETER = 8;
+CABLE_STOP_THICKNESS = 5;
+CABLE_DIAMETER = 5;
+CABLE_STOP_HOLE_DIAMETER = 7;
+
+BASE_MOUNT_WIDTH = 12;
+BASE_MOUNT_HEIGHT = 35;
+BASE_MOUNT_THICKNESS = 6;
+
+SCREW_HEAD_SIZE = 2;
+SCREW_HEAD_DIAMETER = 8;
+SCREW_DIAMETER = 4;
+SCREW_SIZE = 10;
+
+$fn = 30;
+
+difference() {
+    union () {
+        roundedcube([BASE_MOUNT_WIDTH, BASE_MOUNT_HEIGHT,BASE_MOUNT_THICKNESS], true, 1.75, "zmax");
+        translate([0, 0, (CABLE_STOP_DIAMETER + BASE_MOUNT_THICKNESS) / 2])
+        roundedcube([BASE_MOUNT_WIDTH, CABLE_STOP_DIAMETER + BASE_MOUNT_THICKNESS,CABLE_STOP_DIAMETER + BASE_MOUNT_THICKNESS], true, 1.75, "zmax");
+    }
+        translate([0, 0, BASE_MOUNT_THICKNESS/2 - 1]) cylinder(d = CABLE_STOP_DIAMETER, h = BASE_MOUNT_WIDTH, center = true);
+    translate([BASE_MOUNT_WIDTH / 3, 0, BASE_MOUNT_THICKNESS/2 + 1 ]) rotate([0, 90, 0]) cylinder(d = CABLE_STOP_HOLE_DIAMETER, h = BASE_MOUNT_WIDTH, center = true);
+    
+    
+    
+    cylinder(d = CABLE_DIAMETER, h = 100);
+    /* Screws */
+translate([0, BASE_MOUNT_HEIGHT/2 - SCREW_HEAD_DIAMETER / 2 - 2, -(SCREW_SIZE +SCREW_HEAD_SIZE) + BASE_MOUNT_THICKNESS/2]) chamfered_screw_hole(SCREW_DIAMETER, SCREW_SIZE, SCREW_HEAD_DIAMETER, SCREW_HEAD_SIZE);
+translate([0, - (BASE_MOUNT_HEIGHT/2 - SCREW_HEAD_DIAMETER / 2 - 2), -(SCREW_SIZE +SCREW_HEAD_SIZE) + BASE_MOUNT_THICKNESS/2]) chamfered_screw_hole(SCREW_DIAMETER, SCREW_SIZE, SCREW_HEAD_DIAMETER, SCREW_HEAD_SIZE);
+}
+
