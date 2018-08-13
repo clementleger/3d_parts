@@ -4,7 +4,7 @@ use <../common/chamfered_screw_hole.scad>;
 // Based on a design by Makerblock ( http://makerblock.com/2010/03/blender-help/ )
 size=7; // size of the ball joint
 joint_spacing =0.01; // some space between them?
-joint_thickness = 2; // thickness of the arms
+joint_thickness = 3; // thickness of the arms
 joint_arms = 6; // how many arms do you want?
 arm_width = 3; // actually: how much is removed from the arms Larger values will remove more
 
@@ -63,7 +63,7 @@ module joint()
         }
         difference() {
             
-            translate([0,0,size-1]) cylinder(r=6,h=5);
+            translate([0,0,size-1]) cylinder(r=7,h=5);
             sphere(r=size+joint_spacing);
 
         }
