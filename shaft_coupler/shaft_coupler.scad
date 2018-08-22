@@ -1,0 +1,40 @@
+
+
+THREAD_DIAMETER = 7.8;
+NEMA_SHAFT_DIAMETER = 5.2;
+THICKNESS = 5;
+
+COUPLER_HEIGHT = 25;
+NEMA_FLAT_THICKNESS = 4.5;
+
+SCREW_DIAMETER = 3.6;
+SQUARE_NUT_SIZE = 5.5;
+SQUARE_NUT_THICKNESS = 1.6;
+
+$fn = 60;
+EXTERNAL_DIAMETER = THREAD_DIAMETER + 2 * THICKNESS;
+NEMA_FLAT_OFFSET = NEMA_SHAFT_DIAMETER - NEMA_FLAT_THICKNESS;
+
+difference() {
+    union () {
+        difference() {
+            cylinder(d = EXTERNAL_DIAMETER, h = COUPLER_HEIGHT);
+               
+            
+            cylinder(d = THREAD_DIAMETER, h = COUPLER_HEIGHT / 2);
+            translate([0, 0, COUPLER_HEIGHT / 2]) cylinder(d = NEMA_SHAFT_DIAMETER, h = COUPLER_HEIGHT / 2);
+        }
+            translate([- NEMA_SHAFT_DIAMETER/2, NEMA_SHAFT_DIAMETER/2 - NEMA_FLAT_OFFSET, COUPLER_HEIGHT / 2]) cube([NEMA_SHAFT_DIAMETER, NEMA_SHAFT_DIAMETER, COUPLER_HEIGHT / 2]);
+    }
+               
+    translate([0, 0, COUPLER_HEIGHT/6 * 4]) rotate ([-90, 0, 0]) cylinder(d = SCREW_DIAMETER, h = EXTERNAL_DIAMETER/2);
+    
+    translate([0, 0, COUPLER_HEIGHT/6]) rotate ([-90, 0, 0]) cylinder(d = SCREW_DIAMETER, h = EXTERNAL_DIAMETER/2);
+
+    /*translate([-SQUARE_NUT_SIZE / 2, THREAD_DIAMETER / 2 + 0.5, 0]) cube([SQUARE_NUT_SIZE, SQUARE_NUT_THICKNESS, SQUARE_NUT_SIZE + SCREW_DIAMETER / 2]);
+
+    #translate([-SQUARE_NUT_SIZE / 2, THREAD_DIAMETER / 2, COUPLER_HEIGHT - (SQUARE_NUT_SIZE + SCREW_DIAMETER / 2) ]) cube([SQUARE_NUT_SIZE, SQUARE_NUT_THICKNESS, SQUARE_NUT_SIZE + SCREW_DIAMETER / 2]);
+ */
+
+}
+
