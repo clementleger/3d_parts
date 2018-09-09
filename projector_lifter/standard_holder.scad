@@ -10,12 +10,12 @@ HOLE_DIAMETER = 6;
 HOLE_OFFSET = 27;
 NUT_DIAMETER = 11.5;
 
-SCREW_PART_SIZE = 15;
+SCREW_PART_SIZE = 13;
 SCREW_PART_HEIGHT = SCREW_PART_SIZE + THICKNESS ;
 SCREW_PART_THICKNESS = 6;
 
 SCREW_HEAD_SIZE = 2;
-SCREW_HEAD_DIAMETER = 8;
+SCREW_HEAD_DIAMETER = 9;
 SCREW_DIAMETER = 4;
 SCREW_SIZE = 10;
 
@@ -46,11 +46,12 @@ difference() {
        roundedcube([SCREW_PART_HEIGHT, WIDTH, SCREW_PART_THICKNESS], false , 2, "z");
     }
        
-    translate([SCREW_PART_HEIGHT - SCREW_HEAD_DIAMETER / 2 - 2, WIDTH / 2, -SCREW_FULL_SIZE + SCREW_PART_THICKNESS ]) #chamfered_screw_hole(SCREW_DIAMETER, SCREW_SIZE, SCREW_HEAD_DIAMETER, SCREW_HEAD_SIZE, 10, $fn = 100);
+    translate([SCREW_PART_HEIGHT - SCREW_HEAD_DIAMETER / 2 - 3, WIDTH / 2, -SCREW_FULL_SIZE + SCREW_PART_THICKNESS ]) #chamfered_screw_hole(SCREW_DIAMETER, SCREW_SIZE, SCREW_HEAD_DIAMETER, SCREW_HEAD_SIZE, 10, $fn = 100);
 }
 
 
 
+module side_screw() {
 /* small side screw */
 difference() {
     union() {
@@ -58,5 +59,10 @@ difference() {
        translate([0, -SCREW_PART_SIZE, 0])  roundedcube([THICKNESS, SCREW_PART_SIZE + THICKNESS, SCREW_PART_THICKNESS], false , 2, "z");
     }
       
-    translate([THICKNESS / 2, - SCREW_PART_SIZE / 2 - 1, -SCREW_FULL_SIZE + SCREW_PART_THICKNESS ]) #chamfered_screw_hole(SCREW_DIAMETER, SCREW_SIZE, SCREW_HEAD_DIAMETER, SCREW_HEAD_SIZE, 10, $fn = 100);
+    translate([THICKNESS / 2, - SCREW_PART_SIZE / 2, -SCREW_FULL_SIZE + SCREW_PART_THICKNESS ]) #chamfered_screw_hole(SCREW_DIAMETER, SCREW_SIZE, SCREW_HEAD_DIAMETER, SCREW_HEAD_SIZE, 10, $fn = 100);
 }
+}
+
+side_screw();
+
+translate([0, WIDTH, 0]) mirror([0, 1, 0]) side_screw();
