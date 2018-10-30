@@ -124,14 +124,14 @@ BOARD_HOLE_SPACING = (FULL_SUPPORT_LENGTH - (2 * BOARD_HOLE_OFFSET)) / (BOARD_SU
 RAIL_ES_LENGTH = RAIL_ES_HOLE_OFFSET + RAIL_ES_EXTRA + 5;
 RAIL_ES_FULL_HEIGHT = RAIL_HEIGHT + RAIL_ES_EXTRA;
 
-//rail_end_stop();
-//side_support_with_holes();
-//support_feet();
+//x_end_stop();
+//x_rail_support();
 //gantry_side();
 //mirror([1, 0, 0]) nema_attachment();
 //gantry_middle_part();
-gantry_bottom_belt_blocker();
+//x_belt_blocker();
 //x_motor_holder();
+y_end_stop();
 
 /* Modules */
 
@@ -185,7 +185,7 @@ module side_support() {
     }
 }
 
-module side_support_with_holes() {
+module x_rail_support() {
     difference() {
         
         side_support();
@@ -198,7 +198,7 @@ module side_support_with_holes() {
     }
 }
 
-module rail_end_stop() {
+module x_end_stop() {
     difference() {
         roundedcube([RAIL_ES_LENGTH, RAIL_ES_WIDTH + 2 * + RAIL_ES_EXTRA, RAIL_ES_FULL_HEIGHT], true, 1, "zmax");
 translate([RAIL_ES_LENGTH/2 - RAIL_ES_EXTRA/2, 0, -RAIL_ES_FULL_HEIGHT/2 + (RAIL_HEIGHT + SMALL_TOLERANCY)/2]) cube([RAIL_ES_EXTRA, RAIL_WIDTH, RAIL_HEIGHT + SMALL_TOLERANCY], true);
@@ -312,7 +312,7 @@ module gantry_middle_part() {
     }
 }
 
-module gantry_bottom_belt_blocker () {
+module x_belt_blocker () {
     BELT_BLOCKER_WIDTH = 2 * BOTTOM_BELT_BLOCKER_THICKNESS + FLAT_AL_STRIP_WIDTH;
  
     difference() {
@@ -409,4 +409,22 @@ module x_motor_holder()
     translate([NEMA_WIDTH, 0, NEMA_ATTACHMENT_THICKNESS]) cube([NEMA_ATTACHMENT_THICKNESS, NEMA_WIDTH + NEMA_ATTACHMENT_THICKNESS + NEMA_OBLONG_SIZE,NEMA_WIDTH]);
 
     translate([0, NEMA_ATTACHMENT_THICKNESS, NEMA_ATTACHMENT_THICKNESS]) rotate([0, 0, -90]) prism(NEMA_ATTACHMENT_THICKNESS, NEMA_WIDTH, NEMA_WIDTH);
+}
+
+module y_end_stop()
+{
+        difference() {
+            union () {
+                translate([RAIL_ES_LENGTH/4, 0, 0]) roundedcube([RAIL_ES_LENGTH/2, RAIL_ES_WIDTH + 2 * + RAIL_ES_EXTRA, RAIL_ES_FULL_HEIGHT], true, 1, "zmax");
+                roundedcube([RAIL_ES_LENGTH, RAIL_WIDTH, RAIL_ES_FULL_HEIGHT], true, 1, "zmax");
+                
+            }
+    translate([RAIL_ES_LENGTH/2 - RAIL_ES_EXTRA/2, 0, -RAIL_ES_FULL_HEIGHT/2 + (RAIL_HEIGHT + SMALL_TOLERANCY)/2]) cube([RAIL_ES_EXTRA, RAIL_WIDTH, RAIL_HEIGHT + SMALL_TOLERANCY], true);
+        translate([RAIL_ES_LENGTH/2 - RAIL_ES_HOLE_OFFSET - RAIL_ES_EXTRA, 0, -RAIL_ES_FULL_HEIGHT/2]) cylinder(d = RAIL_ES_BOLT_DIAM, h = RAIL_ES_FULL_HEIGHT);
+        translate([RAIL_ES_LENGTH/2 - RAIL_ES_HOLE_OFFSET - RAIL_ES_EXTRA, 0, RAIL_ES_FULL_HEIGHT/2 - RAIL_ES_BOLT_HEAD_THICKNESS]) cylinder(d = RAIL_ES_BOLT_HEAD_DIAM, h = RAIL_ES_BOLT_HEAD_THICKNESS);
+        
+        /* Holes for endstop */
+        translate([RAIL_ES_LENGTH/2 -RAIL_ES_ENDSTOP_HOLE_OFFSET , RAIL_ES_ENDSTOP_HOLE_SPACING/2, 0]) cylinder(d = RAIL_ES_ENDSTOP_HOLE_DIAM, h = RAIL_ES_FULL_HEIGHT, center = true);
+        translate([RAIL_ES_LENGTH/2 -RAIL_ES_ENDSTOP_HOLE_OFFSET , -RAIL_ES_ENDSTOP_HOLE_SPACING/2, 0]) cylinder(d = RAIL_ES_ENDSTOP_HOLE_DIAM, h = RAIL_ES_FULL_HEIGHT, center = true);
+    }
 }
