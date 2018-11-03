@@ -15,6 +15,8 @@ M3_DIAM = 3;
 M3_NUT_DIAM = 7;
 M3_NUT_THICKNESS = 2;
 M3_NUT_SIDE_TO_SIDE_THICKNESS = 6;
+M3_WASHER_DIAM = 7; 
+M3_WASHER_THICKNESS= 0.4; 
 
 /* Feet */
 FEET_WIDTH = 25;
@@ -32,9 +34,9 @@ RAIL_HOLE_SPACING = 20.1;
 
 /* + 2 for end stop holes */
 Y_RAIL_HOLE_COUNT = 10 + 2;
-RAIL_HOLE_DIAM = 2.7;
+RAIL_HOLE_DIAM = M3_DIAM;
 RAIL_NUT_THICKNESS = M3_NUT_THICKNESS;
-RAIL_NUT_DIAM = 7;
+RAIL_NUT_DIAM = M3_NUT_DIAM;
 Y_RAIL_SUPPORT_HEIGHT = 22;
 Y_RAIL_SUPPORT_THICKNESS = 7;
 Y_RAIL_FIRST_HOLE_OFFSET = 8;
@@ -73,7 +75,7 @@ GANTRY_CARRIAGE_Y_OFFSET = 22;
 /* Middle part */
 GANTRY_RAIL_MIDDLE_HOLE_COUNT = 8;
 GANTRY_MIDDLE_PART_EXTRA = 3;
-/* How much is the gantry into the MG carriage
+/* How much is the gantry into the MG carriage */
 GANTRY_MG_CARRIAGE_DEPTH = 1;
 
 /* NEMA stuff */
@@ -224,11 +226,11 @@ module gantry_bottom_holes() {
         translate([GANTRY_WIDTH/2 + (FLAT_AL_STRIP_WIDTH /2) / 4 * 2, 0, 0]) rotate([-90, 0, 0])cylinder(d = GANTRY_BOLT_HOLE_DIAM, h = GANTRY_THICKNESS);
 }
 
-module gantry_carriage_holes(diam) {
-    cylinder(d = diam, h = GANTRY_THICKNESS);
-    translate([MG_CARRIAGE_HOLE_X_OFFSET, 0, 0]) cylinder(d = diam, h = GANTRY_THICKNESS);
-    translate([MG_CARRIAGE_HOLE_X_OFFSET, MG_CARRIAGE_HOLE_Y_OFFSET, 0]) cylinder(d = diam, h = GANTRY_THICKNESS);
-    translate([0, MG_CARRIAGE_HOLE_Y_OFFSET, 0]) cylinder(d = diam, h = GANTRY_THICKNESS);
+module gantry_carriage_holes(diam, thickness) {
+    cylinder(d = diam, h = thickness);
+    translate([MG_CARRIAGE_HOLE_X_OFFSET, 0, 0]) cylinder(d = diam, h = thickness);
+    translate([MG_CARRIAGE_HOLE_X_OFFSET, MG_CARRIAGE_HOLE_Y_OFFSET, 0]) cylinder(d = diam, h = thickness);
+    translate([0, MG_CARRIAGE_HOLE_Y_OFFSET, 0]) cylinder(d = diam, h = thickness);
 }
 
 module gantry_bottom_part()
@@ -284,7 +286,7 @@ module y_gantry_side()
 
                     translate([0, SLOPE_PART_Y_OFFSET, 0]) slope_part(GANTRY_WIDTH, SLOPE_PART_HEIGHT, GANTRY_THICKNESS, SLOPE_OFFSET);
                 }
-                translate([GANTRY_WIDTH/2 - MG_CARRIAGE_HOLE_X_OFFSET/2, GANTRY_CARRIAGE_Y_OFFSET, 0]) gantry_carriage_holes(GANTRY_BOLT_HOLE_DIAM);
+                translate([GANTRY_WIDTH/2 - MG_CARRIAGE_HOLE_X_OFFSET/2, GANTRY_CARRIAGE_Y_OFFSET, 0]) gantry_carriage_holes(GANTRY_BOLT_HOLE_DIAM, GANTRY_THICKNESS);
                 /* Holes for bolt head */
                 //translate([GANTRY_WIDTH/2 - MG_CARRIAGE_HOLE_X_OFFSET/2, GANTRY_CARRIAGE_Y_OFFSET, - GANTRY_THICKNESS + GANTRY_NUT_HEAD_THICKNESS]) gantry_carriage_holes(GANTRY_BOLT_HEAD_DIAM);
                 translate([0, GANTRY_CARRIAGE_Y_OFFSET - MG_CARRIAGE_HOLE_OFFSET, GANTRY_THICKNESS - GANTRY_MG_CARRIAGE_DEPTH])  cube([MG_CARRIAGE_WIDTH, MG_CARRIAGE_HEIGHT, GANTRY_MG_CARRIAGE_DEPTH]);
@@ -458,6 +460,8 @@ X_BELT_BLOCKER_HEIGHT =  2 * X_BELT_BLOCKER_EXTRA_THICKNESS ;
 /* total width from external part of the belt to external part of the carriage */
 X_BELT_WIDTH_TO_CARRIAGE = GANTRY_TOP_THICKNESS + X_BELT_WIDTH_FROM_GANTRY_TOP + BELT_WIDTH;
 
+X_BELT_HOLE_SPACING = X_BELT_BLOCKER_WIDTH / 2;
+
 module y_belt_bolt_nut_hole() {
     cylinder(d = M3_DIAM, h  = X_BELT_WIDTH_TO_CARRIAGE, center = true);
     translate([0, 2, X_BELT_WIDTH_TO_CARRIAGE/4]) cube([M3_NUT_SIDE_TO_SIDE_THICKNESS, X_BELT_BLOCKER_TOP_THICKNESS, M3_NUT_THICKNESS], center = true);
@@ -478,11 +482,81 @@ module x_belt_attachment() {
     difference () {
     roundedcube([X_BELT_BLOCKER_WIDTH,X_BELT_BLOCKER_TOP_THICKNESS, X_BELT_WIDTH_TO_CARRIAGE ], true, 1, "z");
         /* Holes to attach to carriage */
-        translate([X_BELT_BLOCKER_WIDTH/2 - X_BELT_BLOCKER_WIDTH/4, 0, 0]){
+        translate([X_BELT_BLOCKER_WIDTH/2 - X_BELT_HOLE_SPACING/2, 0, 0]){
             y_belt_bolt_nut_hole();
         }
-        translate([- X_BELT_BLOCKER_WIDTH/2 + X_BELT_BLOCKER_WIDTH/4, 0, 0]) {
+        translate([- X_BELT_BLOCKER_WIDTH/2 + X_BELT_HOLE_SPACING/2, 0, 0]) {
             y_belt_bolt_nut_hole();
         }
     }
 }
+
+/* Carriage holder */
+X_CH_SIDE_WIDTH = 10;
+/* Additionnal height on the top */
+X_CH_TOP_HEIGHT = 25;
+/* Additionnal height on the bottom */
+X_CH_BOTTOM_HEIGHT = 15;
+/* Carriage holder thickness */
+X_CH_THICKNESS = 6;
+/* Depth of carriage dimension into this  */
+X_CH_CARRIAGE_DEPTH = 0.6;
+X_CH_M3_HEAD_THICKNESS = 3;
+
+X_CH_HEIGHT = X_CH_BOTTOM_HEIGHT + X_CH_TOP_HEIGHT + MG_CARRIAGE_HEIGHT;
+X_CH_WIDTH = MG_CARRIAGE_WIDTH + 2 * X_CH_SIDE_WIDTH;
+
+/* Guide for real carriage (width ) */
+X_CH_GUIDE_WIDTH = 2;
+/* Guide for real carriage (thickness) */
+X_CH_GUIDE_THICKNESS = 1;
+
+/* Oblong holes for real carriage */
+X_CH_HOLE_LENGTH = X_CH_HEIGHT - 12;
+/* offset from each side of carriage holder */
+X_CH_HOLE_OFFSET_FROM_SIDE = 5;
+
+module x_carriage_holder_mg_footprint()
+{
+    translate([MG_CARRIAGE_WIDTH/2 - MG_CARRIAGE_HOLE_X_OFFSET/2, MG_CARRIAGE_HEIGHT/2 - MG_CARRIAGE_HOLE_Y_OFFSET/2, 0]) {
+          gantry_carriage_holes(M3_DIAM, X_CH_THICKNESS);
+          translate([0, 0, X_CH_THICKNESS - X_CH_M3_HEAD_THICKNESS]) gantry_carriage_holes(M3_HEAD_DIAM, X_CH_M3_HEAD_THICKNESS);
+    }    
+}
+
+module x_carriage_holes_belt_attachment()
+{
+    cylinder(d = M3_DIAM, h = X_CH_THICKNESS);
+    translate([0, 0, X_CH_THICKNESS - X_CH_M3_HEAD_THICKNESS]) cylinder(d = M3_HEAD_DIAM, h = X_CH_M3_HEAD_THICKNESS);
+}
+
+module x_ch_holes() {
+//    M3_WASHER_DIAMETER
+    translate([M3_DIAM/2, X_CH_HOLE_LENGTH/2 + X_CH_HEIGHT/2, 0]) {
+            oblong_hole(M3_DIAM, X_CH_THICKNESS, X_CH_HOLE_LENGTH);
+            oblong_hole(M3_WASHER_DIAM, M3_NUT_THICKNESS + M3_WASHER_THICKNESS, X_CH_HOLE_LENGTH);
+        }
+}
+
+module x_carriage_holder() {
+    difference() {
+        roundedcube([X_CH_WIDTH, X_CH_HEIGHT, X_CH_THICKNESS], false, 2, "z");
+        /* MG carriage holes */
+        translate([X_CH_WIDTH/2 - MG_CARRIAGE_WIDTH/2, X_CH_BOTTOM_HEIGHT, 0]) {
+            /* MG carriage footprint hole */
+            cube([MG_CARRIAGE_WIDTH, MG_CARRIAGE_HEIGHT, X_CH_CARRIAGE_DEPTH]);
+            x_carriage_holder_mg_footprint();
+        }
+        /* Holes for belt attachment */
+        translate([X_CH_WIDTH/2, X_CH_BOTTOM_HEIGHT + MG_CARRIAGE_HEIGHT/2 + GANTRY_TOP_WIDTH/2  + X_BELT_EXTRA_WIDTH_FROM_TOP + X_BELT_BLOCKER_TOP_THICKNESS/2, 0]) {
+            translate([-X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
+            translate([X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
+        }
+        /* Oblong holes for real carriage */
+            translate([X_CH_HOLE_OFFSET_FROM_SIDE, 0, 0]) x_ch_holes();
+            translate([X_CH_WIDTH - X_CH_HOLE_OFFSET_FROM_SIDE - M3_WASHER_DIAM/2, 0, 0]) #x_ch_holes();
+     }
+     /* Guide */
+     translate([X_CH_WIDTH/2 -X_CH_GUIDE_WIDTH/2, 0, X_CH_THICKNESS])  cube([X_CH_GUIDE_WIDTH, X_CH_HEIGHT, X_CH_GUIDE_THICKNESS]);
+}
+x_carriage_holder();
