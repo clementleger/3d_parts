@@ -140,6 +140,7 @@ RAIL_ES_FULL_HEIGHT = RAIL_HEIGHT + RAIL_ES_EXTRA;
 //y_motor_holder();
 //y_endstop();
 //x_belt_attachment();
+x_carriage_holder();
 
 /* Modules */
 
@@ -462,6 +463,33 @@ X_BELT_WIDTH_TO_CARRIAGE = GANTRY_TOP_THICKNESS + X_BELT_WIDTH_FROM_GANTRY_TOP +
 
 X_BELT_HOLE_SPACING = X_BELT_BLOCKER_WIDTH / 2;
 
+/* Zipt tie width */
+ZIPTIE_WIDTH = 3;
+/* Ziptie thickness */
+ZIPTIE_THICKNESS = 1.4;
+/* Sizeof side mount */
+ZIPTIE_MOUNT_SIDE_WIDTH = 6;
+/* Height of mouting base */
+ZIPTIE_MOUNT_HEIGHT = 6;
+/* Added thickness on top of ziptie hole */
+ZIPTIE_MOUNT_ADD_THICKNESS = 1.5;
+/* Full ziptie mount thickness */
+ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
+
+module ziptie_mount() {
+    difference() {
+        union () {
+            difference() {
+                cube([ZIPTIE_WIDTH, ZIPTIE_MOUNT_HEIGHT , ZIPTIE_MOUNT_THICKNESS]);
+                cube([ZIPTIE_WIDTH, ZIPTIE_MOUNT_HEIGHT , ZIPTIE_THICKNESS]);
+            }
+            translate([ZIPTIE_WIDTH + ZIPTIE_MOUNT_SIDE_WIDTH, 0, 0]) rotate([0, 0, 90]) prism(ZIPTIE_MOUNT_HEIGHT, ZIPTIE_MOUNT_SIDE_WIDTH,ZIPTIE_MOUNT_THICKNESS);
+            translate([-ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_MOUNT_HEIGHT, 0]) rotate([0, 0, -90]) prism(ZIPTIE_MOUNT_HEIGHT, ZIPTIE_MOUNT_SIDE_WIDTH,ZIPTIE_MOUNT_THICKNESS);
+        }    
+        translate([-ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_MOUNT_HEIGHT/2 - ZIPTIE_WIDTH/2, 0]) cube([ZIPTIE_WIDTH + 2 * ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_WIDTH , ZIPTIE_THICKNESS + SMALL_TOLERANCY]);
+    }
+}
+
 module y_belt_bolt_nut_hole() {
     cylinder(d = M3_DIAM, h  = X_BELT_WIDTH_TO_CARRIAGE, center = true);
     translate([0, 2, X_BELT_WIDTH_TO_CARRIAGE/4]) cube([M3_NUT_SIDE_TO_SIDE_THICKNESS, X_BELT_BLOCKER_TOP_THICKNESS, M3_NUT_THICKNESS], center = true);
@@ -471,14 +499,14 @@ module x_belt_attachment() {
    X_BELT_BLOCKER_BELT_PART_HEIGHT =  X_BELT_HEIGHT_FROM_GANTRY_TOP +X_BELT_BLOCKER_TOP_THICKNESS + X_BELT_BLOCKER_BELT_Y_OFFSET;
     difference() {
         union () {
-           color("green") translate([0, X_BELT_BLOCKER_BELT_PART_HEIGHT / 2, X_BELT_BLOCKER_THICKNESS/2 ]) roundedcube([X_BELT_BLOCKER_WIDTH,X_BELT_BLOCKER_BELT_PART_HEIGHT, X_BELT_BLOCKER_THICKNESS], true, 1, "z");
+           translate([0, X_BELT_BLOCKER_BELT_PART_HEIGHT / 2, X_BELT_BLOCKER_THICKNESS/2 ]) roundedcube([X_BELT_BLOCKER_WIDTH,X_BELT_BLOCKER_BELT_PART_HEIGHT, X_BELT_BLOCKER_THICKNESS], true, 1, "z");
         }
        /* Belt */
         translate([-X_BELT_BLOCKER_WIDTH/2, X_BELT_BLOCKER_BELT_Y_OFFSET, BELT_WIDTH/2])
         belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = X_BELT_BLOCKER_WIDTH);
     }
     /* Top attachment part */
-    color("blue")translate([0, X_BELT_BLOCKER_BELT_PART_HEIGHT - X_BELT_BLOCKER_TOP_THICKNESS/2, X_BELT_WIDTH_TO_CARRIAGE/2])
+    translate([0, X_BELT_BLOCKER_BELT_PART_HEIGHT - X_BELT_BLOCKER_TOP_THICKNESS/2, X_BELT_WIDTH_TO_CARRIAGE/2])
     difference () {
     roundedcube([X_BELT_BLOCKER_WIDTH,X_BELT_BLOCKER_TOP_THICKNESS, X_BELT_WIDTH_TO_CARRIAGE ], true, 1, "z");
         /* Holes to attach to carriage */
@@ -494,13 +522,14 @@ module x_belt_attachment() {
 /* Carriage holder */
 X_CH_SIDE_WIDTH = 10;
 /* Additionnal height on the top */
-X_CH_TOP_HEIGHT = 25;
+X_CH_TOP_HEIGHT = 30;
 /* Additionnal height on the bottom */
-X_CH_BOTTOM_HEIGHT = 15;
+X_CH_BOTTOM_HEIGHT = 10;
 /* Carriage holder thickness */
 X_CH_THICKNESS = 6;
 /* Depth of carriage dimension into this  */
 X_CH_CARRIAGE_DEPTH = 0.6;
+/* Full M3 head thickness to sunk it in the layer */
 X_CH_M3_HEAD_THICKNESS = 3;
 
 X_CH_HEIGHT = X_CH_BOTTOM_HEIGHT + X_CH_TOP_HEIGHT + MG_CARRIAGE_HEIGHT;
@@ -511,11 +540,13 @@ X_CH_GUIDE_WIDTH = 2;
 /* Guide for real carriage (thickness) */
 X_CH_GUIDE_THICKNESS = 1;
 
-/* Oblong holes for real carriage */
-X_CH_HOLE_LENGTH = X_CH_HEIGHT - 12;
 /* offset from each side of carriage holder */
-X_CH_HOLE_OFFSET_FROM_SIDE = 5;
+X_CH_HOLE_OFFSET_FROM_SIDE = 4;
+/* Space between the two long holes to attach carriage */
+X_CH_SPACE_BETWEEN_HOLES = 4;
 
+/* Oblong holes for real carriage */
+X_CH_HOLE_LENGTH = X_CH_HEIGHT/2 - X_CH_HOLE_OFFSET_FROM_SIDE - X_CH_SPACE_BETWEEN_HOLES / 2 -  M3_WASHER_DIAM/2;
 module x_carriage_holder_mg_footprint()
 {
     translate([MG_CARRIAGE_WIDTH/2 - MG_CARRIAGE_HOLE_X_OFFSET/2, MG_CARRIAGE_HEIGHT/2 - MG_CARRIAGE_HOLE_Y_OFFSET/2, 0]) {
@@ -530,15 +561,20 @@ module x_carriage_holes_belt_attachment()
     translate([0, 0, X_CH_THICKNESS - X_CH_M3_HEAD_THICKNESS]) cylinder(d = M3_HEAD_DIAM, h = X_CH_M3_HEAD_THICKNESS);
 }
 
-module x_ch_holes() {
-//    M3_WASHER_DIAMETER
-    translate([M3_DIAM/2, X_CH_HOLE_LENGTH/2 + X_CH_HEIGHT/2, 0]) {
+module x_ch_holes()
+{
+    translate([M3_DIAM/2, X_CH_HOLE_LENGTH + M3_WASHER_DIAM/2 + X_CH_HOLE_OFFSET_FROM_SIDE/2,  0]) {
+            oblong_hole(M3_DIAM, X_CH_THICKNESS, X_CH_HOLE_LENGTH);
+            oblong_hole(M3_WASHER_DIAM, M3_NUT_THICKNESS + M3_WASHER_THICKNESS, X_CH_HOLE_LENGTH);
+        }
+    translate([M3_DIAM/2, X_CH_HEIGHT - M3_WASHER_DIAM/2 - X_CH_HOLE_OFFSET_FROM_SIDE/2,  0]) {
             oblong_hole(M3_DIAM, X_CH_THICKNESS, X_CH_HOLE_LENGTH);
             oblong_hole(M3_WASHER_DIAM, M3_NUT_THICKNESS + M3_WASHER_THICKNESS, X_CH_HOLE_LENGTH);
         }
 }
 
-module x_carriage_holder() {
+module x_carriage_holder()
+{
     difference() {
         roundedcube([X_CH_WIDTH, X_CH_HEIGHT, X_CH_THICKNESS], false, 2, "z");
         /* MG carriage holes */
@@ -554,9 +590,8 @@ module x_carriage_holder() {
         }
         /* Oblong holes for real carriage */
             translate([X_CH_HOLE_OFFSET_FROM_SIDE, 0, 0]) x_ch_holes();
-            translate([X_CH_WIDTH - X_CH_HOLE_OFFSET_FROM_SIDE - M3_WASHER_DIAM/2, 0, 0]) #x_ch_holes();
+            translate([X_CH_WIDTH - X_CH_HOLE_OFFSET_FROM_SIDE - M3_WASHER_DIAM/2, 0, 0]) x_ch_holes();
      }
      /* Guide */
      translate([X_CH_WIDTH/2 -X_CH_GUIDE_WIDTH/2, 0, X_CH_THICKNESS])  cube([X_CH_GUIDE_WIDTH, X_CH_HEIGHT, X_CH_GUIDE_THICKNESS]);
 }
-x_carriage_holder();
