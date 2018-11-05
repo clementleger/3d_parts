@@ -8,6 +8,7 @@ include <../common/timing_belts.scad>
 SMALL_TOLERANCY = 0.2;
 
 BELT_WIDTH = 6;
+BELT_THICKNESS = 1.5;
 
 M3_HEAD_DIAM = 6;
 M3_HEAD_THICKNESS = 2;
@@ -86,7 +87,7 @@ NEMA_ATTACHMENT_THICKNESS = 8;
 /* Size of hole for belt pulley (maximize to allow some slack) */
 NEMA_BELT_HOLE_DIAM = 20;
 /* Space between both side of the belt when tensionned */
-BELT_PULLEY_DIAM = 12;
+BELT_PULLEY_DIAM = 14;
 /* Oblong hole size for adjusting belt tension */
 NEMA_OBLONG_SIZE = 2;
 /* Little part longer than the rest */
@@ -139,10 +140,49 @@ RAIL_ES_FULL_HEIGHT = RAIL_HEIGHT + RAIL_ES_EXTRA;
 //y_belt_blocker();
 //y_motor_holder();
 //y_endstop();
-//x_belt_attachment();
-x_carriage_holder();
+x_belt_attachment();
+//x_carriage_holder();
 
 /* Modules */
+
+
+/* Ziptie width */
+ZIPTIE_WIDTH = 3;
+/* Ziptie thickness */
+ZIPTIE_THICKNESS = 1.4;
+/* Sizeof side mount */
+ZIPTIE_MOUNT_SIDE_WIDTH = 6;
+/* Height of mouting base */
+ZIPTIE_MOUNT_HEIGHT = 6;
+/* Added thickness on top of ziptie hole */
+ZIPTIE_MOUNT_ADD_THICKNESS = 1.5;
+/* Full ziptie mount thickness */
+ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
+
+module ziptie_mount() {
+    difference() {
+        union () {
+            difference() {
+                cube([ZIPTIE_WIDTH, ZIPTIE_MOUNT_HEIGHT , ZIPTIE_MOUNT_THICKNESS]);
+                cube([ZIPTIE_WIDTH, ZIPTIE_MOUNT_HEIGHT , ZIPTIE_THICKNESS]);
+            }
+            translate([ZIPTIE_WIDTH + ZIPTIE_MOUNT_SIDE_WIDTH, 0, 0]) rotate([0, 0, 90]) prism(ZIPTIE_MOUNT_HEIGHT, ZIPTIE_MOUNT_SIDE_WIDTH,ZIPTIE_MOUNT_THICKNESS);
+            translate([-ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_MOUNT_HEIGHT, 0]) rotate([0, 0, -90]) prism(ZIPTIE_MOUNT_HEIGHT, ZIPTIE_MOUNT_SIDE_WIDTH,ZIPTIE_MOUNT_THICKNESS);
+        }    
+        translate([-ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_MOUNT_HEIGHT/2 - ZIPTIE_WIDTH/2, 0]) cube([ZIPTIE_WIDTH + 2 * ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_WIDTH , ZIPTIE_THICKNESS + SMALL_TOLERANCY]);
+    }
+}
+
+
+module half_cylinder(diam, t, h) {
+    translate([diam/2, diam/2, 0]) 
+    difference() {
+        cylinder(d = diam, h = h);
+        translate([0, -diam/2, 0]) cube([diam/2, diam, h]);
+        
+        cylinder(d = diam - 2 * t, h = h);  
+    }
+}
 
 module support_feet() {
     difference() {
@@ -441,17 +481,19 @@ module y_endstop()
 /* Belt blocker top part thickness */
 X_BELT_BLOCKER_TOP_THICKNESS = 8;
 /* Width between y belt and gantry top part */
-X_BELT_WIDTH_FROM_GANTRY_TOP = 7;  /* FIXME */
+X_BELT_WIDTH_FROM_GANTRY_TOP = 5;
 /* Height between y belt and gantry top */
 X_BELT_EXTRA_WIDTH_FROM_TOP = 4;
 /* Space between carriage and rail support */
-CARRIAGE_SPACE_BETWEEN_SUPPORT = 4;
+CARRIAGE_SPACE_BETWEEN_SUPPORT = 10;
 /* Thickness added around belt */
 X_BELT_BLOCKER_EXTRA_THICKNESS = 2;
 /* Small offset from x to allow belt being in the part */
-X_BELT_BLOCKER_BELT_Y_OFFSET = 2;
+X_BELT_BLOCKER_BELT_Y_OFFSET = 4;
 /* Width of belt blocker */
 X_BELT_BLOCKER_WIDTH = 20;
+/* Radius of reserve of belt blocker */
+X_BELT_BLOCKER_BELT_RESERVE_DIAM = 9;
 
 X_BELT_BLOCKER_THICKNESS  = BELT_WIDTH + X_BELT_BLOCKER_EXTRA_THICKNESS;
 /* Height between top of belt and top y blocker part */
@@ -459,51 +501,24 @@ X_BELT_HEIGHT_FROM_GANTRY_TOP = GANTRY_TOP_WIDTH/2  - BELT_PULLEY_DIAM/2 + X_BEL
 X_BELT_BLOCKER_HEIGHT =  2 * X_BELT_BLOCKER_EXTRA_THICKNESS ;
 
 /* total width from external part of the belt to external part of the carriage */
-X_BELT_WIDTH_TO_CARRIAGE = GANTRY_TOP_THICKNESS + X_BELT_WIDTH_FROM_GANTRY_TOP + BELT_WIDTH;
+X_BELT_WIDTH_TO_CARRIAGE = BELT_WIDTH + X_BELT_WIDTH_FROM_GANTRY_TOP + GANTRY_TOP_THICKNESS + CARRIAGE_SPACE_BETWEEN_SUPPORT;
 
 X_BELT_HOLE_SPACING = X_BELT_BLOCKER_WIDTH / 2;
 
-/* Zipt tie width */
-ZIPTIE_WIDTH = 3;
-/* Ziptie thickness */
-ZIPTIE_THICKNESS = 1.4;
-/* Sizeof side mount */
-ZIPTIE_MOUNT_SIDE_WIDTH = 6;
-/* Height of mouting base */
-ZIPTIE_MOUNT_HEIGHT = 6;
-/* Added thickness on top of ziptie hole */
-ZIPTIE_MOUNT_ADD_THICKNESS = 1.5;
-/* Full ziptie mount thickness */
-ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
-
-module ziptie_mount() {
-    difference() {
-        union () {
-            difference() {
-                cube([ZIPTIE_WIDTH, ZIPTIE_MOUNT_HEIGHT , ZIPTIE_MOUNT_THICKNESS]);
-                cube([ZIPTIE_WIDTH, ZIPTIE_MOUNT_HEIGHT , ZIPTIE_THICKNESS]);
-            }
-            translate([ZIPTIE_WIDTH + ZIPTIE_MOUNT_SIDE_WIDTH, 0, 0]) rotate([0, 0, 90]) prism(ZIPTIE_MOUNT_HEIGHT, ZIPTIE_MOUNT_SIDE_WIDTH,ZIPTIE_MOUNT_THICKNESS);
-            translate([-ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_MOUNT_HEIGHT, 0]) rotate([0, 0, -90]) prism(ZIPTIE_MOUNT_HEIGHT, ZIPTIE_MOUNT_SIDE_WIDTH,ZIPTIE_MOUNT_THICKNESS);
-        }    
-        translate([-ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_MOUNT_HEIGHT/2 - ZIPTIE_WIDTH/2, 0]) cube([ZIPTIE_WIDTH + 2 * ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_WIDTH , ZIPTIE_THICKNESS + SMALL_TOLERANCY]);
-    }
-}
-
 module y_belt_bolt_nut_hole() {
     cylinder(d = M3_DIAM, h  = X_BELT_WIDTH_TO_CARRIAGE, center = true);
-    translate([0, 2, X_BELT_WIDTH_TO_CARRIAGE/4]) cube([M3_NUT_SIDE_TO_SIDE_THICKNESS, X_BELT_BLOCKER_TOP_THICKNESS, M3_NUT_THICKNESS], center = true);
+    translate([0, 2, X_BELT_WIDTH_TO_CARRIAGE/2 - 7]) cube([M3_NUT_SIDE_TO_SIDE_THICKNESS, X_BELT_BLOCKER_TOP_THICKNESS, M3_NUT_THICKNESS], center = true);
 }
 
 module x_belt_attachment() {
    X_BELT_BLOCKER_BELT_PART_HEIGHT =  X_BELT_HEIGHT_FROM_GANTRY_TOP +X_BELT_BLOCKER_TOP_THICKNESS + X_BELT_BLOCKER_BELT_Y_OFFSET;
     difference() {
         union () {
-           translate([0, X_BELT_BLOCKER_BELT_PART_HEIGHT / 2, X_BELT_BLOCKER_THICKNESS/2 ]) roundedcube([X_BELT_BLOCKER_WIDTH,X_BELT_BLOCKER_BELT_PART_HEIGHT, X_BELT_BLOCKER_THICKNESS], true, 1, "z");
+           translate([0, X_BELT_BLOCKER_BELT_PART_HEIGHT / 2, X_BELT_BLOCKER_THICKNESS/2 ])color("green") roundedcube([X_BELT_BLOCKER_WIDTH,X_BELT_BLOCKER_BELT_PART_HEIGHT, X_BELT_BLOCKER_THICKNESS], true, 1, "z");
         }
        /* Belt */
         translate([-X_BELT_BLOCKER_WIDTH/2, X_BELT_BLOCKER_BELT_Y_OFFSET, BELT_WIDTH/2])
-        belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = X_BELT_BLOCKER_WIDTH);
+        mirror([0, 1, 0]) belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = X_BELT_BLOCKER_WIDTH);
     }
     /* Top attachment part */
     translate([0, X_BELT_BLOCKER_BELT_PART_HEIGHT - X_BELT_BLOCKER_TOP_THICKNESS/2, X_BELT_WIDTH_TO_CARRIAGE/2])
@@ -517,6 +532,7 @@ module x_belt_attachment() {
             y_belt_bolt_nut_hole();
         }
     }
+    //translate([-X_BELT_BLOCKER_WIDTH/2, X_BELT_BLOCKER_BELT_PART_HEIGHT - X_BELT_BLOCKER_TOP_THICKNESS + 1, X_BELT_WIDTH_TO_CARRIAGE/2]) rotate([0, -90, 0]) ziptie_mount();
 }
 
 /* Carriage holder */
@@ -580,7 +596,7 @@ module x_carriage_holder()
         /* MG carriage holes */
         translate([X_CH_WIDTH/2 - MG_CARRIAGE_WIDTH/2, X_CH_BOTTOM_HEIGHT, 0]) {
             /* MG carriage footprint hole */
-            cube([MG_CARRIAGE_WIDTH, MG_CARRIAGE_HEIGHT, X_CH_CARRIAGE_DEPTH]);
+            //cube([MG_CARRIAGE_WIDTH, MG_CARRIAGE_HEIGHT, X_CH_CARRIAGE_DEPTH]);
             x_carriage_holder_mg_footprint();
         }
         /* Holes for belt attachment */
