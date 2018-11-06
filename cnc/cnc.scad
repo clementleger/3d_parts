@@ -87,7 +87,7 @@ NEMA_ATTACHMENT_THICKNESS = 8;
 /* Size of hole for belt pulley (maximize to allow some slack) */
 NEMA_BELT_HOLE_DIAM = 20;
 /* Space between both side of the belt when tensionned */
-BELT_PULLEY_DIAM = 14;
+BELT_PULLEY_DIAM = 12;
 /* Oblong hole size for adjusting belt tension */
 NEMA_OBLONG_SIZE = 2;
 /* Little part longer than the rest */
@@ -140,7 +140,7 @@ RAIL_ES_FULL_HEIGHT = RAIL_HEIGHT + RAIL_ES_EXTRA;
 //y_belt_blocker();
 //y_motor_holder();
 //y_endstop();
-x_belt_attachment();
+//x_belt_attachment();
 //x_carriage_holder();
 
 /* Modules */
@@ -489,11 +489,11 @@ CARRIAGE_SPACE_BETWEEN_SUPPORT = 10;
 /* Thickness added around belt */
 X_BELT_BLOCKER_EXTRA_THICKNESS = 2;
 /* Small offset from x to allow belt being in the part */
-X_BELT_BLOCKER_BELT_Y_OFFSET = 4;
+X_BELT_BLOCKER_BELT_Y_OFFSET = 3;
 /* Width of belt blocker */
 X_BELT_BLOCKER_WIDTH = 20;
 /* Radius of reserve of belt blocker */
-X_BELT_BLOCKER_BELT_RESERVE_DIAM = 9;
+X_BELT_BLOCKER_BELT_RESERVE_DIAM = 10;
 
 X_BELT_BLOCKER_THICKNESS  = BELT_WIDTH + X_BELT_BLOCKER_EXTRA_THICKNESS;
 /* Height between top of belt and top y blocker part */
@@ -518,6 +518,9 @@ module x_belt_attachment() {
         }
        /* Belt */
         translate([-X_BELT_BLOCKER_WIDTH/2, X_BELT_BLOCKER_BELT_Y_OFFSET, BELT_WIDTH/2])
+        mirror([0, 1, 0]) belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = X_BELT_BLOCKER_WIDTH);
+
+        translate([-X_BELT_BLOCKER_WIDTH/2, X_BELT_BLOCKER_BELT_Y_OFFSET * 2, BELT_WIDTH/2])
         mirror([0, 1, 0]) belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = X_BELT_BLOCKER_WIDTH);
     }
     /* Top attachment part */
