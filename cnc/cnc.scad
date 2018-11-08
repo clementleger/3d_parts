@@ -14,7 +14,7 @@ M3_HEAD_DIAM = 6;
 M3_HEAD_THICKNESS = 2;
 M3_DIAM = 3;
 M3_NUT_DIAM = 7;
-M3_NUT_THICKNESS = 2;
+M3_NUT_THICKNESS = 2.5;
 M3_NUT_SIDE_TO_SIDE_THICKNESS = 6;
 M3_WASHER_DIAM = 7; 
 M3_WASHER_THICKNESS= 0.4; 
@@ -52,19 +52,32 @@ BOARD_SUPPORT_HOLE_COUNT = 8;
 BOARD_HOLE_OFFSET = 10;
 
 /* Rail endstop */
-RAIL_ES_HOLE_OFFSET = 12;
+RAIL_RS_HOLE_OFFSET = 12;
 RAIL_ES_WIDTH = 16;
-RAIL_ES_EXTRA = 2;
-RAIL_ES_BOLT_DIAM = 3.2;
+RAIL_RS_EXTRA = 2;
+RAIL_RS_BOLT_DIAM = 3.2;
 RAIL_ES_BOLT_HEAD_DIAM = M3_HEAD_DIAM;
-RAIL_ES_BOLT_HEAD_THICKNESS = 4;
+RAIL_RS_BOLT_HEAD_THICKNESS = 4;
 RAIL_ES_HOLDER_HOLE_SIZE = 10;
-RAIL_ES_ENDSTOP_HOLE_OFFSET = 5;
-RAIL_ES_ENDSTOP_HOLE_DIAM = 1.5;
-RAIL_ES_ENDSTOP_HOLE_SPACING = 6.5;
+
+/* Microswitch parameters */
+MICROSWITCH_HOLE_OFFSET = 5;
+MICROSWITCH_HOLE_DIAM = 1.5;
+MICROSWITCH_HOLE_SPACING = 6.5;
+MICROSWITCH_WIDTH = 10;
+
+/* Endstop holder length */
+X_ESH_LENGTH = 25;
+/* Size of microswitch mount */
+X_ESH_MICROSWITCH_MOUNT_WIDTH = MICROSWITCH_WIDTH + 4;
+X_ESH_MICROSWITCH_MOUNT_HEIGHT = 10;
+/* Thickness */
+X_ESH_THICKNESS = 5;
+/* Bolt offset from start of endstop holder */
+X_ESH_BOLT_X_OFFSET = 10;
 
 
-GANTRY_HEIGHT = 160;
+GANTRY_HEIGHT = 140;
 GANTRY_WIDTH = 30;
 GANTRY_THICKNESS = 8;
 GANTRY_BOTTOM_CHAMFER_SIZE = 10;
@@ -129,22 +142,64 @@ BOTTOM_BELT_BLOCKER_HEIGHT = BELT_WIDTH + BOTTOM_BELT_BLOCKER_THICKNESS;
 FULL_SUPPORT_LENGTH = RAIL_LENGTH + 2 * FEET_WIDTH;
 FULL_FEET_HEIGHT = FEET_HEIGTH + Y_RAIL_SUPPORT_HEIGHT;
 BOARD_HOLE_SPACING = (FULL_SUPPORT_LENGTH - (2 * BOARD_HOLE_OFFSET)) / (BOARD_SUPPORT_HOLE_COUNT);
-RAIL_ES_LENGTH = RAIL_ES_HOLE_OFFSET + RAIL_ES_EXTRA + 5;
-RAIL_ES_FULL_HEIGHT = RAIL_HEIGHT + RAIL_ES_EXTRA;
+RAIL_RS_LENGTH = RAIL_RS_HOLE_OFFSET + RAIL_RS_EXTRA + 5;
+RAIL_RS_FULL_HEIGHT = RAIL_HEIGHT + RAIL_RS_EXTRA;
 
-//x_endstop();
-//y_rail_support();
-//y_gantry_side();
-//mirror([1, 0, 0]) x_moto_holder();
-//x_gantry_middle_part();
-//y_belt_blocker();
-//y_motor_holder();
-//y_endstop();
-//x_belt_attachment();
-//x_carriage_holder();
+/* Belt blocker top part thickness */
+X_BELT_BLOCKER_TOP_THICKNESS = 8;
+/* Width between y belt and gantry top part */
+X_BELT_WIDTH_FROM_GANTRY_TOP = 5;
+/* Height between y belt and gantry top */
+X_BELT_EXTRA_WIDTH_FROM_TOP = 4;
+/* Space between carriage and rail support */
+CARRIAGE_SPACE_BETWEEN_SUPPORT = 10;
+/* Thickness added around belt */
+X_BELT_BLOCKER_EXTRA_THICKNESS = 2;
+/* Small offset from x to allow belt being in the part */
+X_BELT_BLOCKER_BELT_Y_OFFSET = 3;
+/* Width of belt blocker */
+X_BELT_BLOCKER_WIDTH = 20;
+/* Radius of reserve of belt blocker */
+X_BELT_BLOCKER_BELT_RESERVE_DIAM = 10;
 
-/* Modules */
+X_BELT_BLOCKER_THICKNESS  = BELT_WIDTH + X_BELT_BLOCKER_EXTRA_THICKNESS;
+/* Height between top of belt and top y blocker part */
+X_BELT_HEIGHT_FROM_GANTRY_TOP = GANTRY_TOP_WIDTH/2  - BELT_PULLEY_DIAM/2 + X_BELT_EXTRA_WIDTH_FROM_TOP;
+X_BELT_BLOCKER_HEIGHT =  2 * X_BELT_BLOCKER_EXTRA_THICKNESS ;
 
+/* total width from external part of the belt to external part of the carriage */
+X_BELT_WIDTH_TO_CARRIAGE = BELT_WIDTH + X_BELT_WIDTH_FROM_GANTRY_TOP + GANTRY_TOP_THICKNESS + CARRIAGE_SPACE_BETWEEN_SUPPORT;
+/* Hole attachment spacing */
+X_BELT_HOLE_SPACING = X_BELT_BLOCKER_WIDTH / 2;
+
+/* Carriage holder */
+X_CH_SIDE_WIDTH = 10;
+/* Additionnal height on the top */
+X_CH_TOP_HEIGHT = 30;
+/* Additionnal height on the bottom */
+X_CH_BOTTOM_HEIGHT = 10;
+/* Carriage holder thickness */
+X_CH_THICKNESS = 6;
+/* Depth of carriage dimension into this  */
+X_CH_CARRIAGE_DEPTH = 0.6;
+/* Full M3 head thickness to sunk it in the layer */
+X_CH_M3_HEAD_THICKNESS = 3;
+
+X_CH_HEIGHT = X_CH_BOTTOM_HEIGHT + X_CH_TOP_HEIGHT + MG_CARRIAGE_HEIGHT;
+X_CH_WIDTH = MG_CARRIAGE_WIDTH + 2 * X_CH_SIDE_WIDTH;
+
+/* Guide for real carriage (width ) */
+X_CH_GUIDE_WIDTH = 2;
+/* Guide for real carriage (thickness) */
+X_CH_GUIDE_THICKNESS = 1;
+
+/* offset from each side of carriage holder */
+X_CH_HOLE_OFFSET_FROM_SIDE = 4;
+/* Space between the two long holes to attach carriage */
+X_CH_SPACE_BETWEEN_HOLES = 4;
+
+/* Oblong holes for real carriage */
+X_CH_HOLE_LENGTH = X_CH_HEIGHT/2 - X_CH_HOLE_OFFSET_FROM_SIDE - X_CH_SPACE_BETWEEN_HOLES / 2 -  M3_WASHER_DIAM/2;
 
 /* Ziptie width */
 ZIPTIE_WIDTH = 3;
@@ -158,6 +213,19 @@ ZIPTIE_MOUNT_HEIGHT = 6;
 ZIPTIE_MOUNT_ADD_THICKNESS = 1.5;
 /* Full ziptie mount thickness */
 ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
+
+//x_endstop();
+//y_rail_support();
+//y_gantry_side();
+//mirror([1, 0, 0]) x_moto_holder();
+//x_gantry_middle_part();
+//y_belt_blocker();
+//y_motor_holder();
+//y_endstop();
+//x_belt_attachment();
+//x_carriage_holder();
+x_endstop_holder();
+
 
 module ziptie_mount() {
     difference() {
@@ -247,16 +315,16 @@ module y_rail_support() {
     }
 }
 
-module x_endstop() {
+module y_endstop() {
     difference() {
-        roundedcube([RAIL_ES_LENGTH, RAIL_ES_WIDTH + 2 * + RAIL_ES_EXTRA, RAIL_ES_FULL_HEIGHT], true, 1, "zmax");
-translate([RAIL_ES_LENGTH/2 - RAIL_ES_EXTRA/2, 0, -RAIL_ES_FULL_HEIGHT/2 + (RAIL_HEIGHT + SMALL_TOLERANCY)/2]) cube([RAIL_ES_EXTRA, RAIL_WIDTH, RAIL_HEIGHT + SMALL_TOLERANCY], true);
-        translate([RAIL_ES_LENGTH/2 - RAIL_ES_HOLE_OFFSET - RAIL_ES_EXTRA, 0, -RAIL_ES_FULL_HEIGHT/2]) cylinder(d = RAIL_ES_BOLT_DIAM, h = RAIL_ES_FULL_HEIGHT);
-        translate([RAIL_ES_LENGTH/2 - RAIL_ES_HOLE_OFFSET - RAIL_ES_EXTRA, 0, RAIL_ES_FULL_HEIGHT/2 - RAIL_ES_BOLT_HEAD_THICKNESS]) cylinder(d = RAIL_ES_BOLT_HEAD_DIAM, h = RAIL_ES_BOLT_HEAD_THICKNESS);
+        roundedcube([RAIL_RS_LENGTH, RAIL_ES_WIDTH + 2 * + RAIL_RS_EXTRA, RAIL_RS_FULL_HEIGHT], true, 1, "zmax");
+translate([RAIL_RS_LENGTH/2 - RAIL_RS_EXTRA/2, 0, -RAIL_RS_FULL_HEIGHT/2 + (RAIL_HEIGHT + SMALL_TOLERANCY)/2]) cube([RAIL_RS_EXTRA, RAIL_WIDTH, RAIL_HEIGHT + SMALL_TOLERANCY], true);
+        translate([RAIL_RS_LENGTH/2 - RAIL_RS_HOLE_OFFSET - RAIL_RS_EXTRA, 0, -RAIL_RS_FULL_HEIGHT/2]) cylinder(d = RAIL_RS_BOLT_DIAM, h = RAIL_RS_FULL_HEIGHT);
+        translate([RAIL_RS_LENGTH/2 - RAIL_RS_HOLE_OFFSET - RAIL_RS_EXTRA, 0, RAIL_RS_FULL_HEIGHT/2 - RAIL_RS_BOLT_HEAD_THICKNESS]) cylinder(d = RAIL_ES_BOLT_HEAD_DIAM, h = RAIL_RS_BOLT_HEAD_THICKNESS);
 
         /* Holes for endstop */
-        translate([RAIL_ES_LENGTH/2 -RAIL_ES_ENDSTOP_HOLE_OFFSET , RAIL_ES_ENDSTOP_HOLE_SPACING/2, 0]) cylinder(d = RAIL_ES_ENDSTOP_HOLE_DIAM, h = RAIL_ES_FULL_HEIGHT, center = true);
-        translate([RAIL_ES_LENGTH/2 -RAIL_ES_ENDSTOP_HOLE_OFFSET , -RAIL_ES_ENDSTOP_HOLE_SPACING/2, 0]) cylinder(d = RAIL_ES_ENDSTOP_HOLE_DIAM, h = RAIL_ES_FULL_HEIGHT, center = true);
+        translate([RAIL_RS_LENGTH/2 -MICROSWITCH_HOLE_OFFSET , MICROSWITCH_HOLE_SPACING/2, 0]) cylinder(d = MICROSWITCH_HOLE_DIAM, h = RAIL_RS_FULL_HEIGHT, center = true);
+        translate([RAIL_RS_LENGTH/2 -MICROSWITCH_HOLE_OFFSET , -MICROSWITCH_HOLE_SPACING/2, 0]) cylinder(d = MICROSWITCH_HOLE_DIAM, h = RAIL_RS_FULL_HEIGHT, center = true);
     }
 
 }
@@ -313,6 +381,8 @@ module gantry_top_part()
            cylinder(d = M3_DIAM, h = GANTRY_TOP_THICKNESS);
            translate([0, 0, -GANTRY_TOP_THICKNESS + M3_NUT_THICKNESS]) cylinder(d = M3_NUT_DIAM, h = GANTRY_TOP_THICKNESS, $fn = 6);
         }
+        /* Hole to attach x endstop holder */
+        translate([GANTRY_TOP_THICKNESS/2, GANTRY_TOP_WIDTH, GANTRY_THICKNESS + X_ESH_BOLT_X_OFFSET]) rotate([90, 0, 0]) cylinder(d = M3_DIAM - SMALL_TOLERANCY, h = GANTRY_TOP_WIDTH/2 - FLAT_AL_STRIP_WIDTH/2);
     }
 }
 
@@ -421,7 +491,7 @@ module nema_support(part_width)
     }
 }
 
-module x_moto_holder()
+module x_motor_holder()
 {
     nema_support(NEMA_WIDTH + GANTRY_THICKNESS);
     difference() {
@@ -435,9 +505,6 @@ module x_moto_holder()
             translate([NEMA_WIDTH, NEMA_WIDTH, 0]) upper_nema_part();
              translate([NEMA_WIDTH, 0, NEMA_ATTACHMENT_THICKNESS]) prism(NEMA_ATTACHMENT_THICKNESS, NEMA_WIDTH, GANTRY_WIDTH);
         }
-
-
-
 
         /* Longer part end hole */
             translate([GANTRY_NEMA_HOLE_Z_OFFSET/2, NEMA_WIDTH + GANTRY_THICKNESS + NEMA_ATTACHMENT_LENGTH, 0]) cylinder (d = M3_DIAM, h = NEMA_ATTACHMENT_THICKNESS);
@@ -460,54 +527,44 @@ module y_motor_holder()
     translate([0, NEMA_ATTACHMENT_THICKNESS, NEMA_ATTACHMENT_THICKNESS]) rotate([0, 0, -90]) prism(NEMA_ATTACHMENT_THICKNESS, NEMA_WIDTH, NEMA_WIDTH);
 }
 
-module y_endstop()
+module x_rail_stopper()
 {
         difference() {
             union () {
-                translate([RAIL_ES_LENGTH/4, 0, 0]) roundedcube([RAIL_ES_LENGTH/2, RAIL_ES_WIDTH + 2 * + RAIL_ES_EXTRA, RAIL_ES_FULL_HEIGHT], true, 1, "zmax");
-                roundedcube([RAIL_ES_LENGTH, RAIL_WIDTH, RAIL_ES_FULL_HEIGHT], true, 1, "zmax");
+                translate([RAIL_RS_LENGTH/4, 0, 0]) roundedcube([RAIL_RS_LENGTH/2, RAIL_ES_WIDTH + 2 * + RAIL_RS_EXTRA, RAIL_RS_FULL_HEIGHT], true, 1, "zmax");
+                roundedcube([RAIL_RS_LENGTH, RAIL_WIDTH, RAIL_RS_FULL_HEIGHT], true, 1, "zmax");
 
             }
-    translate([RAIL_ES_LENGTH/2 - RAIL_ES_EXTRA/2, 0, -RAIL_ES_FULL_HEIGHT/2 + (RAIL_HEIGHT + SMALL_TOLERANCY)/2]) cube([RAIL_ES_EXTRA, RAIL_WIDTH, RAIL_HEIGHT + SMALL_TOLERANCY], true);
-        translate([RAIL_ES_LENGTH/2 - RAIL_ES_HOLE_OFFSET - RAIL_ES_EXTRA, 0, -RAIL_ES_FULL_HEIGHT/2]) cylinder(d = RAIL_ES_BOLT_DIAM, h = RAIL_ES_FULL_HEIGHT);
-        translate([RAIL_ES_LENGTH/2 - RAIL_ES_HOLE_OFFSET - RAIL_ES_EXTRA, 0, RAIL_ES_FULL_HEIGHT/2 - RAIL_ES_BOLT_HEAD_THICKNESS]) cylinder(d = RAIL_ES_BOLT_HEAD_DIAM, h = RAIL_ES_BOLT_HEAD_THICKNESS);
-
-        /* Holes for endstop */
-        translate([RAIL_ES_LENGTH/2 -RAIL_ES_ENDSTOP_HOLE_OFFSET , RAIL_ES_ENDSTOP_HOLE_SPACING/2, 0]) cylinder(d = RAIL_ES_ENDSTOP_HOLE_DIAM, h = RAIL_ES_FULL_HEIGHT, center = true);
-        translate([RAIL_ES_LENGTH/2 -RAIL_ES_ENDSTOP_HOLE_OFFSET , -RAIL_ES_ENDSTOP_HOLE_SPACING/2, 0]) cylinder(d = RAIL_ES_ENDSTOP_HOLE_DIAM, h = RAIL_ES_FULL_HEIGHT, center = true);
+    translate([RAIL_RS_LENGTH/2 - RAIL_RS_EXTRA/2, 0, -RAIL_RS_FULL_HEIGHT/2 + (RAIL_HEIGHT + SMALL_TOLERANCY)/2]) cube([RAIL_RS_EXTRA, RAIL_WIDTH, RAIL_HEIGHT + SMALL_TOLERANCY], true);
+        translate([RAIL_RS_LENGTH/2 - RAIL_RS_HOLE_OFFSET - RAIL_RS_EXTRA, 0, -RAIL_RS_FULL_HEIGHT/2]) cylinder(d = RAIL_RS_BOLT_DIAM, h = RAIL_RS_FULL_HEIGHT);
+        translate([RAIL_RS_LENGTH/2 - RAIL_RS_HOLE_OFFSET - RAIL_RS_EXTRA, 0, RAIL_RS_FULL_HEIGHT/2 - RAIL_RS_BOLT_HEAD_THICKNESS]) cylinder(d = RAIL_ES_BOLT_HEAD_DIAM, h = RAIL_RS_BOLT_HEAD_THICKNESS);
     }
 }
 
-/* Belt blocker top part thickness */
-X_BELT_BLOCKER_TOP_THICKNESS = 8;
-/* Width between y belt and gantry top part */
-X_BELT_WIDTH_FROM_GANTRY_TOP = 5;
-/* Height between y belt and gantry top */
-X_BELT_EXTRA_WIDTH_FROM_TOP = 4;
-/* Space between carriage and rail support */
-CARRIAGE_SPACE_BETWEEN_SUPPORT = 10;
-/* Thickness added around belt */
-X_BELT_BLOCKER_EXTRA_THICKNESS = 2;
-/* Small offset from x to allow belt being in the part */
-X_BELT_BLOCKER_BELT_Y_OFFSET = 3;
-/* Width of belt blocker */
-X_BELT_BLOCKER_WIDTH = 20;
-/* Radius of reserve of belt blocker */
-X_BELT_BLOCKER_BELT_RESERVE_DIAM = 10;
+X_ESH_OBLONG_SIZE = 5;
 
-X_BELT_BLOCKER_THICKNESS  = BELT_WIDTH + X_BELT_BLOCKER_EXTRA_THICKNESS;
-/* Height between top of belt and top y blocker part */
-X_BELT_HEIGHT_FROM_GANTRY_TOP = GANTRY_TOP_WIDTH/2  - BELT_PULLEY_DIAM/2 + X_BELT_EXTRA_WIDTH_FROM_TOP;
-X_BELT_BLOCKER_HEIGHT =  2 * X_BELT_BLOCKER_EXTRA_THICKNESS ;
+module x_endstop_holder()
+{
+        difference() {
+            union () {
+                translate([X_ESH_LENGTH - X_ESH_MICROSWITCH_MOUNT_HEIGHT/2, 0, 0]) roundedcube([X_ESH_MICROSWITCH_MOUNT_HEIGHT, X_ESH_MICROSWITCH_MOUNT_WIDTH, X_ESH_THICKNESS], true, 0.5, "zmax");
+                translate([X_ESH_LENGTH/2, 0, 0]) roundedcube([X_ESH_LENGTH, GANTRY_TOP_THICKNESS, X_ESH_THICKNESS], true, 0.5, "zmax");
+            }
+     /* Screw hole */
+        translate([X_ESH_BOLT_X_OFFSET, 0, -X_ESH_THICKNESS/2]) rotate([0, 0, -90]) oblong_hole(d = M3_DIAM, w = X_ESH_OBLONG_SIZE, h =X_ESH_THICKNESS);
+        translate([X_ESH_BOLT_X_OFFSET, 0, X_ESH_THICKNESS/2 - M3_HEAD_THICKNESS]) rotate([0, 0, -90]) oblong_hole(d = M3_HEAD_DIAM, w = X_ESH_OBLONG_SIZE, h =X_ESH_THICKNESS);
 
-/* total width from external part of the belt to external part of the carriage */
-X_BELT_WIDTH_TO_CARRIAGE = BELT_WIDTH + X_BELT_WIDTH_FROM_GANTRY_TOP + GANTRY_TOP_THICKNESS + CARRIAGE_SPACE_BETWEEN_SUPPORT;
-
-X_BELT_HOLE_SPACING = X_BELT_BLOCKER_WIDTH / 2;
+        /* Holes for endstop */
+         translate([X_ESH_LENGTH - MICROSWITCH_HOLE_OFFSET, 0, 0]) {
+            translate([0 , MICROSWITCH_HOLE_SPACING/2, 0]) cylinder(d = MICROSWITCH_HOLE_DIAM, h = RAIL_RS_FULL_HEIGHT, center = true);
+            translate([0 , -MICROSWITCH_HOLE_SPACING/2, 0]) cylinder(d = MICROSWITCH_HOLE_DIAM, h = RAIL_RS_FULL_HEIGHT, center = true);
+         }
+    }
+}
 
 module y_belt_bolt_nut_hole() {
     cylinder(d = M3_DIAM, h  = X_BELT_WIDTH_TO_CARRIAGE, center = true);
-    translate([0, 2, X_BELT_WIDTH_TO_CARRIAGE/2 - 7]) cube([M3_NUT_SIDE_TO_SIDE_THICKNESS, X_BELT_BLOCKER_TOP_THICKNESS, M3_NUT_THICKNESS], center = true);
+    translate([0, 0, X_BELT_WIDTH_TO_CARRIAGE/2 - 7]) cube([M3_NUT_SIDE_TO_SIDE_THICKNESS, X_BELT_BLOCKER_TOP_THICKNESS, M3_NUT_THICKNESS], center = true);
 }
 
 module x_belt_attachment() {
@@ -518,10 +575,10 @@ module x_belt_attachment() {
         }
        /* Belt */
         translate([-X_BELT_BLOCKER_WIDTH/2, X_BELT_BLOCKER_BELT_Y_OFFSET, BELT_WIDTH/2])
-        mirror([0, 1, 0]) belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = X_BELT_BLOCKER_WIDTH);
+        scale([1, 1.1, 1]) mirror([0, 1, 0]) belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = X_BELT_BLOCKER_WIDTH);
 
         translate([-X_BELT_BLOCKER_WIDTH/2, X_BELT_BLOCKER_BELT_Y_OFFSET * 2, BELT_WIDTH/2])
-        mirror([0, 1, 0]) belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = X_BELT_BLOCKER_WIDTH);
+        scale([1, 1.1, 1]) mirror([0, 1, 0]) belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = X_BELT_BLOCKER_WIDTH);
     }
     /* Top attachment part */
     translate([0, X_BELT_BLOCKER_BELT_PART_HEIGHT - X_BELT_BLOCKER_TOP_THICKNESS/2, X_BELT_WIDTH_TO_CARRIAGE/2])
@@ -538,34 +595,6 @@ module x_belt_attachment() {
     //translate([-X_BELT_BLOCKER_WIDTH/2, X_BELT_BLOCKER_BELT_PART_HEIGHT - X_BELT_BLOCKER_TOP_THICKNESS + 1, X_BELT_WIDTH_TO_CARRIAGE/2]) rotate([0, -90, 0]) ziptie_mount();
 }
 
-/* Carriage holder */
-X_CH_SIDE_WIDTH = 10;
-/* Additionnal height on the top */
-X_CH_TOP_HEIGHT = 30;
-/* Additionnal height on the bottom */
-X_CH_BOTTOM_HEIGHT = 10;
-/* Carriage holder thickness */
-X_CH_THICKNESS = 6;
-/* Depth of carriage dimension into this  */
-X_CH_CARRIAGE_DEPTH = 0.6;
-/* Full M3 head thickness to sunk it in the layer */
-X_CH_M3_HEAD_THICKNESS = 3;
-
-X_CH_HEIGHT = X_CH_BOTTOM_HEIGHT + X_CH_TOP_HEIGHT + MG_CARRIAGE_HEIGHT;
-X_CH_WIDTH = MG_CARRIAGE_WIDTH + 2 * X_CH_SIDE_WIDTH;
-
-/* Guide for real carriage (width ) */
-X_CH_GUIDE_WIDTH = 2;
-/* Guide for real carriage (thickness) */
-X_CH_GUIDE_THICKNESS = 1;
-
-/* offset from each side of carriage holder */
-X_CH_HOLE_OFFSET_FROM_SIDE = 4;
-/* Space between the two long holes to attach carriage */
-X_CH_SPACE_BETWEEN_HOLES = 4;
-
-/* Oblong holes for real carriage */
-X_CH_HOLE_LENGTH = X_CH_HEIGHT/2 - X_CH_HOLE_OFFSET_FROM_SIDE - X_CH_SPACE_BETWEEN_HOLES / 2 -  M3_WASHER_DIAM/2;
 module x_carriage_holder_mg_footprint()
 {
     translate([MG_CARRIAGE_WIDTH/2 - MG_CARRIAGE_HOLE_X_OFFSET/2, MG_CARRIAGE_HEIGHT/2 - MG_CARRIAGE_HOLE_Y_OFFSET/2, 0]) {
