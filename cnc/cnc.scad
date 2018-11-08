@@ -214,14 +214,14 @@ ZIPTIE_MOUNT_ADD_THICKNESS = 1.5;
 /* Full ziptie mount thickness */
 ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 
-//x_endstop();
+//y_endstop();
 //y_rail_support();
 //y_gantry_side();
-//mirror([1, 0, 0]) x_moto_holder();
+//mirror([1, 0, 0]) x_motor_holder();
 //x_gantry_middle_part();
 //y_belt_blocker();
 //y_motor_holder();
-//y_endstop();
+//x_rail_stopper();
 //x_belt_attachment();
 //x_carriage_holder();
 x_endstop_holder();
