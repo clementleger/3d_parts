@@ -16,8 +16,8 @@ M3_DIAM = 3;
 M3_NUT_DIAM = 7;
 M3_NUT_THICKNESS = 2.5;
 M3_NUT_SIDE_TO_SIDE_THICKNESS = 6;
-M3_WASHER_DIAM = 7; 
-M3_WASHER_THICKNESS= 0.4; 
+M3_WASHER_DIAM = 7;
+M3_WASHER_THICKNESS= 0.4;
 
 /* Feet */
 FEET_WIDTH = 25;
@@ -134,9 +134,9 @@ SLOPE_PART_HEIGHT = GANTRY_HEIGHT - GANTRY_TOP_WIDTH -  SLOPE_PART_Y_OFFSET;
 SLOPE_OFFSET = 20;
 
 /* Bottom belt blocker */
-BOTTOM_BELT_BLOCKER_THICKNESS = 3;
-BOTTOM_BELT_OFFSET = 3;
-BOTTOM_BELT_BLOCKER_HEIGHT = BELT_WIDTH + BOTTOM_BELT_BLOCKER_THICKNESS;
+Y_BELT_BLOCKER_THICKNESS = 3;
+Y_BELT_Z_OFFSET = 16;
+Y_BELT_BLOCKER_HEIGHT = 25;
 
 /* Derived from constants */
 FULL_SUPPORT_LENGTH = RAIL_LENGTH + 2 * FEET_WIDTH;
@@ -201,6 +201,8 @@ X_CH_SPACE_BETWEEN_HOLES = 4;
 /* Oblong holes for real carriage */
 X_CH_HOLE_LENGTH = X_CH_HEIGHT/2 - X_CH_HOLE_OFFSET_FROM_SIDE - X_CH_SPACE_BETWEEN_HOLES / 2 -  M3_WASHER_DIAM/2;
 
+SECOND_BELT_OFFSET = 3;
+
 /* Ziptie width */
 ZIPTIE_WIDTH = 3;
 /* Ziptie thickness */
@@ -219,12 +221,12 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //y_gantry_side();
 //mirror([1, 0, 0]) x_motor_holder();
 //x_gantry_middle_part();
-//y_belt_blocker();
+y_belt_blocker();
 //y_motor_holder();
 //x_rail_stopper();
 //x_belt_attachment();
 //x_carriage_holder();
-x_endstop_holder();
+//x_endstop_holder();
 
 
 module ziptie_mount() {
@@ -236,19 +238,19 @@ module ziptie_mount() {
             }
             translate([ZIPTIE_WIDTH + ZIPTIE_MOUNT_SIDE_WIDTH, 0, 0]) rotate([0, 0, 90]) prism(ZIPTIE_MOUNT_HEIGHT, ZIPTIE_MOUNT_SIDE_WIDTH,ZIPTIE_MOUNT_THICKNESS);
             translate([-ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_MOUNT_HEIGHT, 0]) rotate([0, 0, -90]) prism(ZIPTIE_MOUNT_HEIGHT, ZIPTIE_MOUNT_SIDE_WIDTH,ZIPTIE_MOUNT_THICKNESS);
-        }    
+        }
         translate([-ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_MOUNT_HEIGHT/2 - ZIPTIE_WIDTH/2, 0]) cube([ZIPTIE_WIDTH + 2 * ZIPTIE_MOUNT_SIDE_WIDTH, ZIPTIE_WIDTH , ZIPTIE_THICKNESS + SMALL_TOLERANCY]);
     }
 }
 
 
 module half_cylinder(diam, t, h) {
-    translate([diam/2, diam/2, 0]) 
+    translate([diam/2, diam/2, 0])
     difference() {
         cylinder(d = diam, h = h);
         translate([0, -diam/2, 0]) cube([diam/2, diam, h]);
-        
-        cylinder(d = diam - 2 * t, h = h);  
+
+        cylinder(d = diam - 2 * t, h = h);
     }
 }
 
@@ -432,17 +434,28 @@ module x_gantry_middle_part() {
 }
 
 module y_belt_blocker () {
-    BELT_BLOCKER_WIDTH = 2 * BOTTOM_BELT_BLOCKER_THICKNESS + FLAT_AL_STRIP_WIDTH;
+    BELT_BLOCKER_WIDTH = 2 * Y_BELT_BLOCKER_THICKNESS + FLAT_AL_STRIP_WIDTH;
+    BELT_BLOCKER_THICKNESS = FLAT_AL_STRIP_THICKNESS + 2 * Y_BELT_BLOCKER_THICKNESS;
+    MIDDLE_BLOCK_THICKNESS = Y_BELT_BLOCKER_THICKNESS * 2 +SECOND_BELT_OFFSET;
+    MIDDLE_BLOCK_HEIGHT = Y_BELT_Z_OFFSET - Y_BELT_BLOCKER_THICKNESS + BELT_WIDTH;
 
     difference() {
-        cube([BELT_BLOCKER_WIDTH, BOTTOM_BELT_BLOCKER_HEIGHT, FLAT_AL_STRIP_THICKNESS + 2 * BOTTOM_BELT_BLOCKER_THICKNESS]);
-         translate([BELT_BLOCKER_WIDTH/2 - FLAT_AL_STRIP_WIDTH/2, 0, BOTTOM_BELT_BLOCKER_THICKNESS])cube([FLAT_AL_STRIP_WIDTH, BOTTOM_BELT_BLOCKER_HEIGHT, FLAT_AL_STRIP_THICKNESS]);
-        translate([BELT_BLOCKER_WIDTH/2, BOTTOM_BELT_BLOCKER_HEIGHT/2, 0]) cylinder(d = M3_DIAM - SMALL_TOLERANCY, h = BOTTOM_BELT_BLOCKER_HEIGHT);
+        cube([BELT_BLOCKER_WIDTH, Y_BELT_BLOCKER_HEIGHT, BELT_BLOCKER_THICKNESS]);
+        translate([BELT_BLOCKER_WIDTH/2 - FLAT_AL_STRIP_WIDTH/2, 0, Y_BELT_BLOCKER_THICKNESS])cube([FLAT_AL_STRIP_WIDTH, Y_BELT_BLOCKER_HEIGHT, FLAT_AL_STRIP_THICKNESS]);
+        translate([BELT_BLOCKER_WIDTH/2, Y_BELT_BLOCKER_HEIGHT/2, 0]) cylinder(d = M3_DIAM - SMALL_TOLERANCY, h = Y_BELT_BLOCKER_HEIGHT);
+    }
+    translate([0, 0, BELT_BLOCKER_THICKNESS]) { 
+        chamfer(BELT_BLOCKER_WIDTH, Y_BELT_BLOCKER_HEIGHT/2 - MIDDLE_BLOCK_THICKNESS/2, Y_BELT_Z_OFFSET, $fn = 50);
+        translate([0, Y_BELT_BLOCKER_HEIGHT, 0]) mirror([0, 1, 0]) chamfer(BELT_BLOCKER_WIDTH, Y_BELT_BLOCKER_HEIGHT/2 - MIDDLE_BLOCK_THICKNESS/2, Y_BELT_Z_OFFSET, $fn = 50);
     }
     difference() {
-       translate([0, 0, -BOTTOM_BELT_OFFSET]) cube([BELT_BLOCKER_WIDTH, BOTTOM_BELT_BLOCKER_HEIGHT, BOTTOM_BELT_OFFSET]);
-       translate([0, BELT_WIDTH/2, -BOTTOM_BELT_OFFSET + 2]) scale([1, 1.1, 1.1]) rotate([-90, 0, 0])  belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = BELT_BLOCKER_WIDTH);
-    }
+        translate([0, Y_BELT_BLOCKER_HEIGHT/2 - MIDDLE_BLOCK_THICKNESS/2 , BELT_BLOCKER_THICKNESS]) cube([BELT_BLOCKER_WIDTH, MIDDLE_BLOCK_THICKNESS , MIDDLE_BLOCK_HEIGHT]);
+ 
+       translate([0, Y_BELT_BLOCKER_HEIGHT/2 - SECOND_BELT_OFFSET/2 - 0.5,  BELT_WIDTH/2 + Y_BELT_BLOCKER_THICKNESS + FLAT_AL_STRIP_THICKNESS + Y_BELT_Z_OFFSET]) scale([1, 1.1, 1.1]) {
+            belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = BELT_BLOCKER_WIDTH);
+            translate([0, SECOND_BELT_OFFSET, 0]) belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = BELT_BLOCKER_WIDTH);
+       }
+       }
 }
 
 
@@ -577,7 +590,7 @@ module x_belt_attachment() {
         translate([-X_BELT_BLOCKER_WIDTH/2, X_BELT_BLOCKER_BELT_Y_OFFSET, BELT_WIDTH/2])
         scale([1, 1.1, 1]) mirror([0, 1, 0]) belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = X_BELT_BLOCKER_WIDTH);
 
-        translate([-X_BELT_BLOCKER_WIDTH/2, X_BELT_BLOCKER_BELT_Y_OFFSET * 2, BELT_WIDTH/2])
+        translate([-X_BELT_BLOCKER_WIDTH/2, X_BELT_BLOCKER_BELT_Y_OFFSET + SECOND_BELT_OFFSET, BELT_WIDTH/2])
         scale([1, 1.1, 1]) mirror([0, 1, 0]) belt_len(profile = tGT2_2, belt_width = BELT_WIDTH, len = X_BELT_BLOCKER_WIDTH);
     }
     /* Top attachment part */
@@ -600,7 +613,7 @@ module x_carriage_holder_mg_footprint()
     translate([MG_CARRIAGE_WIDTH/2 - MG_CARRIAGE_HOLE_X_OFFSET/2, MG_CARRIAGE_HEIGHT/2 - MG_CARRIAGE_HOLE_Y_OFFSET/2, 0]) {
           gantry_carriage_holes(M3_DIAM, X_CH_THICKNESS);
           translate([0, 0, X_CH_THICKNESS - X_CH_M3_HEAD_THICKNESS]) gantry_carriage_holes(M3_HEAD_DIAM, X_CH_M3_HEAD_THICKNESS);
-    }    
+    }
 }
 
 module x_carriage_holes_belt_attachment()
