@@ -75,7 +75,8 @@ X_ESH_MICROSWITCH_MOUNT_HEIGHT = 10;
 X_ESH_THICKNESS = 5;
 /* Bolt offset from start of endstop holder */
 X_ESH_BOLT_X_OFFSET = 10;
-
+/* End stop holder adjustment hole length */
+X_ESH_OBLONG_SIZE = 5;
 
 GANTRY_HEIGHT = 140;
 GANTRY_WIDTH = 30;
@@ -102,6 +103,7 @@ NEMA_ATTACHMENT_THICKNESS = 8;
 NEMA_BELT_HOLE_DIAM = 20;
 /* Space between both side of the belt when tensionned */
 BELT_PULLEY_DIAM = 12;
+BELT_PULLEY_THICKNESS = 10;
 /* Oblong hole size for adjusting belt tension */
 NEMA_OBLONG_SIZE = 2;
 /* Little part longer than the rest */
@@ -148,8 +150,8 @@ RAIL_RS_FULL_HEIGHT = RAIL_HEIGHT + RAIL_RS_EXTRA;
 
 /* Belt blocker top part thickness */
 X_BELT_BLOCKER_TOP_THICKNESS = 8;
-/* Width between y belt and gantry top part */
-X_BELT_WIDTH_FROM_GANTRY_TOP = 5;
+/* Width between x belt and gantry top part */
+BELT_PULLEY_MOTOR_OFFSET = 5;
 /* Height between y belt and gantry top */
 X_BELT_EXTRA_WIDTH_FROM_TOP = 4;
 /* Space between carriage and rail support */
@@ -169,7 +171,7 @@ X_BELT_HEIGHT_FROM_GANTRY_TOP = GANTRY_TOP_WIDTH/2  - BELT_PULLEY_DIAM/2 + X_BEL
 X_BELT_BLOCKER_HEIGHT =  2 * X_BELT_BLOCKER_EXTRA_THICKNESS ;
 
 /* total width from external part of the belt to external part of the carriage */
-X_BELT_WIDTH_TO_CARRIAGE = BELT_WIDTH + X_BELT_WIDTH_FROM_GANTRY_TOP + GANTRY_TOP_THICKNESS + CARRIAGE_SPACE_BETWEEN_SUPPORT;
+X_BELT_WIDTH_TO_CARRIAGE = BELT_WIDTH + BELT_PULLEY_MOTOR_OFFSET + GANTRY_TOP_THICKNESS + CARRIAGE_SPACE_BETWEEN_SUPPORT;
 /* Hole attachment spacing */
 X_BELT_HOLE_SPACING = X_BELT_BLOCKER_WIDTH / 2;
 
@@ -202,7 +204,14 @@ X_CH_SPACE_BETWEEN_HOLES = 4;
 /* Oblong holes for real carriage */
 X_CH_HOLE_LENGTH = X_CH_HEIGHT/2 - X_CH_HOLE_OFFSET_FROM_SIDE - X_CH_SPACE_BETWEEN_HOLES / 2 -  M3_WASHER_DIAM/2;
 
+/* Offset between the two belts for end of belt */
 SECOND_BELT_OFFSET = 3;
+
+/* Thickness of side of motor holder */
+Y_MOTOR_HOLDER_THICKNESS = 5;
+/* Little side width (where the screws are) */
+Y_MOTOR_HOLDER_SIDE_WIDTH = 20;
+
 
 /* Ziptie width */
 ZIPTIE_WIDTH = 3;
@@ -223,11 +232,12 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //mirror([1, 0, 0]) x_motor_holder();
 //x_gantry_middle_part();
 //y_belt_blocker();
-y_motor_holder();
+//y_motor_holder();
 //x_rail_stopper();
 //x_belt_attachment();
 //x_carriage_holder();
 //x_endstop_holder();
+y_pulley_idler();
 
 
 module ziptie_mount() {
@@ -530,10 +540,6 @@ module x_motor_holder()
     }
 }
 
-
-Y_MOTOR_HOLDER_THICKNESS = 5;
-Y_MOTOR_HOLDER_SIDE_WIDTH = 20;
-
 module y_motor_holder_side()
 {
     difference() {
@@ -574,8 +580,6 @@ module x_rail_stopper()
         translate([RAIL_RS_LENGTH/2 - RAIL_RS_HOLE_OFFSET - RAIL_RS_EXTRA, 0, RAIL_RS_FULL_HEIGHT/2 - RAIL_RS_BOLT_HEAD_THICKNESS]) cylinder(d = RAIL_ES_BOLT_HEAD_DIAM, h = RAIL_RS_BOLT_HEAD_THICKNESS);
     }
 }
-
-X_ESH_OBLONG_SIZE = 5;
 
 module x_endstop_holder()
 {
@@ -676,4 +680,42 @@ module x_carriage_holder()
      }
      /* Guide */
      translate([X_CH_WIDTH/2 -X_CH_GUIDE_WIDTH/2, 0, X_CH_THICKNESS])  cube([X_CH_GUIDE_WIDTH, X_CH_HEIGHT, X_CH_GUIDE_THICKNESS]);
+}
+
+Y_PULLEY_IDLER_WIDTH = 20;
+Y_PULLEY_IDLER_THICKNESS = 5;
+
+Y_PULLEY_IDLER_HEIGHT = BELT_PULLEY_MOTOR_OFFSET + NEMA_THICKNESS + BELT_PULLEY_THICKNESS + Y_PULLEY_IDLER_THICKNESS;
+IDLER_PULLEY_CENTER_DIAM = 4;
+
+module y_pulley_idler_side()
+{
+    difference() {
+        union () {
+            cube([Y_PULLEY_IDLER_THICKNESS, Y_PULLEY_IDLER_WIDTH, Y_PULLEY_IDLER_HEIGHT]);
+            cube([Y_MOTOR_HOLDER_SIDE_WIDTH + Y_PULLEY_IDLER_THICKNESS, Y_PULLEY_IDLER_WIDTH, Y_PULLEY_IDLER_THICKNESS]);
+               
+            /* Side prism */
+            translate([Y_MOTOR_HOLDER_SIDE_WIDTH + Y_MOTOR_HOLDER_THICKNESS, 0, Y_MOTOR_HOLDER_THICKNESS]) rotate([0, 0, 90]) {
+                prism(Y_PULLEY_IDLER_THICKNESS, Y_MOTOR_HOLDER_SIDE_WIDTH, Y_PULLEY_IDLER_HEIGHT - Y_PULLEY_IDLER_THICKNESS);
+          
+                translate([Y_PULLEY_IDLER_WIDTH - Y_MOTOR_HOLDER_THICKNESS, 0, 0]) prism(Y_PULLEY_IDLER_THICKNESS, Y_MOTOR_HOLDER_SIDE_WIDTH, Y_PULLEY_IDLER_HEIGHT - Y_PULLEY_IDLER_THICKNESS);
+            }
+        }
+        translate([Y_MOTOR_HOLDER_SIDE_WIDTH / 4 * 3, Y_PULLEY_IDLER_WIDTH/2, 0]) cylinder(d = M3_DIAM, h = Y_PULLEY_IDLER_THICKNESS);
+    }
+}
+
+
+module y_pulley_idler()
+{
+    y_pulley_idler_side();
+    difference () {
+        union() {
+            translate([-BELT_PULLEY_DIAM, 0, 0]) translate([0, 0, 0 ])  cube([BELT_PULLEY_DIAM, Y_PULLEY_IDLER_WIDTH, Y_PULLEY_IDLER_HEIGHT]);
+            translate([-BELT_PULLEY_DIAM, Y_PULLEY_IDLER_WIDTH/2, 0]) cylinder(d = Y_PULLEY_IDLER_WIDTH, h = Y_PULLEY_IDLER_HEIGHT);
+        }
+            translate([-BELT_PULLEY_DIAM, Y_PULLEY_IDLER_WIDTH/2, Y_PULLEY_IDLER_HEIGHT/2]) cylinder(d = IDLER_PULLEY_CENTER_DIAM, h = Y_PULLEY_IDLER_HEIGHT);
+            translate([-BELT_PULLEY_DIAM * 2, 0, BELT_PULLEY_MOTOR_OFFSET + NEMA_THICKNESS]) cube([BELT_PULLEY_DIAM * 2, Y_PULLEY_IDLER_WIDTH, BELT_PULLEY_THICKNESS]);
+    }
 }
