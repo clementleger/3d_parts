@@ -93,6 +93,7 @@ GANTRY_MIDDLE_PART_EXTRA = 3;
 GANTRY_MG_CARRIAGE_DEPTH = 1;
 
 /* NEMA stuff */
+NEMA_THICKNESS = 33;
 NEMA_WIDTH = 42.5;
 NEMA_HOLE_SPACING = 31;
 NEMA_CENTER_DIAM = 25;
@@ -221,8 +222,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //y_gantry_side();
 //mirror([1, 0, 0]) x_motor_holder();
 //x_gantry_middle_part();
-y_belt_blocker();
-//y_motor_holder();
+//y_belt_blocker();
+y_motor_holder();
 //x_rail_stopper();
 //x_belt_attachment();
 //x_carriage_holder();
@@ -483,11 +484,11 @@ module upper_nema_part () {
 }
 
 
-module nema_support(part_width)
+module nema_support(part_width, part_height)
 {
     difference() {
         union() {
-            cube([NEMA_WIDTH + NEMA_ATTACHMENT_THICKNESS, part_width, NEMA_ATTACHMENT_THICKNESS]);
+            cube([part_width, part_height, NEMA_ATTACHMENT_THICKNESS]);
         }
         for(i = [0:1]) {
             for(j = [0:1]) {
@@ -506,7 +507,7 @@ module nema_support(part_width)
 
 module x_motor_holder()
 {
-    nema_support(NEMA_WIDTH + GANTRY_THICKNESS);
+    nema_support(NEMA_WIDTH + NEMA_ATTACHMENT_THICKNESS, NEMA_WIDTH + GANTRY_THICKNESS);
     difference() {
         union() {
             /* Longer part */
@@ -529,15 +530,35 @@ module x_motor_holder()
     }
 }
 
+
+Y_MOTOR_HOLDER_THICKNESS = 5;
+Y_MOTOR_HOLDER_SIDE_WIDTH = 20;
+
+module y_motor_holder_side()
+{
+    difference() {
+        union () {
+            cube([Y_MOTOR_HOLDER_THICKNESS, NEMA_WIDTH, NEMA_THICKNESS + NEMA_ATTACHMENT_THICKNESS]);
+            cube([Y_MOTOR_HOLDER_SIDE_WIDTH + Y_MOTOR_HOLDER_THICKNESS, NEMA_WIDTH, Y_MOTOR_HOLDER_THICKNESS]);
+               
+            /* Side prism */
+            translate([Y_MOTOR_HOLDER_SIDE_WIDTH + Y_MOTOR_HOLDER_THICKNESS, 0, Y_MOTOR_HOLDER_THICKNESS]) rotate([0, 0, 90]) {
+                prism(Y_MOTOR_HOLDER_THICKNESS, Y_MOTOR_HOLDER_SIDE_WIDTH, NEMA_THICKNESS + NEMA_ATTACHMENT_THICKNESS - Y_MOTOR_HOLDER_THICKNESS);
+          
+                translate([NEMA_WIDTH - Y_MOTOR_HOLDER_THICKNESS, 0, 0]) prism(Y_MOTOR_HOLDER_THICKNESS, Y_MOTOR_HOLDER_SIDE_WIDTH, NEMA_THICKNESS + NEMA_ATTACHMENT_THICKNESS - Y_MOTOR_HOLDER_THICKNESS);
+            }
+        }
+        translate([Y_MOTOR_HOLDER_SIDE_WIDTH / 4 * 3, NEMA_WIDTH/3, 0]) cylinder(d = M3_DIAM, h = Y_MOTOR_HOLDER_THICKNESS);
+        translate([Y_MOTOR_HOLDER_SIDE_WIDTH / 4 * 3, NEMA_WIDTH/3 * 2, 0]) cylinder(d = M3_DIAM, h = Y_MOTOR_HOLDER_THICKNESS);
+    }
+}
+
+
 module y_motor_holder()
 {
-    translate([0, NEMA_ATTACHMENT_THICKNESS + NEMA_OBLONG_SIZE, 0]) nema_support(NEMA_WIDTH);
-    cube([NEMA_WIDTH + NEMA_ATTACHMENT_THICKNESS, NEMA_ATTACHMENT_THICKNESS + NEMA_OBLONG_SIZE, NEMA_ATTACHMENT_THICKNESS]);
-
-    /* Top */
-    translate([NEMA_WIDTH, 0, NEMA_ATTACHMENT_THICKNESS]) cube([NEMA_ATTACHMENT_THICKNESS, NEMA_WIDTH + NEMA_ATTACHMENT_THICKNESS + NEMA_OBLONG_SIZE,NEMA_WIDTH]);
-
-    translate([0, NEMA_ATTACHMENT_THICKNESS, NEMA_ATTACHMENT_THICKNESS]) rotate([0, 0, -90]) prism(NEMA_ATTACHMENT_THICKNESS, NEMA_WIDTH, NEMA_WIDTH);
+    nema_support(NEMA_WIDTH, NEMA_WIDTH);
+    translate([0, 0, NEMA_THICKNESS + NEMA_ATTACHMENT_THICKNESS])rotate([0, 180, 0]) y_motor_holder_side();
+    translate([NEMA_WIDTH, NEMA_WIDTH, NEMA_THICKNESS + NEMA_ATTACHMENT_THICKNESS])rotate([0, 180, 180]) y_motor_holder_side();
 }
 
 module x_rail_stopper()
