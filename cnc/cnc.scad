@@ -151,7 +151,7 @@ RAIL_RS_FULL_HEIGHT = RAIL_HEIGHT + RAIL_RS_EXTRA;
 /* Belt blocker top part thickness */
 X_BELT_BLOCKER_TOP_THICKNESS = 8;
 /* Width between x belt and gantry top part */
-BELT_PULLEY_MOTOR_OFFSET = 5;
+BELT_PULLEY_MOTOR_OFFSET = 4;
 /* Height between y belt and gantry top */
 X_BELT_EXTRA_WIDTH_FROM_TOP = 4;
 /* Space between carriage and rail support */
@@ -683,33 +683,35 @@ module x_carriage_holder()
 }
 
 Y_PULLEY_IDLER_WIDTH = 20;
+Y_PULLEY_IDLER_DEPTH = 20;
 Y_PULLEY_IDLER_THICKNESS = 5;
+Y_PULLEY_IDLER_SMALL_SIZE_WIDTH = 20;
+Y_PULLEY_IDLER_SMALL_SIZE_DEPTH = 15;
 
 Y_PULLEY_IDLER_HEIGHT = BELT_PULLEY_MOTOR_OFFSET + NEMA_THICKNESS + BELT_PULLEY_THICKNESS + Y_PULLEY_IDLER_THICKNESS;
 IDLER_PULLEY_CENTER_DIAM = 4;
 
-module y_pulley_idler_side()
+module y_pulley_idler_side(w, d, h, t)
 {
     difference() {
         union () {
-            cube([Y_PULLEY_IDLER_THICKNESS, Y_PULLEY_IDLER_WIDTH, Y_PULLEY_IDLER_HEIGHT]);
-            cube([Y_MOTOR_HOLDER_SIDE_WIDTH + Y_PULLEY_IDLER_THICKNESS, Y_PULLEY_IDLER_WIDTH, Y_PULLEY_IDLER_THICKNESS]);
+            cube([t, w, h]);
+            cube([d + t, w, t]);
                
             /* Side prism */
-            translate([Y_MOTOR_HOLDER_SIDE_WIDTH + Y_MOTOR_HOLDER_THICKNESS, 0, Y_MOTOR_HOLDER_THICKNESS]) rotate([0, 0, 90]) {
-                prism(Y_PULLEY_IDLER_THICKNESS, Y_MOTOR_HOLDER_SIDE_WIDTH, Y_PULLEY_IDLER_HEIGHT - Y_PULLEY_IDLER_THICKNESS);
+            translate([d + t, 0, t]) rotate([0, 0, 90]) {
+                prism(t, d, h - t);
           
-                translate([Y_PULLEY_IDLER_WIDTH - Y_MOTOR_HOLDER_THICKNESS, 0, 0]) prism(Y_PULLEY_IDLER_THICKNESS, Y_MOTOR_HOLDER_SIDE_WIDTH, Y_PULLEY_IDLER_HEIGHT - Y_PULLEY_IDLER_THICKNESS);
+                translate([w - t, 0, 0]) prism(t, d, h - t);
             }
         }
-        translate([Y_MOTOR_HOLDER_SIDE_WIDTH / 4 * 3, Y_PULLEY_IDLER_WIDTH/2, 0]) cylinder(d = M3_DIAM, h = Y_PULLEY_IDLER_THICKNESS);
+        translate([d / 4 * 3, w / 2, 0]) cylinder(d = M3_DIAM, h = t);
     }
 }
 
-
 module y_pulley_idler()
 {
-    y_pulley_idler_side();
+    y_pulley_idler_side(Y_PULLEY_IDLER_WIDTH, Y_PULLEY_IDLER_DEPTH, Y_PULLEY_IDLER_HEIGHT, Y_PULLEY_IDLER_THICKNESS);
     difference () {
         union() {
             translate([-BELT_PULLEY_DIAM, 0, 0]) translate([0, 0, 0 ])  cube([BELT_PULLEY_DIAM, Y_PULLEY_IDLER_WIDTH, Y_PULLEY_IDLER_HEIGHT]);
@@ -718,4 +720,7 @@ module y_pulley_idler()
             translate([-BELT_PULLEY_DIAM, Y_PULLEY_IDLER_WIDTH/2, Y_PULLEY_IDLER_HEIGHT/2]) cylinder(d = IDLER_PULLEY_CENTER_DIAM, h = Y_PULLEY_IDLER_HEIGHT);
             translate([-BELT_PULLEY_DIAM * 2, 0, BELT_PULLEY_MOTOR_OFFSET + NEMA_THICKNESS]) cube([BELT_PULLEY_DIAM * 2, Y_PULLEY_IDLER_WIDTH, BELT_PULLEY_THICKNESS]);
     }
+    
+    translate([-Y_PULLEY_IDLER_SMALL_SIZE_WIDTH/2, Y_PULLEY_IDLER_THICKNESS, 0]) rotate([0, 0, -90]) y_pulley_idler_side(Y_PULLEY_IDLER_SMALL_SIZE_WIDTH, Y_PULLEY_IDLER_SMALL_SIZE_DEPTH, Y_PULLEY_IDLER_HEIGHT/2, Y_PULLEY_IDLER_THICKNESS);
+    translate([Y_PULLEY_IDLER_SMALL_SIZE_WIDTH/2, Y_PULLEY_IDLER_WIDTH - Y_PULLEY_IDLER_THICKNESS, 0]) rotate([0, 0, 90]) y_pulley_idler_side( Y_PULLEY_IDLER_SMALL_SIZE_WIDTH, Y_PULLEY_IDLER_SMALL_SIZE_DEPTH, Y_PULLEY_IDLER_HEIGHT/2, Y_PULLEY_IDLER_THICKNESS);
 }
