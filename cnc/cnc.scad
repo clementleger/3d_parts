@@ -94,24 +94,24 @@ GANTRY_MIDDLE_PART_EXTRA = 3;
 GANTRY_MG_CARRIAGE_DEPTH = 1;
 
 /* NEMA stuff */
-NEMA_THICKNESS = 33;
-NEMA_WIDTH = 42.5;
-NEMA_HOLE_SPACING = 31;
-NEMA_CENTER_DIAM = 25;
-NEMA_ATTACHMENT_THICKNESS = 8;
+NEMA17_THICKNESS = 33;
+NEMA17_WIDTH = 42.5;
+NEMA17_HOLE_SPACING = 31;
+NEMA17_CENTER_DIAM = 25;
+NEMA17_ATTACHMENT_THICKNESS = 8;
 /* Size of hole for belt pulley (maximize to allow some slack) */
-NEMA_BELT_HOLE_DIAM = 20;
+NEMA17_BELT_HOLE_DIAM = 20;
 /* Space between both side of the belt when tensionned */
 BELT_PULLEY_DIAM = 12;
 BELT_PULLEY_THICKNESS = 10;
 /* Oblong hole size for adjusting belt tension */
-NEMA_OBLONG_SIZE = 2;
+NEMA17_OBLONG_SIZE = 2;
 /* Little part longer than the rest */
-NEMA_ATTACHMENT_LENGTH = 15;
-NEMA_ROUNDING = 2;
-NEMA_HOLE_DIAM = 3;
+NEMA17_ATTACHMENT_LENGTH = 15;
+NEMA17_ROUNDING = 2;
+NEMA17_HOLE_DIAM = 3;
 
-GANTRY_NEMA_HOLE_Z_OFFSET = NEMA_WIDTH/2 - NEMA_BELT_HOLE_DIAM/2;
+GANTRY_NEMA17_HOLE_Z_OFFSET = NEMA17_WIDTH/2 - NEMA17_BELT_HOLE_DIAM/2;
 
 /* Small bearing carriage dimension */
 MG_CARRIAGE_WIDTH = 30;
@@ -126,7 +126,7 @@ FLAT_AL_STRIP_THICKNESS = 2 + SMALL_TOLERANCY;
 FLAT_AL_TIGHTEN_SIZE = 40;
 
 /* Gantry top part */
-GANTRY_TOP_WIDTH = NEMA_WIDTH;
+GANTRY_TOP_WIDTH = NEMA17_WIDTH;
 GANTRY_TOP_HEIGHT = Y_RAIL_FIRST_HOLE_OFFSET + RAIL_HOLE_SPACING + GANTRY_THICKNESS + RAIL_HOLE_SPACING / 2 ;
 GANTRY_TOP_THICKNESS = 8;
 GANTRY_TOP_CHAMFER_SIZE = 8;
@@ -235,9 +235,9 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //y_motor_holder();
 //x_rail_stopper();
 //x_belt_attachment();
-//x_carriage_holder();
+z_carriage_base();
 //x_endstop_holder();
-y_pulley_idler();
+//y_pulley_idler();
 
 
 module ziptie_mount() {
@@ -390,7 +390,7 @@ module gantry_top_part()
         /* Rail footprint */
         translate([-RAIL_HEIGHT, GANTRY_TOP_WIDTH/2- RAIL_WIDTH/2, 0]) cube([RAIL_HEIGHT, RAIL_WIDTH, 100]);
         /* Hole for NEMA attachment */
-        translate([0, GANTRY_NEMA_HOLE_Z_OFFSET/2, GANTRY_THICKNESS + NEMA_ATTACHMENT_LENGTH]) rotate([0, 90, 0]) {
+        translate([0, GANTRY_NEMA17_HOLE_Z_OFFSET/2, GANTRY_THICKNESS + NEMA17_ATTACHMENT_LENGTH]) rotate([0, 90, 0]) {
            cylinder(d = M3_DIAM, h = GANTRY_TOP_THICKNESS);
            translate([0, 0, -GANTRY_TOP_THICKNESS + M3_NUT_THICKNESS]) cylinder(d = M3_NUT_DIAM, h = GANTRY_TOP_THICKNESS, $fn = 6);
         }
@@ -477,66 +477,66 @@ module oblong_hole(d, h, w) {
     }
 }
 
-module upper_nema_part () {
-    UPPER_NEMA_PART_WIDTH = GANTRY_WIDTH + NEMA_ATTACHMENT_THICKNESS;
+module upper_nema17_part () {
+    UPPER_NEMA17_PART_WIDTH = GANTRY_WIDTH + NEMA17_ATTACHMENT_THICKNESS;
 
     difference() {
-        cube([NEMA_ATTACHMENT_THICKNESS, GANTRY_THICKNESS, UPPER_NEMA_PART_WIDTH]);
+        cube([NEMA17_ATTACHMENT_THICKNESS, GANTRY_THICKNESS, UPPER_NEMA17_PART_WIDTH]);
         translate([0, GANTRY_THICKNESS - GANTRY_THICKNESS/2, GANTRY_TOP_THICKNESS + GANTRY_WIDTH/4]) rotate([0, 90, 0]) {
-            cylinder(d = M3_DIAM, h = NEMA_ATTACHMENT_THICKNESS);
-            translate([0, 0, NEMA_ATTACHMENT_THICKNESS - M3_HEAD_THICKNESS]) cylinder(d = M3_HEAD_DIAM, h = NEMA_ATTACHMENT_THICKNESS);
+            cylinder(d = M3_DIAM, h = NEMA17_ATTACHMENT_THICKNESS);
+            translate([0, 0, NEMA17_ATTACHMENT_THICKNESS - M3_HEAD_THICKNESS]) cylinder(d = M3_HEAD_DIAM, h = NEMA17_ATTACHMENT_THICKNESS);
         }
         translate([0, GANTRY_THICKNESS - GANTRY_THICKNESS/2, GANTRY_TOP_THICKNESS + GANTRY_WIDTH/4 * 3]) rotate([0, 90, 0]) {
-             cylinder(d = M3_DIAM, h = NEMA_ATTACHMENT_THICKNESS);
-            translate([0, 0, NEMA_ATTACHMENT_THICKNESS - M3_HEAD_THICKNESS]) cylinder(d = M3_HEAD_DIAM, h = NEMA_ATTACHMENT_THICKNESS);
+             cylinder(d = M3_DIAM, h = NEMA17_ATTACHMENT_THICKNESS);
+            translate([0, 0, NEMA17_ATTACHMENT_THICKNESS - M3_HEAD_THICKNESS]) cylinder(d = M3_HEAD_DIAM, h = NEMA17_ATTACHMENT_THICKNESS);
         }
     }
 }
 
 
-module nema_support(part_width, part_height)
+module nema17_support(part_width, part_height)
 {
     difference() {
         union() {
-            cube([part_width, part_height, NEMA_ATTACHMENT_THICKNESS]);
+            cube([part_width, part_height, NEMA17_ATTACHMENT_THICKNESS]);
         }
         for(i = [0:1]) {
             for(j = [0:1]) {
-                offset_h = NEMA_WIDTH/2 - NEMA_HOLE_SPACING/2;
-                translate([offset_h + i * NEMA_HOLE_SPACING, offset_h+ j * NEMA_HOLE_SPACING, 0])  {
-                    oblong_hole(d = NEMA_HOLE_DIAM, h = NEMA_ATTACHMENT_THICKNESS, w = NEMA_OBLONG_SIZE);
-                    translate([0, 0,- NEMA_ATTACHMENT_THICKNESS + M3_HEAD_THICKNESS ]) oblong_hole(d = M3_HEAD_DIAM, h = NEMA_ATTACHMENT_THICKNESS, w = NEMA_OBLONG_SIZE);
+                offset_h = NEMA17_WIDTH/2 - NEMA17_HOLE_SPACING/2;
+                translate([offset_h + i * NEMA17_HOLE_SPACING, offset_h+ j * NEMA17_HOLE_SPACING, 0])  {
+                    oblong_hole(d = NEMA17_HOLE_DIAM, h = NEMA17_ATTACHMENT_THICKNESS, w = NEMA17_OBLONG_SIZE);
+                    translate([0, 0,- NEMA17_ATTACHMENT_THICKNESS + M3_HEAD_THICKNESS ]) oblong_hole(d = M3_HEAD_DIAM, h = NEMA17_ATTACHMENT_THICKNESS, w = NEMA17_OBLONG_SIZE);
                 }
             }
         }
         /* Hole for NEMA motor */
-        translate([NEMA_WIDTH/2, NEMA_WIDTH/2, 0]) cylinder (d = NEMA_CENTER_DIAM, h = NEMA_ATTACHMENT_THICKNESS);
-        translate([NEMA_WIDTH/2 - NEMA_BELT_HOLE_DIAM/2, NEMA_WIDTH/2, 0]) cube([NEMA_BELT_HOLE_DIAM, NEMA_CENTER_DIAM + NEMA_ATTACHMENT_LENGTH + GANTRY_THICKNESS, NEMA_ATTACHMENT_THICKNESS]);
+        translate([NEMA17_WIDTH/2, NEMA17_WIDTH/2, 0]) cylinder (d = NEMA17_CENTER_DIAM, h = NEMA17_ATTACHMENT_THICKNESS);
+        translate([NEMA17_WIDTH/2 - NEMA17_BELT_HOLE_DIAM/2, NEMA17_WIDTH/2, 0]) cube([NEMA17_BELT_HOLE_DIAM, NEMA17_CENTER_DIAM + NEMA17_ATTACHMENT_LENGTH + GANTRY_THICKNESS, NEMA17_ATTACHMENT_THICKNESS]);
     }
 }
 
 module x_motor_holder()
 {
-    nema_support(NEMA_WIDTH + NEMA_ATTACHMENT_THICKNESS, NEMA_WIDTH + GANTRY_THICKNESS);
+    nema17_support(NEMA17_WIDTH + NEMA17_ATTACHMENT_THICKNESS, NEMA17_WIDTH + GANTRY_THICKNESS);
     difference() {
         union() {
             /* Longer part */
 
-            translate( [0, NEMA_WIDTH + GANTRY_THICKNESS, 0]) cube([NEMA_WIDTH / 2, NEMA_ATTACHMENT_LENGTH, NEMA_ATTACHMENT_THICKNESS]);
+            translate( [0, NEMA17_WIDTH + GANTRY_THICKNESS, 0]) cube([NEMA17_WIDTH / 2, NEMA17_ATTACHMENT_LENGTH, NEMA17_ATTACHMENT_THICKNESS]);
             /* Longer part end rounding */
-            translate([GANTRY_NEMA_HOLE_Z_OFFSET/2, NEMA_WIDTH + GANTRY_THICKNESS + NEMA_ATTACHMENT_LENGTH, 0]) cylinder (d = GANTRY_NEMA_HOLE_Z_OFFSET, h = NEMA_ATTACHMENT_THICKNESS);
+            translate([GANTRY_NEMA17_HOLE_Z_OFFSET/2, NEMA17_WIDTH + GANTRY_THICKNESS + NEMA17_ATTACHMENT_LENGTH, 0]) cylinder (d = GANTRY_NEMA17_HOLE_Z_OFFSET, h = NEMA17_ATTACHMENT_THICKNESS);
                    /* Upper part */
-            translate([NEMA_WIDTH, NEMA_WIDTH, 0]) upper_nema_part();
-             translate([NEMA_WIDTH, 0, NEMA_ATTACHMENT_THICKNESS]) prism(NEMA_ATTACHMENT_THICKNESS, NEMA_WIDTH, GANTRY_WIDTH);
+            translate([NEMA17_WIDTH, NEMA17_WIDTH, 0]) upper_nema17_part();
+             translate([NEMA17_WIDTH, 0, NEMA17_ATTACHMENT_THICKNESS]) prism(NEMA17_ATTACHMENT_THICKNESS, NEMA17_WIDTH, GANTRY_WIDTH);
         }
 
         /* Longer part end hole */
-            translate([GANTRY_NEMA_HOLE_Z_OFFSET/2, NEMA_WIDTH + GANTRY_THICKNESS + NEMA_ATTACHMENT_LENGTH, 0]) cylinder (d = M3_DIAM, h = NEMA_ATTACHMENT_THICKNESS);
-            translate([GANTRY_NEMA_HOLE_Z_OFFSET/2, NEMA_WIDTH + GANTRY_THICKNESS + NEMA_ATTACHMENT_LENGTH, - NEMA_ATTACHMENT_THICKNESS + M3_HEAD_THICKNESS]) cylinder (d = M3_HEAD_DIAM, h = NEMA_ATTACHMENT_THICKNESS);
+            translate([GANTRY_NEMA17_HOLE_Z_OFFSET/2, NEMA17_WIDTH + GANTRY_THICKNESS + NEMA17_ATTACHMENT_LENGTH, 0]) cylinder (d = M3_DIAM, h = NEMA17_ATTACHMENT_THICKNESS);
+            translate([GANTRY_NEMA17_HOLE_Z_OFFSET/2, NEMA17_WIDTH + GANTRY_THICKNESS + NEMA17_ATTACHMENT_LENGTH, - NEMA17_ATTACHMENT_THICKNESS + M3_HEAD_THICKNESS]) cylinder (d = M3_HEAD_DIAM, h = NEMA17_ATTACHMENT_THICKNESS);
 
         /* Hole for NEMA motor */
-        translate([NEMA_WIDTH/2, NEMA_WIDTH/2, 0]) cylinder (d = NEMA_CENTER_DIAM, h = NEMA_ATTACHMENT_THICKNESS);
-        translate([NEMA_WIDTH/2 - NEMA_BELT_HOLE_DIAM/2, NEMA_WIDTH/2, 0]) cube([NEMA_BELT_HOLE_DIAM, NEMA_CENTER_DIAM + NEMA_ATTACHMENT_LENGTH + GANTRY_THICKNESS, NEMA_ATTACHMENT_THICKNESS]);
+        translate([NEMA17_WIDTH/2, NEMA17_WIDTH/2, 0]) cylinder (d = NEMA17_CENTER_DIAM, h = NEMA17_ATTACHMENT_THICKNESS);
+        translate([NEMA17_WIDTH/2 - NEMA17_BELT_HOLE_DIAM/2, NEMA17_WIDTH/2, 0]) cube([NEMA17_BELT_HOLE_DIAM, NEMA17_CENTER_DIAM + NEMA17_ATTACHMENT_LENGTH + GANTRY_THICKNESS, NEMA17_ATTACHMENT_THICKNESS]);
     }
 }
 
@@ -544,27 +544,27 @@ module y_motor_holder_side()
 {
     difference() {
         union () {
-            cube([Y_MOTOR_HOLDER_THICKNESS, NEMA_WIDTH, NEMA_THICKNESS + NEMA_ATTACHMENT_THICKNESS]);
-            cube([Y_MOTOR_HOLDER_SIDE_WIDTH + Y_MOTOR_HOLDER_THICKNESS, NEMA_WIDTH, Y_MOTOR_HOLDER_THICKNESS]);
+            cube([Y_MOTOR_HOLDER_THICKNESS, NEMA17_WIDTH, NEMA17_THICKNESS + NEMA17_ATTACHMENT_THICKNESS]);
+            cube([Y_MOTOR_HOLDER_SIDE_WIDTH + Y_MOTOR_HOLDER_THICKNESS, NEMA17_WIDTH, Y_MOTOR_HOLDER_THICKNESS]);
                
             /* Side prism */
             translate([Y_MOTOR_HOLDER_SIDE_WIDTH + Y_MOTOR_HOLDER_THICKNESS, 0, Y_MOTOR_HOLDER_THICKNESS]) rotate([0, 0, 90]) {
-                prism(Y_MOTOR_HOLDER_THICKNESS, Y_MOTOR_HOLDER_SIDE_WIDTH, NEMA_THICKNESS + NEMA_ATTACHMENT_THICKNESS - Y_MOTOR_HOLDER_THICKNESS);
+                prism(Y_MOTOR_HOLDER_THICKNESS, Y_MOTOR_HOLDER_SIDE_WIDTH, NEMA17_THICKNESS + NEMA17_ATTACHMENT_THICKNESS - Y_MOTOR_HOLDER_THICKNESS);
           
-                translate([NEMA_WIDTH - Y_MOTOR_HOLDER_THICKNESS, 0, 0]) prism(Y_MOTOR_HOLDER_THICKNESS, Y_MOTOR_HOLDER_SIDE_WIDTH, NEMA_THICKNESS + NEMA_ATTACHMENT_THICKNESS - Y_MOTOR_HOLDER_THICKNESS);
+                translate([NEMA17_WIDTH - Y_MOTOR_HOLDER_THICKNESS, 0, 0]) prism(Y_MOTOR_HOLDER_THICKNESS, Y_MOTOR_HOLDER_SIDE_WIDTH, NEMA17_THICKNESS + NEMA17_ATTACHMENT_THICKNESS - Y_MOTOR_HOLDER_THICKNESS);
             }
         }
-        translate([Y_MOTOR_HOLDER_SIDE_WIDTH / 4 * 3, NEMA_WIDTH/3, 0]) cylinder(d = M3_DIAM, h = Y_MOTOR_HOLDER_THICKNESS);
-        translate([Y_MOTOR_HOLDER_SIDE_WIDTH / 4 * 3, NEMA_WIDTH/3 * 2, 0]) cylinder(d = M3_DIAM, h = Y_MOTOR_HOLDER_THICKNESS);
+        translate([Y_MOTOR_HOLDER_SIDE_WIDTH / 4 * 3, NEMA17_WIDTH/3, 0]) cylinder(d = M3_DIAM, h = Y_MOTOR_HOLDER_THICKNESS);
+        translate([Y_MOTOR_HOLDER_SIDE_WIDTH / 4 * 3, NEMA17_WIDTH/3 * 2, 0]) cylinder(d = M3_DIAM, h = Y_MOTOR_HOLDER_THICKNESS);
     }
 }
 
 
 module y_motor_holder()
 {
-    nema_support(NEMA_WIDTH, NEMA_WIDTH);
-    translate([0, 0, NEMA_THICKNESS + NEMA_ATTACHMENT_THICKNESS])rotate([0, 180, 0]) y_motor_holder_side();
-    translate([NEMA_WIDTH, NEMA_WIDTH, NEMA_THICKNESS + NEMA_ATTACHMENT_THICKNESS])rotate([0, 180, 180]) y_motor_holder_side();
+    nema17_support(NEMA17_WIDTH, NEMA17_WIDTH);
+    translate([0, 0, NEMA17_THICKNESS + NEMA17_ATTACHMENT_THICKNESS])rotate([0, 180, 0]) y_motor_holder_side();
+    translate([NEMA17_WIDTH, NEMA17_WIDTH, NEMA17_THICKNESS + NEMA17_ATTACHMENT_THICKNESS])rotate([0, 180, 180]) y_motor_holder_side();
 }
 
 module x_rail_stopper()
@@ -659,7 +659,7 @@ module x_ch_holes()
         }
 }
 
-module x_carriage_holder()
+module z_carriage_base()
 {
     difference() {
         roundedcube([X_CH_WIDTH, X_CH_HEIGHT, X_CH_THICKNESS], false, 2, "z");
@@ -688,7 +688,7 @@ Y_PULLEY_IDLER_THICKNESS = 5;
 Y_PULLEY_IDLER_SMALL_SIZE_WIDTH = 20;
 Y_PULLEY_IDLER_SMALL_SIZE_DEPTH = 15;
 
-Y_PULLEY_IDLER_HEIGHT = BELT_PULLEY_MOTOR_OFFSET + NEMA_THICKNESS + BELT_PULLEY_THICKNESS + Y_PULLEY_IDLER_THICKNESS;
+Y_PULLEY_IDLER_HEIGHT = BELT_PULLEY_MOTOR_OFFSET + NEMA17_THICKNESS + BELT_PULLEY_THICKNESS + Y_PULLEY_IDLER_THICKNESS;
 IDLER_PULLEY_CENTER_DIAM = 4;
 
 module y_pulley_idler_side(w, d, h, t)
@@ -718,7 +718,7 @@ module y_pulley_idler()
             translate([-BELT_PULLEY_DIAM, Y_PULLEY_IDLER_WIDTH/2, 0]) cylinder(d = Y_PULLEY_IDLER_WIDTH, h = Y_PULLEY_IDLER_HEIGHT);
         }
             translate([-BELT_PULLEY_DIAM, Y_PULLEY_IDLER_WIDTH/2, Y_PULLEY_IDLER_HEIGHT/2]) cylinder(d = IDLER_PULLEY_CENTER_DIAM, h = Y_PULLEY_IDLER_HEIGHT);
-            translate([-BELT_PULLEY_DIAM * 2, 0, BELT_PULLEY_MOTOR_OFFSET + NEMA_THICKNESS]) cube([BELT_PULLEY_DIAM * 2, Y_PULLEY_IDLER_WIDTH, BELT_PULLEY_THICKNESS]);
+            translate([-BELT_PULLEY_DIAM * 2, 0, BELT_PULLEY_MOTOR_OFFSET + NEMA17_THICKNESS]) cube([BELT_PULLEY_DIAM * 2, Y_PULLEY_IDLER_WIDTH, BELT_PULLEY_THICKNESS]);
     }
     
     translate([-Y_PULLEY_IDLER_SMALL_SIZE_WIDTH/2, Y_PULLEY_IDLER_THICKNESS, 0]) rotate([0, 0, -90]) y_pulley_idler_side(Y_PULLEY_IDLER_SMALL_SIZE_WIDTH, Y_PULLEY_IDLER_SMALL_SIZE_DEPTH, Y_PULLEY_IDLER_HEIGHT/2, Y_PULLEY_IDLER_THICKNESS);
