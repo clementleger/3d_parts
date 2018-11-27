@@ -176,33 +176,33 @@ X_BELT_WIDTH_TO_CARRIAGE = BELT_WIDTH + BELT_PULLEY_MOTOR_OFFSET + GANTRY_TOP_TH
 X_BELT_HOLE_SPACING = X_BELT_BLOCKER_WIDTH / 2;
 
 /* Carriage holder */
-X_CH_SIDE_WIDTH = 10;
+Z_AXIS_SIDE_WIDTH = 10;
 /* Additionnal height on the top */
-X_CH_TOP_HEIGHT = 30;
+Z_AXIS_FB_TOP_HEIGHT = 30;
 /* Additionnal height on the bottom */
-X_CH_BOTTOM_HEIGHT = 10;
+Z_AXIS_FB_BOTTOM_HEIGHT = 10;
 /* Carriage holder thickness */
-X_CH_THICKNESS = 6;
+Z_AXIS_THICKNESS = 6;
 /* Depth of carriage dimension into this  */
-X_CH_CARRIAGE_DEPTH = 0.6;
+Z_AXIS_CARRIAGE_DEPTH = 0.6;
 /* Full M3 head thickness to sunk it in the layer */
-X_CH_M3_HEAD_THICKNESS = 3;
+Z_AXIS_M3_HEAD_THICKNESS = 3;
 
-X_CH_HEIGHT = X_CH_BOTTOM_HEIGHT + X_CH_TOP_HEIGHT + MG_CARRIAGE_HEIGHT;
-X_CH_WIDTH = MG_CARRIAGE_WIDTH + 2 * X_CH_SIDE_WIDTH;
+Z_AXIS_FB_HEIGHT = Z_AXIS_FB_BOTTOM_HEIGHT + Z_AXIS_FB_TOP_HEIGHT + MG_CARRIAGE_HEIGHT;
+Z_AXIS_FB_WIDTH = MG_CARRIAGE_WIDTH + 2 * Z_AXIS_SIDE_WIDTH;
 
 /* Guide for real carriage (width ) */
-X_CH_GUIDE_WIDTH = 2;
+Z_AXIS_GUIDE_WIDTH = 2;
 /* Guide for real carriage (thickness) */
-X_CH_GUIDE_THICKNESS = 1;
+Z_AXIS_GUIDE_THICKNESS = 1;
 
 /* offset from each side of carriage holder */
-X_CH_HOLE_OFFSET_FROM_SIDE = 4;
+Z_AXIS_FB_HOLE_OFFSET_FROM_SIDE = 4;
 /* Space between the two long holes to attach carriage */
-X_CH_SPACE_BETWEEN_HOLES = 4;
+Z_AXIS_FB_SPACE_BETWEEN_HOLES = 4;
 
 /* Oblong holes for real carriage */
-X_CH_HOLE_LENGTH = X_CH_HEIGHT/2 - X_CH_HOLE_OFFSET_FROM_SIDE - X_CH_SPACE_BETWEEN_HOLES / 2 -  M3_WASHER_DIAM/2;
+Z_AXIS_FB_OBLONG_HOLE_LENGTH = Z_AXIS_FB_HEIGHT/2 - Z_AXIS_FB_HOLE_OFFSET_FROM_SIDE - Z_AXIS_FB_SPACE_BETWEEN_HOLES / 2 -  M3_WASHER_DIAM/2;
 
 /* Offset between the two belts for end of belt */
 SECOND_BELT_OFFSET = 3;
@@ -235,7 +235,7 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //y_motor_holder();
 //x_rail_stopper();
 //x_belt_attachment();
-z_carriage_base();
+z_carriage_fixed_base();
 //x_endstop_holder();
 //y_pulley_idler();
 
@@ -636,50 +636,50 @@ module x_belt_attachment() {
 module x_carriage_holder_mg_footprint()
 {
     translate([MG_CARRIAGE_WIDTH/2 - MG_CARRIAGE_HOLE_X_OFFSET/2, MG_CARRIAGE_HEIGHT/2 - MG_CARRIAGE_HOLE_Y_OFFSET/2, 0]) {
-          gantry_carriage_holes(M3_DIAM, X_CH_THICKNESS);
-          translate([0, 0, X_CH_THICKNESS - X_CH_M3_HEAD_THICKNESS]) gantry_carriage_holes(M3_HEAD_DIAM, X_CH_M3_HEAD_THICKNESS);
+          gantry_carriage_holes(M3_DIAM, Z_AXIS_THICKNESS);
+          translate([0, 0, Z_AXIS_THICKNESS - Z_AXIS_M3_HEAD_THICKNESS]) gantry_carriage_holes(M3_HEAD_DIAM, Z_AXIS_M3_HEAD_THICKNESS);
     }
 }
 
 module x_carriage_holes_belt_attachment()
 {
-    cylinder(d = M3_DIAM, h = X_CH_THICKNESS);
-    translate([0, 0, X_CH_THICKNESS - X_CH_M3_HEAD_THICKNESS]) cylinder(d = M3_HEAD_DIAM, h = X_CH_M3_HEAD_THICKNESS);
+    cylinder(d = M3_DIAM, h = Z_AXIS_THICKNESS);
+    translate([0, 0, Z_AXIS_THICKNESS - Z_AXIS_M3_HEAD_THICKNESS]) cylinder(d = M3_HEAD_DIAM, h = Z_AXIS_M3_HEAD_THICKNESS);
 }
 
 module x_ch_holes()
 {
-    translate([M3_DIAM/2, X_CH_HOLE_LENGTH + M3_WASHER_DIAM/2 + X_CH_HOLE_OFFSET_FROM_SIDE/2,  0]) {
-            oblong_hole(M3_DIAM, X_CH_THICKNESS, X_CH_HOLE_LENGTH);
-            oblong_hole(M3_WASHER_DIAM, M3_NUT_THICKNESS + M3_WASHER_THICKNESS, X_CH_HOLE_LENGTH);
+    translate([M3_DIAM/2, Z_AXIS_FB_OBLONG_HOLE_LENGTH + M3_WASHER_DIAM/2 + Z_AXIS_FB_HOLE_OFFSET_FROM_SIDE/2,  0]) {
+            oblong_hole(M3_DIAM, Z_AXIS_THICKNESS, Z_AXIS_FB_OBLONG_HOLE_LENGTH);
+            oblong_hole(M3_WASHER_DIAM, M3_NUT_THICKNESS + M3_WASHER_THICKNESS, Z_AXIS_FB_OBLONG_HOLE_LENGTH);
         }
-    translate([M3_DIAM/2, X_CH_HEIGHT - M3_WASHER_DIAM/2 - X_CH_HOLE_OFFSET_FROM_SIDE/2,  0]) {
-            oblong_hole(M3_DIAM, X_CH_THICKNESS, X_CH_HOLE_LENGTH);
-            oblong_hole(M3_WASHER_DIAM, M3_NUT_THICKNESS + M3_WASHER_THICKNESS, X_CH_HOLE_LENGTH);
+    translate([M3_DIAM/2, Z_AXIS_FB_HEIGHT - M3_WASHER_DIAM/2 - Z_AXIS_FB_HOLE_OFFSET_FROM_SIDE/2,  0]) {
+            oblong_hole(M3_DIAM, Z_AXIS_THICKNESS, Z_AXIS_FB_OBLONG_HOLE_LENGTH);
+            oblong_hole(M3_WASHER_DIAM, M3_NUT_THICKNESS + M3_WASHER_THICKNESS, Z_AXIS_FB_OBLONG_HOLE_LENGTH);
         }
 }
 
-module z_carriage_base()
+module z_carriage_fixed_base()
 {
     difference() {
-        roundedcube([X_CH_WIDTH, X_CH_HEIGHT, X_CH_THICKNESS], false, 2, "z");
+        roundedcube([Z_AXIS_FB_WIDTH, Z_AXIS_FB_HEIGHT, Z_AXIS_THICKNESS], false, 2, "z");
         /* MG carriage holes */
-        translate([X_CH_WIDTH/2 - MG_CARRIAGE_WIDTH/2, X_CH_BOTTOM_HEIGHT, 0]) {
+        translate([Z_AXIS_FB_WIDTH/2 - MG_CARRIAGE_WIDTH/2, Z_AXIS_FB_BOTTOM_HEIGHT, 0]) {
             /* MG carriage footprint hole */
-            //cube([MG_CARRIAGE_WIDTH, MG_CARRIAGE_HEIGHT, X_CH_CARRIAGE_DEPTH]);
+            //cube([MG_CARRIAGE_WIDTH, MG_CARRIAGE_HEIGHT, Z_AXIS_CARRIAGE_DEPTH]);
             x_carriage_holder_mg_footprint();
         }
         /* Holes for belt attachment */
-        translate([X_CH_WIDTH/2, X_CH_BOTTOM_HEIGHT + MG_CARRIAGE_HEIGHT/2 + GANTRY_TOP_WIDTH/2  + X_BELT_EXTRA_WIDTH_FROM_TOP + X_BELT_BLOCKER_TOP_THICKNESS/2, 0]) {
+        translate([Z_AXIS_FB_WIDTH/2, Z_AXIS_FB_BOTTOM_HEIGHT + MG_CARRIAGE_HEIGHT/2 + GANTRY_TOP_WIDTH/2  + X_BELT_EXTRA_WIDTH_FROM_TOP + X_BELT_BLOCKER_TOP_THICKNESS/2, 0]) {
             translate([-X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
             translate([X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
         }
         /* Oblong holes for real carriage */
-            translate([X_CH_HOLE_OFFSET_FROM_SIDE, 0, 0]) x_ch_holes();
-            translate([X_CH_WIDTH - X_CH_HOLE_OFFSET_FROM_SIDE - M3_WASHER_DIAM/2, 0, 0]) x_ch_holes();
+            translate([Z_AXIS_FB_HOLE_OFFSET_FROM_SIDE, 0, 0]) x_ch_holes();
+            translate([Z_AXIS_FB_WIDTH - Z_AXIS_FB_HOLE_OFFSET_FROM_SIDE - M3_WASHER_DIAM/2, 0, 0]) x_ch_holes();
      }
      /* Guide */
-     translate([X_CH_WIDTH/2 -X_CH_GUIDE_WIDTH/2, 0, X_CH_THICKNESS])  cube([X_CH_GUIDE_WIDTH, X_CH_HEIGHT, X_CH_GUIDE_THICKNESS]);
+     translate([Z_AXIS_FB_WIDTH/2 -Z_AXIS_GUIDE_WIDTH/2, 0, Z_AXIS_THICKNESS])  cube([Z_AXIS_GUIDE_WIDTH, Z_AXIS_FB_HEIGHT, Z_AXIS_GUIDE_THICKNESS]);
 }
 
 Y_PULLEY_IDLER_WIDTH = 20;
