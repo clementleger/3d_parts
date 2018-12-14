@@ -114,8 +114,8 @@ NEMA17_HOLE_DIAM = 3;
 NEMA14_THICKNESS = 28;
 NEMA14_WIDTH = 35.2;
 NEMA14_HOLE_SPACING = 26;
-NEMA14_CENTER_DIAM = 22;
-NEMA14_BELT_HOLE_DIAM = 14;
+NEMA14_CENTER_DIAM = 26;
+NEMA14_BELT_HOLE_DIAM = 16;
 
 GANTRY_NEMA17_HOLE_Z_OFFSET = NEMA17_WIDTH/2 - NEMA17_BELT_HOLE_DIAM/2;
 
@@ -246,7 +246,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //x_rail_stopper();
 //x_belt_attachment();
 //z_carriage_fixed_base();
-z_carriage_moving_base();
+//z_carriage_moving_base();
+z_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
 
@@ -839,18 +840,19 @@ module z_axis_motor_holder_holes(x_offset)
     }
 }
 
-ROD_HOLDER_Z_OFFSET = 2;
+ROD_HOLDER_Z_OFFSET = 1;
 
-module z_carriage_moving_base()
+module z_carriage_moving_base(motor_holder_only = false)
 {
     difference() {
         union () {
             translate([Z_AXIS_MB_WIDTH/2 - NEMA14_WIDTH/2, Z_AXIS_MB_HEIGHT, -NEMA14_WIDTH - Z_AXIS_SUPPORT_EXTRA_BOTTOM]) rotate([90, 0, 0]) z_motor_holder();
-            
-            z_axis_base_support();
-            translate([Z_AXIS_MB_WIDTH/2 - Z_AXIS_ROD_HOLDER_DIAM/2, 0, Z_AXIS_THICKNESS - Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS - ROD_HOLDER_Z_OFFSET]) {
-                translate([0, Z_AXIS_ROD_HOLDER_THICKNESS, 0]) mirror([0, 180, 0])  z_axis_rod_holder();
-                translate([0, Z_AXIS_MB_HEIGHT - Z_AXIS_NEMA_HOLDER_THICKNESS - Z_AXIS_ROD_HOLDER_THICKNESS, 0]) z_axis_rod_holder();
+            if (motor_holder_only == false) {
+                z_axis_base_support();
+                translate([Z_AXIS_MB_WIDTH/2 - Z_AXIS_ROD_HOLDER_DIAM/2, 0, Z_AXIS_THICKNESS - Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS - ROD_HOLDER_Z_OFFSET]) {
+                    translate([0, Z_AXIS_ROD_HOLDER_THICKNESS, 0]) mirror([0, 180, 0])  z_axis_rod_holder();
+                    translate([0, Z_AXIS_MB_HEIGHT - Z_AXIS_NEMA_HOLDER_THICKNESS - Z_AXIS_ROD_HOLDER_THICKNESS, 0]) z_axis_rod_holder();
+                }
             }
         }
          translate([Z_AXIS_MB_WIDTH/2 - Z_AXIS_ROD_HOLDER_DIAM/2, 0, Z_AXIS_THICKNESS - Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS - ROD_HOLDER_Z_OFFSET]) {
@@ -861,3 +863,10 @@ module z_carriage_moving_base()
             z_axis_motor_holder_holes(x_offset = Z_AXIS_MB_WIDTH / 2 + NEMA14_WIDTH/2 + Z_AXIS_NEMA_HOLDER_THICKNESS/2);
     }
 }
+
+
+module z_carriage_motor_holder()
+{
+    z_carriage_moving_base(true);
+}
+
