@@ -19,6 +19,12 @@ M3_NUT_SIDE_TO_SIDE_THICKNESS = 6;
 M3_WASHER_DIAM = 7;
 M3_WASHER_THICKNESS= 0.4;
 
+M2_DIAM = 2;
+M2_HEAD_DIAM = 3;
+M2_NUT_DIAM = 5;
+M2_NUT_THICKNESS = 1.5;
+
+
 /* Feet */
 FEET_WIDTH = 25;
 FEET_HEIGTH = 40;
@@ -32,6 +38,12 @@ RAIL_WIDTH = 9.5;
 RAIL_HEIGHT = 7;
 RAIL_LENGTH = 195;
 RAIL_HOLE_SPACING = 20.1;
+
+/* MGN7 stuff */
+MGN7_RAIL_HOLE_SPACING = 15;
+MGN7_RAIL_CARRIAGE_THICKNESS = 8;
+MGN7_HOLE_DIAMETER = M2_DIAM;
+MGN7_RAIL_HEIGHT = 5;
 
 /* + 2 for end stop holes */
 Y_RAIL_HOLE_COUNT = 10 + 2;
@@ -65,6 +77,7 @@ MICROSWITCH_HOLE_OFFSET = 5;
 MICROSWITCH_HOLE_DIAM = 1.5;
 MICROSWITCH_HOLE_SPACING = 6.5;
 MICROSWITCH_WIDTH = 13;
+MICROSWITCH_HEIGHT = 8;
 
 /* Endstop holder length */
 X_ESH_LENGTH = 25;
@@ -126,9 +139,6 @@ MG_CARRIAGE_NUT_DIAM = M3_DIAM;
 MG_CARRIAGE_HOLE_OFFSET = 2.75;
 MG_CARRIAGE_HOLE_X_OFFSET = 10;
 MG_CARRIAGE_HOLE_Y_OFFSET = 15;
-
-MGN7_RAIL_HOLE_SPACING = 15;
-MGN7_RAIL_CARRIAGE_THICKNESS = 8;
 
 FLAT_AL_STRIP_WIDTH = 25 + SMALL_TOLERANCY;
 FLAT_AL_STRIP_THICKNESS = 2 + SMALL_TOLERANCY;
@@ -246,8 +256,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //x_rail_stopper();
 //x_belt_attachment();
 //z_carriage_fixed_base();
-//z_carriage_moving_base();
-z_carriage_motor_holder();
+z_carriage_moving_base();
+//xz_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
 
@@ -744,8 +754,8 @@ module y_pulley_idler()
  
 Z_AXIS_NEMA_HOLDER_THICKNESS = 6;
 
-Z_AXIS_MB_BOTTOM_HEIGHT = 10;
-Z_AXIS_MB_TOP_HEIGHT = 75;
+Z_AXIS_MB_BOTTOM_HEIGHT = 15;
+Z_AXIS_MB_TOP_HEIGHT = 65;
 Z_AXIS_MB_HEIGHT = Z_AXIS_MB_BOTTOM_HEIGHT + Z_AXIS_MB_TOP_HEIGHT + MG_CARRIAGE_HEIGHT;
 Z_AXIS_MB_WIDTH = MG_CARRIAGE_WIDTH + 2 * Z_AXIS_SIDE_WIDTH;
 Z_AXIS_MOTOR_SIDE_HEIGHT = NEMA14_THICKNESS;
@@ -753,6 +763,16 @@ Z_AXIS_MOTOR_SIDE_HEIGHT = NEMA14_THICKNESS;
 /* Holes for bolts (top and bottom hole) */
 Z_AXIS_MOTOR_HOLDER_TOP_HOLE_OFFSET = 2;
 Z_AXIS_MOTOR_HOLDER_BOTTOM_HOLE_OFFSET = 12;
+
+
+/* Negative offset of rod holder to have less height */
+ROD_HOLDER_Z_OFFSET = 1;
+/* Count of holes in the rail */
+Z_RAIL_MGN7_HOLES_COUNT = 7;
+/* Spacing between the two Z rails */
+Z_RAIL_SPACING  = 32;
+/* Offset from x axis */
+Z_RAIL_X_OFFSET = Z_AXIS_MB_HEIGHT /2 - ((Z_RAIL_MGN7_HOLES_COUNT - 1) * MGN7_RAIL_HOLE_SPACING) / 2;
 
 module z_axis_base_support()
 {
@@ -770,7 +790,8 @@ module z_axis_base_support()
             translate([X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
         }
         
-        translate([Z_AXIS_MB_WIDTH/2 - NEMA14_BELT_HOLE_DIAM/2, Z_AXIS_MB_HEIGHT - Z_AXIS_NEMA_HOLDER_THICKNESS, 0]) cube([NEMA14_BELT_HOLE_DIAM, Z_AXIS_NEMA_HOLDER_THICKNESS, Z_AXIS_THICKNESS]);
+        /* cutout for the belt */
+        //translate([Z_AXIS_MB_WIDTH/2 - NEMA14_BELT_HOLE_DIAM/2, Z_AXIS_MB_HEIGHT - Z_AXIS_NEMA_HOLDER_THICKNESS, 0]) cube([NEMA14_BELT_HOLE_DIAM, Z_AXIS_NEMA_HOLDER_THICKNESS, Z_AXIS_THICKNESS]);
      }
 }
 
@@ -840,27 +861,43 @@ module z_axis_motor_holder_holes(x_offset)
     }
 }
 
-ROD_HOLDER_Z_OFFSET = 1;
+module z_rail_hole()
+{
+          for (hole = [0:Z_RAIL_MGN7_HOLES_COUNT-1]) {
+                translate([Z_AXIS_MB_WIDTH/2, Z_RAIL_X_OFFSET + MGN7_RAIL_HOLE_SPACING * hole, 0]) cylinder(d = MGN7_HOLE_DIAMETER, h = 100);
+                translate([Z_AXIS_MB_WIDTH/2, Z_RAIL_X_OFFSET + MGN7_RAIL_HOLE_SPACING * hole, 0]) cylinder(d = M2_NUT_DIAM, h = M2_NUT_THICKNESS, $fn = 6);
+            }
+}
+
+module z_rail_holes()
+{
+            translate([Z_RAIL_SPACING/2, 0, 0]) z_rail_hole();
+            translate([-Z_RAIL_SPACING/2, 0, 0]) z_rail_hole();
+}
 
 module z_carriage_moving_base(motor_holder_only = false)
 {
     difference() {
         union () {
+            if (motor_holder_only == true) {
             translate([Z_AXIS_MB_WIDTH/2 - NEMA14_WIDTH/2, Z_AXIS_MB_HEIGHT, -NEMA14_WIDTH - Z_AXIS_SUPPORT_EXTRA_BOTTOM]) rotate([90, 0, 0]) z_motor_holder();
+            }
             if (motor_holder_only == false) {
-                z_axis_base_support();
+                 z_axis_base_support();
                 translate([Z_AXIS_MB_WIDTH/2 - Z_AXIS_ROD_HOLDER_DIAM/2, 0, Z_AXIS_THICKNESS - Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS - ROD_HOLDER_Z_OFFSET]) {
                     translate([0, Z_AXIS_ROD_HOLDER_THICKNESS, 0]) mirror([0, 180, 0])  z_axis_rod_holder();
-                    translate([0, Z_AXIS_MB_HEIGHT - Z_AXIS_NEMA_HOLDER_THICKNESS - Z_AXIS_ROD_HOLDER_THICKNESS, 0]) z_axis_rod_holder();
+                    translate([0, Z_AXIS_MB_HEIGHT - Z_AXIS_ROD_HOLDER_THICKNESS, 0]) z_axis_rod_holder();
                 }
             }
         }
          translate([Z_AXIS_MB_WIDTH/2 - Z_AXIS_ROD_HOLDER_DIAM/2, 0, Z_AXIS_THICKNESS - Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS - ROD_HOLDER_Z_OFFSET]) {
                 translate([0, Z_AXIS_ROD_HOLDER_THICKNESS, 0]) mirror([0, 180, 0])  z_axis_bearing_holes();
-                translate([0, Z_AXIS_MB_HEIGHT - Z_AXIS_NEMA_HOLDER_THICKNESS - Z_AXIS_ROD_HOLDER_THICKNESS, 0]) z_axis_bearing_holes();
+                translate([0, Z_AXIS_MB_HEIGHT - Z_AXIS_ROD_HOLDER_THICKNESS, 0]) z_axis_bearing_holes();
             }
             z_axis_motor_holder_holes(x_offset = Z_AXIS_MB_WIDTH / 2 - NEMA14_WIDTH/2 - Z_AXIS_NEMA_HOLDER_THICKNESS/2);
             z_axis_motor_holder_holes(x_offset = Z_AXIS_MB_WIDTH / 2 + NEMA14_WIDTH/2 + Z_AXIS_NEMA_HOLDER_THICKNESS/2);
+
+        z_rail_holes();
     }
 }
 
