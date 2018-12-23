@@ -256,8 +256,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //x_rail_stopper();
 //x_belt_attachment();
 //z_carriage_fixed_base();
-z_carriage_moving_base();
-//xz_carriage_motor_holder();
+//z_carriage_moving_base();
+z_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
 
@@ -469,7 +469,7 @@ module x_gantry_middle_part() {
 module y_belt_blocker () {
     BELT_BLOCKER_WIDTH = 2 * Y_BELT_BLOCKER_THICKNESS + FLAT_AL_STRIP_WIDTH;
     BELT_BLOCKER_THICKNESS = FLAT_AL_STRIP_THICKNESS + 2 * Y_BELT_BLOCKER_THICKNESS;
-    MIDDLE_BLOCK_THICKNESS = Y_BELT_BLOCKER_THICKNESS * 2 +SECOND_BELT_OFFSET;
+    MIDDLE_BLOCK_THICKNESS = Y_BELT_BLOCKER_THICKNESS * 2 + SECOND_BELT_OFFSET + 2;
     MIDDLE_BLOCK_HEIGHT = Y_BELT_Z_OFFSET - Y_BELT_BLOCKER_THICKNESS + BELT_WIDTH;
 
     difference() {
@@ -516,7 +516,7 @@ module upper_nema17_part () {
 }
 
 
-module nema_support(part_width, part_height, thickness, nema_width, hole_spacing, center_diam, belt_hole_diam, extra_bottom_size = 0)
+module nema_support(part_width, part_height, thickness, nema_width, hole_spacing, center_diam, belt_hole_diam, extra_bottom_size = 0, nema_head_diameter = M3_HEAD_DIAM)
 {
     difference() {
         union() {
@@ -527,7 +527,7 @@ module nema_support(part_width, part_height, thickness, nema_width, hole_spacing
                 offset_h = nema_width/2 - hole_spacing/2;
                 translate([offset_h + i * hole_spacing, offset_h+ j * hole_spacing, 0])  {
                     oblong_hole(d = NEMA17_HOLE_DIAM, h = thickness, w = NEMA17_OBLONG_SIZE);
-                    translate([0, 0,- thickness + M3_HEAD_THICKNESS ]) oblong_hole(d = M3_HEAD_DIAM, h = thickness, w = NEMA17_OBLONG_SIZE);
+                    translate([0, 0,- thickness + M3_HEAD_THICKNESS ]) oblong_hole(d = nema_head_diameter, h = thickness, w = NEMA17_OBLONG_SIZE);
                 }
             }
         }
@@ -753,11 +753,11 @@ module y_pulley_idler()
 }
  
 Z_AXIS_NEMA_HOLDER_THICKNESS = 6;
-
+Z_AXIS_MB_SIDE_WIDTH = 10;
 Z_AXIS_MB_BOTTOM_HEIGHT = 15;
 Z_AXIS_MB_TOP_HEIGHT = 65;
 Z_AXIS_MB_HEIGHT = Z_AXIS_MB_BOTTOM_HEIGHT + Z_AXIS_MB_TOP_HEIGHT + MG_CARRIAGE_HEIGHT;
-Z_AXIS_MB_WIDTH = MG_CARRIAGE_WIDTH + 2 * Z_AXIS_SIDE_WIDTH;
+Z_AXIS_MB_WIDTH = MG_CARRIAGE_WIDTH + 2 * Z_AXIS_MB_SIDE_WIDTH;
 Z_AXIS_MOTOR_SIDE_HEIGHT = NEMA14_THICKNESS;
 
 /* Holes for bolts (top and bottom hole) */
@@ -798,9 +798,9 @@ module z_axis_base_support()
 Z_AXIS_SUPPORT_EXTRA_BOTTOM = 3;
 Z_AXIS_MOTOR_HOLDER_WIDTH = NEMA14_WIDTH + Z_AXIS_SUPPORT_EXTRA_BOTTOM;
 
-module nema14_support(part_width, part_height, thickness)
+module z_nema14_support(part_width, part_height, thickness)
 {
-    nema_support(part_width, part_height, thickness, NEMA14_WIDTH, NEMA14_HOLE_SPACING, NEMA14_CENTER_DIAM, NEMA14_BELT_HOLE_DIAM, Z_AXIS_SUPPORT_EXTRA_BOTTOM);
+    nema_support(part_width, part_height, thickness, NEMA14_WIDTH, NEMA14_HOLE_SPACING, NEMA14_CENTER_DIAM, 0, Z_AXIS_SUPPORT_EXTRA_BOTTOM, M3_DIAM);
 }
 
 module prism_with_base(w, l, h, bw)
@@ -823,7 +823,7 @@ Z_AXIS_BOLT_HOLES_LENGTH = 20;
 
 module z_motor_holder()
 {
-    translate ([0, Z_AXIS_SUPPORT_EXTRA_BOTTOM, 0]) nema14_support(NEMA14_WIDTH, NEMA14_WIDTH, Z_AXIS_NEMA_HOLDER_THICKNESS);
+    translate ([0, Z_AXIS_SUPPORT_EXTRA_BOTTOM, 0]) z_nema14_support(NEMA14_WIDTH, NEMA14_WIDTH, Z_AXIS_NEMA_HOLDER_THICKNESS);
     translate([-Z_AXIS_NEMA_HOLDER_THICKNESS, 0, 0]) prism_with_base(Z_AXIS_NEMA_HOLDER_THICKNESS, Z_AXIS_MOTOR_HOLDER_WIDTH, Z_AXIS_MOTOR_SIDE_HEIGHT, Z_AXIS_NEMA_HOLDER_THICKNESS);
     translate([NEMA14_WIDTH, 0, 0]) prism_with_base(Z_AXIS_NEMA_HOLDER_THICKNESS, Z_AXIS_MOTOR_HOLDER_WIDTH, Z_AXIS_MOTOR_SIDE_HEIGHT, Z_AXIS_NEMA_HOLDER_THICKNESS);
 }
