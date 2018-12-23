@@ -92,5 +92,13 @@ module main_box_case () {
     }
 }
 
+
+module back_cover (){
+    cube([BOX_FULL_WIDTH - 2 * BOX_THICKNESS, BOX_FULL_HEIGHT - BOX_THICKNESS - BOX_BOTTOM_THICKNESS, BOX_THICKNESS]);
+}
+
+translate([BOX_THICKNESS, BOX_BOTTOM_THICKNESS, 50]) back_cover();
+
 main_box_case();
+
 //box_feet(5);
