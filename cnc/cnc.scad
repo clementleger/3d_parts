@@ -21,9 +21,14 @@ M3_WASHER_THICKNESS= 0.4;
 
 M2_DIAM = 2;
 M2_HEAD_DIAM = 3;
+M2_HEAD_THICKNESS = 1.5;
 M2_NUT_DIAM = 5;
 M2_NUT_THICKNESS = 1.5;
 
+
+M6_NUT_THICKNESS = 5;
+/* Width across flats */
+M6_NUT_SIDE_TO_SIDE_WIDTH = 10;
 
 /* Feet */
 FEET_WIDTH = 25;
@@ -44,6 +49,12 @@ MGN7_RAIL_HOLE_SPACING = 15;
 MGN7_RAIL_CARRIAGE_THICKNESS = 8;
 MGN7_HOLE_DIAMETER = M2_DIAM;
 MGN7_RAIL_HEIGHT = 5;
+
+MGN7H_HOLE_Y_OFFSET = 13;
+MGN7H_HOLE_X_OFFSET = 12;
+MGN7H_HOLE_DIAMETER = M2_DIAM;
+MGN7H_WIDTH=17;
+MGN7H_HEIGHT=30;
 
 /* + 2 for end stop holes */
 Y_RAIL_HOLE_COUNT = 10 + 2;
@@ -104,7 +115,7 @@ GANTRY_CARRIAGE_Y_OFFSET = 22;
 GANTRY_RAIL_MIDDLE_HOLE_COUNT = 8;
 GANTRY_MIDDLE_PART_EXTRA = 3;
 /* How much is the gantry into the MG carriage */
-GANTRY_MG_CARRIAGE_DEPTH = 1;
+GANTRY_MGN9C_DEPTH = 1;
 
 /* NEMA stuff */
 NEMA17_THICKNESS = 33;
@@ -133,12 +144,12 @@ NEMA14_BELT_HOLE_DIAM = 16;
 GANTRY_NEMA17_HOLE_Z_OFFSET = NEMA17_WIDTH/2 - NEMA17_BELT_HOLE_DIAM/2;
 
 /* Small bearing carriage dimension */
-MG_CARRIAGE_WIDTH = 30;
-MG_CARRIAGE_HEIGHT = 20.5;
-MG_CARRIAGE_NUT_DIAM = M3_DIAM;
-MG_CARRIAGE_HOLE_OFFSET = 2.75;
-MG_CARRIAGE_HOLE_X_OFFSET = 10;
-MG_CARRIAGE_HOLE_Y_OFFSET = 15;
+MGN9C_WIDTH = 30;
+MGN9C_HEIGHT = 20.5;
+MGN9C_NUT_DIAM = M3_DIAM;
+MGN9C_HOLE_OFFSET = 2.75;
+MGN9C_HOLE_X_OFFSET = 10;
+MGN9C_HOLE_Y_OFFSET = 15;
 
 FLAT_AL_STRIP_WIDTH = 25 + SMALL_TOLERANCY;
 FLAT_AL_STRIP_THICKNESS = 2 + SMALL_TOLERANCY;
@@ -151,7 +162,7 @@ GANTRY_TOP_THICKNESS = 8;
 GANTRY_TOP_CHAMFER_SIZE = 8;
 
 /* Slope part of gantry */
-SLOPE_PART_Y_OFFSET =  GANTRY_CARRIAGE_Y_OFFSET  - MG_CARRIAGE_HOLE_OFFSET + MG_CARRIAGE_HEIGHT;
+SLOPE_PART_Y_OFFSET =  GANTRY_CARRIAGE_Y_OFFSET  - MGN9C_HOLE_OFFSET + MGN9C_HEIGHT;
 SLOPE_PART_HEIGHT = GANTRY_HEIGHT - GANTRY_TOP_WIDTH -  SLOPE_PART_Y_OFFSET;
 SLOPE_OFFSET = 20;
 
@@ -208,8 +219,8 @@ Z_AXIS_FB_TOP_HEIGHT = 30;
 /* Additionnal height on the bottom */
 Z_AXIS_FB_BOTTOM_HEIGHT = 10;
 
-Z_AXIS_FB_HEIGHT = Z_AXIS_FB_BOTTOM_HEIGHT + Z_AXIS_FB_TOP_HEIGHT + MG_CARRIAGE_HEIGHT;
-Z_AXIS_FB_WIDTH = MG_CARRIAGE_WIDTH + 2 * Z_AXIS_SIDE_WIDTH;
+Z_AXIS_FB_HEIGHT = Z_AXIS_FB_BOTTOM_HEIGHT + Z_AXIS_FB_TOP_HEIGHT + MGN9C_HEIGHT;
+Z_AXIS_FB_WIDTH = MGN9C_WIDTH + 2 * Z_AXIS_SIDE_WIDTH;
 
 /* Guide for real carriage (width ) */
 Z_AXIS_GUIDE_WIDTH = 2;
@@ -257,7 +268,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //x_belt_attachment();
 //z_carriage_fixed_base();
 //z_carriage_moving_base();
-z_carriage_motor_holder();
+z_carriage_tool_support();
+//z_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
 
@@ -372,9 +384,9 @@ module gantry_bottom_holes() {
 
 module gantry_carriage_holes(diam, thickness) {
     cylinder(d = diam, h = thickness);
-    translate([MG_CARRIAGE_HOLE_X_OFFSET, 0, 0]) cylinder(d = diam, h = thickness);
-    translate([MG_CARRIAGE_HOLE_X_OFFSET, MG_CARRIAGE_HOLE_Y_OFFSET, 0]) cylinder(d = diam, h = thickness);
-    translate([0, MG_CARRIAGE_HOLE_Y_OFFSET, 0]) cylinder(d = diam, h = thickness);
+    translate([MGN9C_HOLE_X_OFFSET, 0, 0]) cylinder(d = diam, h = thickness);
+    translate([MGN9C_HOLE_X_OFFSET, MGN9C_HOLE_Y_OFFSET, 0]) cylinder(d = diam, h = thickness);
+    translate([0, MGN9C_HOLE_Y_OFFSET, 0]) cylinder(d = diam, h = thickness);
 }
 
 module gantry_bottom_part()
@@ -432,10 +444,10 @@ module y_gantry_side()
 
                     translate([0, SLOPE_PART_Y_OFFSET, 0]) slope_part(GANTRY_WIDTH, SLOPE_PART_HEIGHT, GANTRY_THICKNESS, SLOPE_OFFSET);
                 }
-                translate([GANTRY_WIDTH/2 - MG_CARRIAGE_HOLE_X_OFFSET/2, GANTRY_CARRIAGE_Y_OFFSET, 0]) gantry_carriage_holes(GANTRY_BOLT_HOLE_DIAM, GANTRY_THICKNESS);
+                translate([GANTRY_WIDTH/2 - MGN9C_HOLE_X_OFFSET/2, GANTRY_CARRIAGE_Y_OFFSET, 0]) gantry_carriage_holes(GANTRY_BOLT_HOLE_DIAM, GANTRY_THICKNESS);
                 /* Holes for bolt head */
-                //translate([GANTRY_WIDTH/2 - MG_CARRIAGE_HOLE_X_OFFSET/2, GANTRY_CARRIAGE_Y_OFFSET, - GANTRY_THICKNESS + GANTRY_NUT_HEAD_THICKNESS]) gantry_carriage_holes(GANTRY_BOLT_HEAD_DIAM);
-                translate([0, GANTRY_CARRIAGE_Y_OFFSET - MG_CARRIAGE_HOLE_OFFSET, GANTRY_THICKNESS - GANTRY_MG_CARRIAGE_DEPTH])  cube([MG_CARRIAGE_WIDTH, MG_CARRIAGE_HEIGHT, GANTRY_MG_CARRIAGE_DEPTH]);
+                //translate([GANTRY_WIDTH/2 - MGN9C_HOLE_X_OFFSET/2, GANTRY_CARRIAGE_Y_OFFSET, - GANTRY_THICKNESS + GANTRY_NUT_HEAD_THICKNESS]) gantry_carriage_holes(GANTRY_BOLT_HEAD_DIAM);
+                translate([0, GANTRY_CARRIAGE_Y_OFFSET - MGN9C_HOLE_OFFSET, GANTRY_THICKNESS - GANTRY_MGN9C_DEPTH])  cube([MGN9C_WIDTH, MGN9C_HEIGHT, GANTRY_MGN9C_DEPTH]);
 
             }
             /* Top and bottom parts */
@@ -662,7 +674,7 @@ module x_belt_attachment() {
 
 module x_carriage_holder_mg_footprint()
 {
-    translate([MG_CARRIAGE_WIDTH/2 - MG_CARRIAGE_HOLE_X_OFFSET/2, MG_CARRIAGE_HEIGHT/2 - MG_CARRIAGE_HOLE_Y_OFFSET/2, 0]) {
+    translate([MGN9C_WIDTH/2 - MGN9C_HOLE_X_OFFSET/2, MGN9C_HEIGHT/2 - MGN9C_HOLE_Y_OFFSET/2, 0]) {
           gantry_carriage_holes(M3_DIAM, Z_AXIS_THICKNESS);
           translate([0, 0, Z_AXIS_THICKNESS - Z_AXIS_M3_HEAD_THICKNESS]) gantry_carriage_holes(M3_HEAD_DIAM, Z_AXIS_M3_HEAD_THICKNESS);
     }
@@ -691,13 +703,13 @@ module z_carriage_fixed_base()
     difference() {
         roundedcube([Z_AXIS_FB_WIDTH, Z_AXIS_FB_HEIGHT, Z_AXIS_THICKNESS], false, 2, "z");
         /* MG carriage holes */
-        translate([Z_AXIS_FB_WIDTH/2 - MG_CARRIAGE_WIDTH/2, Z_AXIS_FB_BOTTOM_HEIGHT, 0]) {
+        translate([Z_AXIS_FB_WIDTH/2 - MGN9C_WIDTH/2, Z_AXIS_FB_BOTTOM_HEIGHT, 0]) {
             /* MG carriage footprint hole */
-            //cube([MG_CARRIAGE_WIDTH, MG_CARRIAGE_HEIGHT, Z_AXIS_CARRIAGE_DEPTH]);
+            //cube([MGN9C_WIDTH, MGN9C_HEIGHT, Z_AXIS_CARRIAGE_DEPTH]);
             x_carriage_holder_mg_footprint();
         }
         /* Holes for belt attachment */
-        translate([Z_AXIS_FB_WIDTH/2, Z_AXIS_FB_BOTTOM_HEIGHT + MG_CARRIAGE_HEIGHT/2 + GANTRY_TOP_WIDTH/2  + X_BELT_EXTRA_WIDTH_FROM_TOP + X_BELT_BLOCKER_TOP_THICKNESS/2, 0]) {
+        translate([Z_AXIS_FB_WIDTH/2, Z_AXIS_FB_BOTTOM_HEIGHT + MGN9C_HEIGHT/2 + GANTRY_TOP_WIDTH/2  + X_BELT_EXTRA_WIDTH_FROM_TOP + X_BELT_BLOCKER_TOP_THICKNESS/2, 0]) {
             translate([-X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
             translate([X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
         }
@@ -756,8 +768,8 @@ Z_AXIS_NEMA_HOLDER_THICKNESS = 6;
 Z_AXIS_MB_SIDE_WIDTH = 10;
 Z_AXIS_MB_BOTTOM_HEIGHT = 15;
 Z_AXIS_MB_TOP_HEIGHT = 65;
-Z_AXIS_MB_HEIGHT = Z_AXIS_MB_BOTTOM_HEIGHT + Z_AXIS_MB_TOP_HEIGHT + MG_CARRIAGE_HEIGHT;
-Z_AXIS_MB_WIDTH = MG_CARRIAGE_WIDTH + 2 * Z_AXIS_MB_SIDE_WIDTH;
+Z_AXIS_MB_HEIGHT = Z_AXIS_MB_BOTTOM_HEIGHT + Z_AXIS_MB_TOP_HEIGHT + MGN9C_HEIGHT;
+Z_AXIS_MB_WIDTH = MGN9C_WIDTH + 2 * Z_AXIS_MB_SIDE_WIDTH;
 Z_AXIS_MOTOR_SIDE_HEIGHT = NEMA14_THICKNESS;
 
 /* Holes for bolts (top and bottom hole) */
@@ -779,13 +791,13 @@ module z_axis_base_support()
     difference() {
         roundedcube([Z_AXIS_MB_WIDTH, Z_AXIS_MB_HEIGHT, Z_AXIS_THICKNESS], false, 2, "z");
         /* MG carriage holes */
-        translate([Z_AXIS_MB_WIDTH/2 - MG_CARRIAGE_WIDTH/2, Z_AXIS_MB_BOTTOM_HEIGHT, 0]) {
+        translate([Z_AXIS_MB_WIDTH/2 - MGN9C_WIDTH/2, Z_AXIS_MB_BOTTOM_HEIGHT, 0]) {
             /* MG carriage footprint hole */
-            //cube([MG_CARRIAGE_WIDTH, MG_CARRIAGE_HEIGHT, Z_AXIS_CARRIAGE_DEPTH]);
+            //cube([MGN9C_WIDTH, MGN9C_HEIGHT, Z_AXIS_CARRIAGE_DEPTH]);
             x_carriage_holder_mg_footprint();
         }
         /* Holes for belt attachment */
-        translate([Z_AXIS_MB_WIDTH/2, Z_AXIS_MB_BOTTOM_HEIGHT + MG_CARRIAGE_HEIGHT/2 + GANTRY_TOP_WIDTH/2  + X_BELT_EXTRA_WIDTH_FROM_TOP + X_BELT_BLOCKER_TOP_THICKNESS/2, 0]) {
+        translate([Z_AXIS_MB_WIDTH/2, Z_AXIS_MB_BOTTOM_HEIGHT + MGN9C_HEIGHT/2 + GANTRY_TOP_WIDTH/2  + X_BELT_EXTRA_WIDTH_FROM_TOP + X_BELT_BLOCKER_TOP_THICKNESS/2, 0]) {
             translate([-X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
             translate([X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
         }
@@ -901,9 +913,62 @@ module z_carriage_moving_base(motor_holder_only = false)
     }
 }
 
-
 module z_carriage_motor_holder()
 {
     z_carriage_moving_base(true);
 }
 
+/* Z tools support width */
+ZTS_WIDTH = Z_AXIS_MB_WIDTH;
+/* Z tools support height*/
+ZTS_HEIGHT = 70;
+/* Z tools support thickness */
+ZTS_THICKNESS = 4;
+/* Y offset from bottom of support */
+ZTS_HOLE_Y_OFFSET = 25;
+
+ZTS_MGN7H_OFFSET = 3;
+
+module m2_screw(height = ZTS_THICKNESS + ZTS_MGN7H_OFFSET) {
+    cylinder(d = M2_HEAD_DIAM, h = M2_HEAD_THICKNESS);
+    cylinder(d = M2_DIAM, h = height);
+}
+
+module mgn7_holes(height = ZTS_THICKNESS) {
+    translate([MGN7H_HOLE_X_OFFSET/2, - MGN7H_HOLE_Y_OFFSET/2, 0]) m2_screw();
+    translate([MGN7H_HOLE_X_OFFSET/2, MGN7H_HOLE_Y_OFFSET/2, 0]) m2_screw();
+    translate([-MGN7H_HOLE_X_OFFSET/2, - MGN7H_HOLE_Y_OFFSET/2, 0]) m2_screw();
+    translate([-MGN7H_HOLE_X_OFFSET/2, MGN7H_HOLE_Y_OFFSET/2, 0]) m2_screw();
+}
+
+ZTS_Z_NUT_HOLDER_THICKNESS = 2;
+/* Nut holder height (should be based on threaded rod)*/
+ZTS_Z_NUT_HOLDER_HEIGHT = 10;
+
+ZTS_Z_NUT_HOLDER_WIDTH = Z_RAIL_SPACING - MGN7H_WIDTH;
+ZTS_Z_NUT_HOLDER_HEIGHT = M6_NUT_THICKNESS + 2 * ZTS_Z_NUT_HOLDER_THICKNESS;
+
+//
+module z_nut_holder()
+{
+    difference() {
+        roundedcube([ZTS_Z_NUT_HOLDER_WIDTH, ZTS_Z_NUT_HOLDER_HEIGHT,  ZTS_Z_NUT_HOLDER_HEIGHT], true, 0.7, "zmax");
+         cube([M6_NUT_SIDE_TO_SIDE_WIDTH, M6_NUT_THICKNESS, ZTS_Z_NUT_HOLDER_HEIGHT], center = true);
+         cube([6, ZTS_Z_NUT_HOLDER_HEIGHT, ZTS_Z_NUT_HOLDER_HEIGHT], center = true);
+    }
+}
+
+module z_carriage_tool_support()
+{
+    difference() {
+        union() {
+           roundedcube([ZTS_WIDTH, ZTS_HEIGHT, ZTS_THICKNESS], false, 2, "z");
+            translate([ZTS_WIDTH/2 - Z_RAIL_SPACING/2, ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_MGN7H_OFFSET/2]) cube([MGN7H_WIDTH, MGN7H_HEIGHT, ZTS_MGN7H_OFFSET], center = true);
+            translate([ZTS_WIDTH/2 + Z_RAIL_SPACING/2, ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_MGN7H_OFFSET/2]) cube([MGN7H_WIDTH, MGN7H_HEIGHT, ZTS_MGN7H_OFFSET], center = true);
+    }
+        translate([ZTS_WIDTH/2 + Z_RAIL_SPACING/2, ZTS_HOLE_Y_OFFSET, 0]) mgn7_holes();
+        translate([ZTS_WIDTH/2 - Z_RAIL_SPACING/2, ZTS_HOLE_Y_OFFSET, 0]) mgn7_holes();
+    }
+translate([ZTS_WIDTH/2 , ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_Z_NUT_HOLDER_HEIGHT/2]) 
+z_nut_holder();
+}
