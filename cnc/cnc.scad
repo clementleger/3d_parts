@@ -274,6 +274,10 @@ z_carriage_tool_support();
 //y_pulley_idler();
 
 
+module sliding_rails(width1, width2, height, thickness) {
+    linear_extrude(height = thickness)  polygon(points = [[-width1/2, 0],[width1/2, 0],[width2/2, height],[-width2/2, height]]);
+}
+
 module ziptie_mount() {
     difference() {
         union () {
@@ -948,6 +952,12 @@ ZTS_Z_NUT_HOLDER_HEIGHT = 10;
 ZTS_Z_NUT_HOLDER_WIDTH = Z_RAIL_SPACING - MGN7H_WIDTH;
 ZTS_Z_NUT_HOLDER_HEIGHT = M6_NUT_THICKNESS + 2 * ZTS_Z_NUT_HOLDER_THICKNESS;
 
+/* Clipping rail offset from both side */
+ZTS_RAIL_OFFSET_FROM_SIDE = 12;
+
+ZTS_SLIDE_RAIL_HEIGHT = 2;
+ZTS_SLIDE_RAIL_WIDTH_BOTTOM = 4;
+ZTS_SLIDE_RAIL_WIDTH_TOP = 5;
 //
 module z_nut_holder()
 {
@@ -965,10 +975,15 @@ module z_carriage_tool_support()
            roundedcube([ZTS_WIDTH, ZTS_HEIGHT, ZTS_THICKNESS], false, 2, "z");
             translate([ZTS_WIDTH/2 - Z_RAIL_SPACING/2, ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_MGN7H_OFFSET/2]) cube([MGN7H_WIDTH, MGN7H_HEIGHT, ZTS_MGN7H_OFFSET], center = true);
             translate([ZTS_WIDTH/2 + Z_RAIL_SPACING/2, ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_MGN7H_OFFSET/2]) cube([MGN7H_WIDTH, MGN7H_HEIGHT, ZTS_MGN7H_OFFSET], center = true);
-    }
+        }
+        /* Holes fro mgn7h carriage */
         translate([ZTS_WIDTH/2 + Z_RAIL_SPACING/2, ZTS_HOLE_Y_OFFSET, 0]) mgn7_holes();
         translate([ZTS_WIDTH/2 - Z_RAIL_SPACING/2, ZTS_HOLE_Y_OFFSET, 0]) mgn7_holes();
+        /* Sliding rails */
+        /* Bottom rail */
+        translate([0, ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 0, 90]) #sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
+        translate([0, ZTS_HEIGHT - ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 0, 90]) #sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
     }
-translate([ZTS_WIDTH/2 , ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_Z_NUT_HOLDER_HEIGHT/2]) 
-z_nut_holder();
+    translate([ZTS_WIDTH/2 , ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_Z_NUT_HOLDER_HEIGHT/2]) 
+    z_nut_holder();
 }
