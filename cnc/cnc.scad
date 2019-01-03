@@ -13,7 +13,7 @@ BELT_THICKNESS = 1.5;
 M3_HEAD_DIAM = 6;
 M3_HEAD_THICKNESS = 2;
 M3_DIAM = 3;
-M3_NUT_DIAM = 7;
+M3_NUT_DIAM = 6.6;
 M3_NUT_THICKNESS = 2.5;
 M3_NUT_SIDE_TO_SIDE_THICKNESS = 6;
 M3_WASHER_DIAM = 7;
@@ -925,13 +925,13 @@ module z_carriage_motor_holder()
 /* Z tools support width */
 ZTS_WIDTH = Z_AXIS_MB_WIDTH;
 /* Z tools support height*/
-ZTS_HEIGHT = 70;
+ZTS_HEIGHT = 80;
 /* Z tools support thickness */
 ZTS_THICKNESS = 4;
 /* Y offset from bottom of support */
 ZTS_HOLE_Y_OFFSET = 25;
 
-ZTS_MGN7H_OFFSET = 3;
+ZTS_MGN7H_OFFSET = 5;
 
 module m2_screw(height = ZTS_THICKNESS + ZTS_MGN7H_OFFSET) {
     cylinder(d = M2_HEAD_DIAM, h = M2_HEAD_THICKNESS);
@@ -946,13 +946,15 @@ module mgn7_holes(height = ZTS_THICKNESS) {
 }
 
 ZTS_Z_NUT_HOLDER_THICKNESS = 2;
-/* Nut holder height (should be based on threaded rod)*/
-ZTS_Z_NUT_HOLDER_HEIGHT = 10;
 
+/* Nut holder depth (should be based on threaded rod)*/
+ZTS_Z_NUT_HOLDER_DEPTH = 11;
+
+/* Width and height of the nut holder for threaded rod */
 ZTS_Z_NUT_HOLDER_WIDTH = Z_RAIL_SPACING - MGN7H_WIDTH;
 ZTS_Z_NUT_HOLDER_HEIGHT = M6_NUT_THICKNESS + 2 * ZTS_Z_NUT_HOLDER_THICKNESS;
 
-/* Clipping rail offset from both side */
+/* Sliding rail offset from both side */
 ZTS_RAIL_OFFSET_FROM_SIDE = 12;
 
 ZTS_SLIDE_RAIL_HEIGHT = 2;
@@ -962,10 +964,40 @@ ZTS_SLIDE_RAIL_WIDTH_TOP = 5;
 module z_nut_holder()
 {
     difference() {
-        roundedcube([ZTS_Z_NUT_HOLDER_WIDTH, ZTS_Z_NUT_HOLDER_HEIGHT,  ZTS_Z_NUT_HOLDER_HEIGHT], true, 0.7, "zmax");
-         cube([M6_NUT_SIDE_TO_SIDE_WIDTH, M6_NUT_THICKNESS, ZTS_Z_NUT_HOLDER_HEIGHT], center = true);
-         cube([6, ZTS_Z_NUT_HOLDER_HEIGHT, ZTS_Z_NUT_HOLDER_HEIGHT], center = true);
+        roundedcube([ZTS_Z_NUT_HOLDER_WIDTH, ZTS_Z_NUT_HOLDER_HEIGHT,  ZTS_Z_NUT_HOLDER_DEPTH], true, 0.7, "zmax");
+         cube([M6_NUT_SIDE_TO_SIDE_WIDTH, M6_NUT_THICKNESS, ZTS_Z_NUT_HOLDER_DEPTH], center = true);
+         cube([6, ZTS_Z_NUT_HOLDER_HEIGHT, ZTS_Z_NUT_HOLDER_DEPTH], center = true);
     }
+}
+
+/* Holes for tool attachment */
+ZTS_HOLES_ATTACHMENT_COUNT = 3;
+ZTS_HOLES_OFFSET_FROM_SIDE = 8;
+ZTS_HOLES_SPACING = (ZTS_WIDTH - ZTS_HOLES_OFFSET_FROM_SIDE * 2) / (ZTS_HOLES_ATTACHMENT_COUNT - 1);
+ZTS_HOLES_BOTTOM_OFFSET = 5;
+ZTS_HOLES_MIDDLE_OFFSET = ZTS_HEIGHT - 35;
+ZTS_HOLES_TOP_OFFSET = ZTS_HEIGHT - 5;
+
+module zts_m3_hole_with_nut()
+{
+    cylinder(d = M3_DIAM, h = ZTS_THICKNESS);
+    translate([0, 0, ZTS_THICKNESS - M3_NUT_THICKNESS]) cylinder(d = M3_NUT_DIAM, h = M3_NUT_THICKNESS, $fn = 6);
+}
+
+module zts_attachment_holes()
+{
+            /* Bottom holes for real tool support attachment */
+        for (hole = [0:ZTS_HOLES_ATTACHMENT_COUNT-1]) {
+            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_BOTTOM_OFFSET, 0]) zts_m3_hole_with_nut();
+        }
+        /* Middle holes for real tool support attachment */
+        for (hole = [0:ZTS_HOLES_ATTACHMENT_COUNT-1]) {
+            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_MIDDLE_OFFSET, 0]) zts_m3_hole_with_nut();
+        }
+        /* Top holes for real tool support attachment */
+        for (hole = [0:ZTS_HOLES_ATTACHMENT_COUNT-1]) {
+            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_TOP_OFFSET, 0]) zts_m3_hole_with_nut();
+        }
 }
 
 module z_carriage_tool_support()
@@ -983,6 +1015,7 @@ module z_carriage_tool_support()
         /* Bottom rail */
         translate([0, ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 0, 90]) #sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
         translate([0, ZTS_HEIGHT - ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 0, 90]) #sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
+        zts_attachment_holes();
     }
     translate([ZTS_WIDTH/2 , ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_Z_NUT_HOLDER_HEIGHT/2]) 
     z_nut_holder();
