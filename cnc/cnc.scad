@@ -268,7 +268,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //x_belt_attachment();
 //z_carriage_fixed_base();
 //z_carriage_moving_base();
-z_carriage_tool_support();
+//z_carriage_tool_support();
+laser_tool_support();
 //z_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
@@ -978,25 +979,27 @@ ZTS_HOLES_BOTTOM_OFFSET = 5;
 ZTS_HOLES_MIDDLE_OFFSET = ZTS_HEIGHT - 35;
 ZTS_HOLES_TOP_OFFSET = ZTS_HEIGHT - 5;
 
-module zts_m3_hole_with_nut()
+module zts_m3_hole_with_nut(nut = true)
 {
     cylinder(d = M3_DIAM, h = ZTS_THICKNESS);
-    translate([0, 0, ZTS_THICKNESS - M3_NUT_THICKNESS]) cylinder(d = M3_NUT_DIAM, h = M3_NUT_THICKNESS, $fn = 6);
+    if (nut == true) {
+        translate([0, 0, ZTS_THICKNESS - M3_NUT_THICKNESS]) cylinder(d = M3_NUT_DIAM, h = M3_NUT_THICKNESS, $fn = 6);
+    }
 }
 
-module zts_attachment_holes()
+module zts_attachment_holes(nut = true)
 {
             /* Bottom holes for real tool support attachment */
         for (hole = [0:ZTS_HOLES_ATTACHMENT_COUNT-1]) {
-            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_BOTTOM_OFFSET, 0]) zts_m3_hole_with_nut();
+            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_BOTTOM_OFFSET, 0]) zts_m3_hole_with_nut(nut);
         }
         /* Middle holes for real tool support attachment */
         for (hole = [0:ZTS_HOLES_ATTACHMENT_COUNT-1]) {
-            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_MIDDLE_OFFSET, 0]) zts_m3_hole_with_nut();
+            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_MIDDLE_OFFSET, 0]) zts_m3_hole_with_nut(nut);
         }
         /* Top holes for real tool support attachment */
         for (hole = [0:ZTS_HOLES_ATTACHMENT_COUNT-1]) {
-            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_TOP_OFFSET, 0]) zts_m3_hole_with_nut();
+            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_TOP_OFFSET, 0]) zts_m3_hole_with_nut(nut);
         }
 }
 
@@ -1019,4 +1022,16 @@ module z_carriage_tool_support()
     }
     translate([ZTS_WIDTH/2 , ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_Z_NUT_HOLDER_HEIGHT/2]) 
     z_nut_holder();
+}
+
+
+module laser_tool_support()
+{
+    difference() {
+       roundedcube([ZTS_WIDTH, ZTS_HEIGHT, ZTS_THICKNESS], false, 2, "z");
+        zts_attachment_holes(nut=false);
+    }
+    
+    translate([0, ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 180, 90]) sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
+    translate([0, ZTS_HEIGHT - ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 180, 90]) sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
 }
