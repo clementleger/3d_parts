@@ -685,7 +685,7 @@ module x_carriage_holder_mg_footprint()
     }
 }
 
-module x_carriage_holes_belt_attachment(h = Z_AXIS_THICKNESS)
+module m3_with_head(h = Z_AXIS_THICKNESS)
 {
     cylinder(d = M3_DIAM, h = h);
     translate([0, 0, h - Z_AXIS_M3_HEAD_THICKNESS]) cylinder(d = M3_HEAD_DIAM, h = Z_AXIS_M3_HEAD_THICKNESS);
@@ -715,8 +715,8 @@ module z_carriage_fixed_base()
         }
         /* Holes for belt attachment */
         translate([Z_AXIS_FB_WIDTH/2, Z_AXIS_FB_BOTTOM_HEIGHT + MGN9C_HEIGHT/2 + GANTRY_TOP_WIDTH/2  + X_BELT_EXTRA_WIDTH_FROM_TOP + X_BELT_BLOCKER_TOP_THICKNESS/2, 0]) {
-            translate([-X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
-            translate([X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
+            translate([-X_BELT_HOLE_SPACING/2, 0, 0]) m3_with_head();
+            translate([X_BELT_HOLE_SPACING/2, 0, 0]) m3_with_head();
         }
         /* Oblong holes for real carriage */
             translate([Z_AXIS_FB_HOLE_OFFSET_FROM_SIDE, 0, 0]) x_ch_holes();
@@ -803,8 +803,8 @@ module z_axis_base_support()
         }
         /* Holes for belt attachment */
         translate([Z_AXIS_MB_WIDTH/2, Z_AXIS_MB_BOTTOM_HEIGHT + MGN9C_HEIGHT/2 + GANTRY_TOP_WIDTH/2  + X_BELT_EXTRA_WIDTH_FROM_TOP + X_BELT_BLOCKER_TOP_THICKNESS/2, 0]) {
-            translate([-X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
-            translate([X_BELT_HOLE_SPACING/2, 0, 0]) x_carriage_holes_belt_attachment();
+            translate([-X_BELT_HOLE_SPACING/2, 0, 0]) m3_with_head();
+            translate([X_BELT_HOLE_SPACING/2, 0, 0]) m3_with_head();
         }
         
         /* cutout for the belt */
@@ -866,13 +866,13 @@ module z_axis_motor_holder_holes(x_offset)
 {
     /* Top hole */
     translate([x_offset, Z_AXIS_MB_HEIGHT - Z_AXIS_NEMA_HOLDER_THICKNESS - Z_AXIS_MOTOR_HOLDER_TOP_HOLE_OFFSET, Z_AXIS_THICKNESS - Z_AXIS_BOLT_HOLES_LENGTH]) {
-        x_carriage_holes_belt_attachment(h = Z_AXIS_BOLT_HOLES_LENGTH);
+        m3_with_head(h = Z_AXIS_BOLT_HOLES_LENGTH);
         translate([0, 0, 8]) cube([X_BELT_BLOCKER_TOP_THICKNESS, M3_NUT_SIDE_TO_SIDE_THICKNESS, M3_NUT_THICKNESS], center = true);
     }
 
     /* Bottom hole */
     translate([x_offset, Z_AXIS_MB_HEIGHT - Z_AXIS_NEMA_HOLDER_THICKNESS - Z_AXIS_MOTOR_SIDE_HEIGHT + Z_AXIS_MOTOR_HOLDER_BOTTOM_HOLE_OFFSET, Z_AXIS_THICKNESS - Z_AXIS_BOLT_HOLES_LENGTH]) {
-        x_carriage_holes_belt_attachment(h = Z_AXIS_BOLT_HOLES_LENGTH);
+        m3_with_head(h = Z_AXIS_BOLT_HOLES_LENGTH);
     
         translate([0, 0, 8]) cube([X_BELT_BLOCKER_TOP_THICKNESS, M3_NUT_SIDE_TO_SIDE_THICKNESS, M3_NUT_THICKNESS], center = true);
     }
@@ -979,28 +979,26 @@ ZTS_HOLES_BOTTOM_OFFSET = 5;
 ZTS_HOLES_MIDDLE_OFFSET = ZTS_HEIGHT - 35;
 ZTS_HOLES_TOP_OFFSET = ZTS_HEIGHT - 5;
 
-module zts_m3_hole_with_nut(nut = true)
+module zts_m3_hole_with_nut(nut = true, h = ZTS_THICKNESS)
 {
-    cylinder(d = M3_DIAM, h = ZTS_THICKNESS);
+    cylinder(d = M3_DIAM, h = h);
     if (nut == true) {
-        translate([0, 0, ZTS_THICKNESS - M3_NUT_THICKNESS]) cylinder(d = M3_NUT_DIAM, h = M3_NUT_THICKNESS, $fn = 6);
+        translate([0, 0, h - M3_NUT_THICKNESS]) cylinder(d = M3_NUT_DIAM, h = M3_NUT_THICKNESS, $fn = 6);
     }
+}
+
+module zts_attachment_hole(nut = true, y_offset = 0, h = ZTS_THICKNESS)
+{
+        for (hole = [0:ZTS_HOLES_ATTACHMENT_COUNT-1]) {
+            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, y_offset, 0]) zts_m3_hole_with_nut(nut, h);
+        }
 }
 
 module zts_attachment_holes(nut = true)
 {
-            /* Bottom holes for real tool support attachment */
-        for (hole = [0:ZTS_HOLES_ATTACHMENT_COUNT-1]) {
-            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_BOTTOM_OFFSET, 0]) zts_m3_hole_with_nut(nut);
-        }
-        /* Middle holes for real tool support attachment */
-        for (hole = [0:ZTS_HOLES_ATTACHMENT_COUNT-1]) {
-            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_MIDDLE_OFFSET, 0]) zts_m3_hole_with_nut(nut);
-        }
-        /* Top holes for real tool support attachment */
-        for (hole = [0:ZTS_HOLES_ATTACHMENT_COUNT-1]) {
-            translate([ZTS_HOLES_OFFSET_FROM_SIDE + hole * ZTS_HOLES_SPACING, ZTS_HOLES_TOP_OFFSET, 0]) zts_m3_hole_with_nut(nut);
-        }
+    zts_attachment_hole(nut, y_offset =ZTS_HOLES_BOTTOM_OFFSET);
+    zts_attachment_hole(nut, y_offset =ZTS_HOLES_MIDDLE_OFFSET);
+    zts_attachment_hole(nut, y_offset =ZTS_HOLES_TOP_OFFSET);
 }
 
 module z_carriage_tool_support()
@@ -1024,12 +1022,30 @@ module z_carriage_tool_support()
     z_nut_holder();
 }
 
+LASER_MODULE_X_SPACING = 20;
+LASER_MODULE_Y_SPACING = 40;
+LASER_MODULE_Y_OFFSET = 5;
+
+LASER_SUPPORT_THICKNESS = 5;
+LASER_SUPPORT_WIDTH = ZTS_WIDTH;
+LASER_SUPPORT_HEIGHT = ZTS_HEIGHT;
+
+module laser_holes() 
+{
+    translate([0, 0, LASER_SUPPORT_THICKNESS]) mirror([0, 0, 1]) {
+        translate([LASER_MODULE_X_SPACING/2, LASER_MODULE_Y_SPACING/2, 0]) m3_with_head(h = LASER_SUPPORT_THICKNESS);
+        translate([LASER_MODULE_X_SPACING/2, -LASER_MODULE_Y_SPACING/2, 0]) m3_with_head(h = LASER_SUPPORT_THICKNESS);
+        translate([-LASER_MODULE_X_SPACING/2, -LASER_MODULE_Y_SPACING/2, 0]) m3_with_head(h = LASER_SUPPORT_THICKNESS);
+        translate([-LASER_MODULE_X_SPACING/2, LASER_MODULE_Y_SPACING/2, 0]) m3_with_head(h = LASER_SUPPORT_THICKNESS);
+    }
+}
 
 module laser_tool_support()
 {
     difference() {
-       roundedcube([ZTS_WIDTH, ZTS_HEIGHT, ZTS_THICKNESS], false, 2, "z");
-        zts_attachment_holes(nut=false);
+       roundedcube([LASER_SUPPORT_WIDTH, LASER_SUPPORT_HEIGHT, LASER_SUPPORT_THICKNESS], false, 2, "z");
+        zts_attachment_hole(nut = false, y_offset =ZTS_HOLES_TOP_OFFSET, h  = LASER_SUPPORT_THICKNESS);
+        translate([LASER_SUPPORT_WIDTH /2, LASER_MODULE_Y_SPACING/2  + LASER_MODULE_Y_OFFSET, 0]) #laser_holes();
     }
     
     translate([0, ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 180, 90]) sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
