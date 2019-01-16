@@ -26,7 +26,7 @@ M2_NUT_DIAM = 5;
 M2_NUT_THICKNESS = 1.5;
 
 
-M6_NUT_THICKNESS = 5;
+M6_NUT_THICKNESS = 4.7;
 /* Width across flats */
 M6_NUT_SIDE_TO_SIDE_WIDTH = 10;
 
@@ -268,8 +268,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //x_belt_attachment();
 //z_carriage_fixed_base();
 //z_carriage_moving_base();
-//z_carriage_tool_support();
-laser_tool_support();
+z_carriage_tool_support();
+//laser_tool_support();
 //z_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
@@ -829,12 +829,13 @@ module prism_with_base(w, l, h, bw)
 Z_MOTOR_HOLDER_WIDTH = NEMA14_WIDTH + 2 * Z_AXIS_NEMA_HOLDER_THICKNESS;
 
 Z_AXIS_ROD_OFFSET_FROM_BASE = 6;
-Z_AXIS_ROD_DIAM= 5;
+Z_AXIS_ROD_DIAM= 6.2;
 686ZZ_OUTER_DIAMETER = 13;
 686ZZ_THICKNESS = 5;
-Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS = 2;
+Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS = 4;
+Z_AXIS_ROD_HOLDER_EXTRA_DIAM = 2;
 Z_AXIS_ROD_HOLDER_THICKNESS = 686ZZ_THICKNESS + Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS;
-Z_AXIS_ROD_HOLDER_DIAM= 686ZZ_OUTER_DIAMETER + 2 * Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS;
+Z_AXIS_ROD_HOLDER_DIAM= 686ZZ_OUTER_DIAMETER + 2 * Z_AXIS_ROD_HOLDER_EXTRA_DIAM;
 
 Z_AXIS_BOLT_HOLES_LENGTH = 20;
 
@@ -845,9 +846,9 @@ module z_motor_holder()
     translate([NEMA14_WIDTH, 0, 0]) prism_with_base(Z_AXIS_NEMA_HOLDER_THICKNESS, Z_AXIS_MOTOR_HOLDER_WIDTH, Z_AXIS_MOTOR_SIDE_HEIGHT, Z_AXIS_NEMA_HOLDER_THICKNESS);
 }
 
-module z_axis_bearing_holes()
+module z_axis_bearing_holes(thickness = 686ZZ_THICKNESS)
 {
-    translate([Z_AXIS_ROD_HOLDER_DIAM/2, Z_AXIS_ROD_HOLDER_THICKNESS, Z_AXIS_ROD_HOLDER_DIAM/2]) rotate([90, 0, 0]) cylinder(d = 686ZZ_OUTER_DIAMETER, h = 686ZZ_THICKNESS);
+    translate([Z_AXIS_ROD_HOLDER_DIAM/2, Z_AXIS_ROD_HOLDER_THICKNESS, Z_AXIS_ROD_HOLDER_DIAM/2]) rotate([90, 0, 0]) cylinder(d = 686ZZ_OUTER_DIAMETER, h = thickness);
 }
 
 module z_axis_rod_holder()
@@ -858,7 +859,7 @@ module z_axis_rod_holder()
                 translate([Z_AXIS_ROD_HOLDER_DIAM/2, Z_AXIS_ROD_HOLDER_THICKNESS, Z_AXIS_ROD_HOLDER_DIAM/2]) rotate([90, 0, 0]) cylinder(d = Z_AXIS_ROD_HOLDER_DIAM, h = Z_AXIS_ROD_HOLDER_THICKNESS);
             }
             translate([Z_AXIS_ROD_HOLDER_DIAM/2, Z_AXIS_ROD_HOLDER_THICKNESS, Z_AXIS_ROD_HOLDER_DIAM/2]) rotate([90, 0, 0]) cylinder(d = Z_AXIS_ROD_DIAM, h = Z_AXIS_ROD_HOLDER_THICKNESS);
-            translate([0, 0, Z_AXIS_ROD_HOLDER_DIAM - Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS ]) cube([Z_AXIS_ROD_HOLDER_DIAM, Z_AXIS_ROD_HOLDER_THICKNESS, Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS]);
+            translate([0, 0, Z_AXIS_ROD_HOLDER_DIAM - Z_AXIS_ROD_HOLDER_EXTRA_DIAM / 2 ]) cube([Z_AXIS_ROD_HOLDER_DIAM, Z_AXIS_ROD_HOLDER_THICKNESS, Z_AXIS_ROD_HOLDER_EXTRA_DIAM]);
     }
 }
 
@@ -892,6 +893,10 @@ module z_rail_holes()
             translate([-Z_RAIL_SPACING/2, 0, 0]) z_rail_hole();
 }
 
+
+/* Bottom rod holder y offset */
+BOTTOM_ROD_HOLDER_Y_OFFSET = 4;
+
 module z_carriage_moving_base(motor_holder_only = false)
 {
     difference() {
@@ -901,14 +906,14 @@ module z_carriage_moving_base(motor_holder_only = false)
             }
             if (motor_holder_only == false) {
                  z_axis_base_support();
-                translate([Z_AXIS_MB_WIDTH/2 - Z_AXIS_ROD_HOLDER_DIAM/2, 0, Z_AXIS_THICKNESS - Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS - ROD_HOLDER_Z_OFFSET]) {
-                    translate([0, Z_AXIS_ROD_HOLDER_THICKNESS, 0]) mirror([0, 180, 0])  z_axis_rod_holder();
+                translate([Z_AXIS_MB_WIDTH/2 - Z_AXIS_ROD_HOLDER_DIAM/2, 0, Z_AXIS_THICKNESS - Z_AXIS_ROD_HOLDER_EXTRA_DIAM - ROD_HOLDER_Z_OFFSET]) {
+                    translate([0, Z_AXIS_ROD_HOLDER_THICKNESS + BOTTOM_ROD_HOLDER_Y_OFFSET, 0]) mirror([0, 180, 0])  #z_axis_rod_holder();
                     translate([0, Z_AXIS_MB_HEIGHT - Z_AXIS_ROD_HOLDER_THICKNESS, 0]) z_axis_rod_holder();
                 }
             }
         }
-         translate([Z_AXIS_MB_WIDTH/2 - Z_AXIS_ROD_HOLDER_DIAM/2, 0, Z_AXIS_THICKNESS - Z_AXIS_ROD_HOLDER_EXTRA_THICKNESS - ROD_HOLDER_Z_OFFSET]) {
-                translate([0, Z_AXIS_ROD_HOLDER_THICKNESS, 0]) mirror([0, 180, 0])  z_axis_bearing_holes();
+         translate([Z_AXIS_MB_WIDTH/2 - Z_AXIS_ROD_HOLDER_DIAM/2, 0, Z_AXIS_THICKNESS - Z_AXIS_ROD_HOLDER_EXTRA_DIAM - ROD_HOLDER_Z_OFFSET]) {
+                translate([0, Z_AXIS_ROD_HOLDER_THICKNESS - ROD_HOLDER_Z_OFFSET, 0]) mirror([0, 180, 0])  #z_axis_bearing_holes(10);
                 translate([0, Z_AXIS_MB_HEIGHT - Z_AXIS_ROD_HOLDER_THICKNESS, 0]) z_axis_bearing_holes();
             }
             z_axis_motor_holder_holes(x_offset = Z_AXIS_MB_WIDTH / 2 - NEMA14_WIDTH/2 - Z_AXIS_NEMA_HOLDER_THICKNESS/2);
@@ -932,7 +937,8 @@ ZTS_THICKNESS = 4;
 /* Y offset from bottom of support */
 ZTS_HOLE_Y_OFFSET = 25;
 
-ZTS_MGN7H_OFFSET = 5;
+/* Offset from MGN7H carriage */
+ZTS_MGN7H_OFFSET = 6;
 
 module m2_screw(height = ZTS_THICKNESS + ZTS_MGN7H_OFFSET) {
     cylinder(d = M2_HEAD_DIAM, h = M2_HEAD_THICKNESS);
@@ -949,7 +955,7 @@ module mgn7_holes(height = ZTS_THICKNESS) {
 ZTS_Z_NUT_HOLDER_THICKNESS = 2;
 
 /* Nut holder depth (should be based on threaded rod)*/
-ZTS_Z_NUT_HOLDER_DEPTH = 11;
+ZTS_Z_NUT_HOLDER_DEPTH = 12;
 
 /* Width and height of the nut holder for threaded rod */
 ZTS_Z_NUT_HOLDER_WIDTH = Z_RAIL_SPACING - MGN7H_WIDTH;
@@ -1001,6 +1007,10 @@ module zts_attachment_holes(nut = true)
     zts_attachment_hole(nut, y_offset =ZTS_HOLES_TOP_OFFSET);
 }
 
+
+/* Thickness of prism that will trigger the Z endstop */
+ZTS_ES_TRIGGER_THICKNESS = ZTS_THICKNESS + ZTS_MGN7H_OFFSET;
+
 module z_carriage_tool_support()
 {
     difference() {
@@ -1020,13 +1030,15 @@ module z_carriage_tool_support()
     }
     translate([ZTS_WIDTH/2 , ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_Z_NUT_HOLDER_HEIGHT/2]) 
     z_nut_holder();
+
+    /* Side endstop trigger */
 }
 
 LASER_MODULE_X_SPACING = 20;
 LASER_MODULE_Y_SPACING = 40;
 LASER_MODULE_Y_OFFSET = 5;
 
-LASER_SUPPORT_THICKNESS = 5;
+LASER_SUPPORT_THICKNESS = 4;
 LASER_SUPPORT_WIDTH = ZTS_WIDTH;
 LASER_SUPPORT_HEIGHT = ZTS_HEIGHT;
 
