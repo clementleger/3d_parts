@@ -1011,6 +1011,23 @@ module zts_attachment_holes(nut = true)
 /* Thickness of prism that will trigger the Z endstop */
 ZTS_ES_TRIGGER_THICKNESS = ZTS_THICKNESS + ZTS_MGN7H_OFFSET;
 
+ZTS_ES_TRIGGER_HEIGHT = 6;
+ZTS_SCREW_SIDE_OFFSET = 4;
+
+ZTS_ES_TRIGGER_HOLE_DIAM = M3_DIAM;
+
+/* Enstop trigger for Z will contain a hole to add a screw to set the 
+ * triggering limit */
+module zts_side_endstop() {
+    difference() {
+        union() {
+            cylinder(d = ZTS_ES_TRIGGER_HEIGHT, h = ZTS_ES_TRIGGER_THICKNESS);
+            translate([0, -ZTS_ES_TRIGGER_HEIGHT/2, 0]) cube([ZTS_SCREW_SIDE_OFFSET + ZTS_WIDTH/2 - Z_RAIL_SPACING/2 - MGN7H_WIDTH/2, ZTS_ES_TRIGGER_HEIGHT, ZTS_ES_TRIGGER_THICKNESS]);
+        }
+        cylinder(d = M3_DIAM, h = ZTS_ES_TRIGGER_THICKNESS);
+    }
+}
+
 module z_carriage_tool_support()
 {
     difference() {
@@ -1028,10 +1045,10 @@ module z_carriage_tool_support()
         translate([0, ZTS_HEIGHT - ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 0, 90]) #sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
         zts_attachment_holes();
     }
-    translate([ZTS_WIDTH/2 , ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_Z_NUT_HOLDER_HEIGHT/2]) 
-    z_nut_holder();
+    translate([ZTS_WIDTH/2 , ZTS_HOLE_Y_OFFSET, ZTS_THICKNESS + ZTS_Z_NUT_HOLDER_HEIGHT/2]) z_nut_holder();
 
     /* Side endstop trigger */
+    translate([- ZTS_SCREW_SIDE_OFFSET, ZTS_HOLE_Y_OFFSET, 0]) zts_side_endstop();
 }
 
 LASER_MODULE_X_SPACING = 20;
