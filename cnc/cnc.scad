@@ -913,7 +913,7 @@ module z_carriage_moving_base(motor_holder_only = false)
             }
         }
          translate([Z_AXIS_MB_WIDTH/2 - Z_AXIS_ROD_HOLDER_DIAM/2, 0, Z_AXIS_THICKNESS - Z_AXIS_ROD_HOLDER_EXTRA_DIAM - ROD_HOLDER_Z_OFFSET]) {
-                translate([0, Z_AXIS_ROD_HOLDER_THICKNESS - ROD_HOLDER_Z_OFFSET, 0]) mirror([0, 180, 0])  #z_axis_bearing_holes(10);
+                translate([0, Z_AXIS_ROD_HOLDER_THICKNESS - ROD_HOLDER_Z_OFFSET, 0]) mirror([0, 180, 0])  z_axis_bearing_holes(10);
                 translate([0, Z_AXIS_MB_HEIGHT - Z_AXIS_ROD_HOLDER_THICKNESS, 0]) z_axis_bearing_holes();
             }
             z_axis_motor_holder_holes(x_offset = Z_AXIS_MB_WIDTH / 2 - NEMA14_WIDTH/2 - Z_AXIS_NEMA_HOLDER_THICKNESS/2);
@@ -1012,7 +1012,7 @@ module zts_attachment_holes(nut = true)
 ZTS_ES_TRIGGER_THICKNESS = ZTS_THICKNESS + ZTS_MGN7H_OFFSET;
 
 ZTS_ES_TRIGGER_HEIGHT = 6;
-ZTS_SCREW_SIDE_OFFSET = 4;
+ZTS_SCREW_SIDE_OFFSET = 5;
 
 ZTS_ES_TRIGGER_HOLE_DIAM = M3_DIAM;
 
