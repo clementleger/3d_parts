@@ -268,9 +268,9 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //x_belt_attachment();
 //z_carriage_fixed_base();
 //z_carriage_moving_base();
-z_carriage_tool_support();
+//z_carriage_tool_support();
 //laser_tool_support();
-//z_carriage_motor_holder();
+z_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
 
@@ -839,11 +839,31 @@ Z_AXIS_ROD_HOLDER_DIAM= 686ZZ_OUTER_DIAMETER + 2 * Z_AXIS_ROD_HOLDER_EXTRA_DIAM;
 
 Z_AXIS_BOLT_HOLES_LENGTH = 20;
 
+Z_MOTOR_HOLDER_ES_WIDTH  = MICROSWITCH_WIDTH;
+Z_MOTOR_HOLDER_ES_HEIGHT  = MICROSWITCH_HEIGHT;
+Z_MOTOR_HOLDER_ES_HEIGHT_Z_OFFSET = 15;
+Z_MOTOR_CABLE_HOLDER_WIDTH = Z_MOTOR_HOLDER_ES_WIDTH + 2;
+
 module z_motor_holder()
 {
     translate ([0, Z_AXIS_SUPPORT_EXTRA_BOTTOM, 0]) z_nema14_support(NEMA14_WIDTH, NEMA14_WIDTH, Z_AXIS_NEMA_HOLDER_THICKNESS);
     translate([-Z_AXIS_NEMA_HOLDER_THICKNESS, 0, 0]) prism_with_base(Z_AXIS_NEMA_HOLDER_THICKNESS, Z_AXIS_MOTOR_HOLDER_WIDTH, Z_AXIS_MOTOR_SIDE_HEIGHT, Z_AXIS_NEMA_HOLDER_THICKNESS);
     translate([NEMA14_WIDTH, 0, 0]) prism_with_base(Z_AXIS_NEMA_HOLDER_THICKNESS, Z_AXIS_MOTOR_HOLDER_WIDTH, Z_AXIS_MOTOR_SIDE_HEIGHT, Z_AXIS_NEMA_HOLDER_THICKNESS);
+    /* Endstop support */
+    translate([NEMA14_WIDTH + Z_AXIS_NEMA_HOLDER_THICKNESS, NEMA14_WIDTH + Z_AXIS_SUPPORT_EXTRA_BOTTOM - Z_MOTOR_HOLDER_ES_HEIGHT, 0]) difference() {
+            cube([Z_MOTOR_HOLDER_ES_WIDTH, Z_MOTOR_HOLDER_ES_HEIGHT, Z_MOTOR_HOLDER_ES_HEIGHT_Z_OFFSET]);
+            /* microswitch holes */
+            translate([Z_MOTOR_HOLDER_ES_WIDTH/2 , Z_MOTOR_HOLDER_ES_HEIGHT - MICROSWITCH_HOLE_OFFSET, 1]) {
+                translate([-MICROSWITCH_HOLE_SPACING/2, 0, 0]) cylinder(d = MICROSWITCH_HOLE_DIAM, h = Z_MOTOR_HOLDER_ES_HEIGHT_Z_OFFSET - 1);
+                translate([MICROSWITCH_HOLE_SPACING/2, 0, 0]) cylinder(d = MICROSWITCH_HOLE_DIAM, h = Z_MOTOR_HOLDER_ES_HEIGHT_Z_OFFSET - 1);
+            }
+    }
+    /* Support + Hole for cable */
+    ROUND = 1;
+    translate([NEMA14_WIDTH + Z_AXIS_NEMA_HOLDER_THICKNESS, 0, 0]) difference() {
+        translate([-ROUND, 0, 0]) roundedcube([Z_MOTOR_CABLE_HOLDER_WIDTH + ROUND, NEMA14_WIDTH + Z_AXIS_SUPPORT_EXTRA_BOTTOM , Z_AXIS_NEMA_HOLDER_THICKNESS], false, ROUND, "z");
+        translate([Z_MOTOR_CABLE_HOLDER_WIDTH/2, NEMA14_WIDTH/2, 0]) scale([0.8, 1.2, 1])cylinder (d = Z_MOTOR_CABLE_HOLDER_WIDTH - ROUND, h  = Z_AXIS_NEMA_HOLDER_THICKNESS);
+    }
 }
 
 module z_axis_bearing_holes(thickness = 686ZZ_THICKNESS)
