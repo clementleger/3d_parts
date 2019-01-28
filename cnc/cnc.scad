@@ -270,10 +270,10 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //z_carriage_moving_base();
 //z_carriage_tool_support();
 //laser_tool_support();
-z_carriage_motor_holder();
+//z_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
-
+x_pulley_idler();
 
 module sliding_rails(width1, width2, height, thickness) {
     linear_extrude(height = thickness)  polygon(points = [[-width1/2, 0],[width1/2, 0],[width2/2, height],[-width2/2, height]]);
@@ -430,7 +430,7 @@ module gantry_top_part()
         translate([-RAIL_HEIGHT, GANTRY_TOP_WIDTH/2- RAIL_WIDTH/2, 0]) cube([RAIL_HEIGHT, RAIL_WIDTH, 100]);
         /* Hole for NEMA attachment */
         translate([0, GANTRY_NEMA17_HOLE_Z_OFFSET/2, GANTRY_THICKNESS + NEMA17_ATTACHMENT_LENGTH]) rotate([0, 90, 0]) {
-           cylinder(d = M3_DIAM, h = GANTRY_TOP_THICKNESS);
+           #cylinder(d = M3_DIAM, h = GANTRY_TOP_THICKNESS);
            translate([0, 0, -GANTRY_TOP_THICKNESS + M3_NUT_THICKNESS]) cylinder(d = M3_NUT_DIAM, h = GANTRY_TOP_THICKNESS, $fn = 6);
         }
         /* Hole to attach x endstop holder */
@@ -466,7 +466,7 @@ module y_gantry_side()
         }
 
         /* Hole for belt idler */
-        translate([SLOPE_OFFSET + GANTRY_WIDTH - GANTRY_WIDTH/2, GANTRY_HEIGHT - GANTRY_TOP_WIDTH/2, GANTRY_THICKNESS/2]) rotate([0, 90, 0])  # cylinder(d = M3_DIAM, h = GANTRY_WIDTH/2);
+        translate([SLOPE_OFFSET + GANTRY_WIDTH - GANTRY_WIDTH/2, GANTRY_HEIGHT - GANTRY_TOP_WIDTH/2, GANTRY_THICKNESS/2]) rotate([0, 90, 0])  cylinder(d = M3_DIAM, h = GANTRY_WIDTH/2);
     }
 }
 
@@ -839,10 +839,10 @@ Z_AXIS_ROD_HOLDER_DIAM= 686ZZ_OUTER_DIAMETER + 2 * Z_AXIS_ROD_HOLDER_EXTRA_DIAM;
 
 Z_AXIS_BOLT_HOLES_LENGTH = 20;
 
-Z_MOTOR_HOLDER_ES_WIDTH  = MICROSWITCH_WIDTH;
-Z_MOTOR_HOLDER_ES_HEIGHT  = MICROSWITCH_HEIGHT;
-Z_MOTOR_HOLDER_ES_HEIGHT_Z_OFFSET = 15;
-Z_MOTOR_CABLE_HOLDER_WIDTH = Z_MOTOR_HOLDER_ES_WIDTH + 2;
+Z_MOTOR_HOLDER_ES_WIDTH  = 3;
+Z_MOTOR_HOLDER_ES_HEIGHT = MICROSWITCH_HEIGHT;
+Z_MOTOR_HOLDER_ES_HEIGHT_Z_OFFSET = 22;
+Z_MOTOR_CABLE_HOLDER_WIDTH = 10;
 
 module z_motor_holder()
 {
@@ -853,9 +853,9 @@ module z_motor_holder()
     translate([NEMA14_WIDTH + Z_AXIS_NEMA_HOLDER_THICKNESS, NEMA14_WIDTH + Z_AXIS_SUPPORT_EXTRA_BOTTOM - Z_MOTOR_HOLDER_ES_HEIGHT, 0]) difference() {
             cube([Z_MOTOR_HOLDER_ES_WIDTH, Z_MOTOR_HOLDER_ES_HEIGHT, Z_MOTOR_HOLDER_ES_HEIGHT_Z_OFFSET]);
             /* microswitch holes */
-            translate([Z_MOTOR_HOLDER_ES_WIDTH/2 , Z_MOTOR_HOLDER_ES_HEIGHT - MICROSWITCH_HOLE_OFFSET, 1]) {
-                translate([-MICROSWITCH_HOLE_SPACING/2, 0, 0]) cylinder(d = MICROSWITCH_HOLE_DIAM, h = Z_MOTOR_HOLDER_ES_HEIGHT_Z_OFFSET - 1);
-                translate([MICROSWITCH_HOLE_SPACING/2, 0, 0]) cylinder(d = MICROSWITCH_HOLE_DIAM, h = Z_MOTOR_HOLDER_ES_HEIGHT_Z_OFFSET - 1);
+            translate([0, Z_MOTOR_HOLDER_ES_HEIGHT - MICROSWITCH_HOLE_OFFSET, Z_MOTOR_HOLDER_ES_HEIGHT_Z_OFFSET - MICROSWITCH_WIDTH/2 ]) rotate([0, 90, 0])  {
+                #translate([-MICROSWITCH_HOLE_SPACING/2, 0, 0]) cylinder(d = MICROSWITCH_HOLE_DIAM, h = Z_MOTOR_HOLDER_ES_WIDTH);
+                #translate([MICROSWITCH_HOLE_SPACING/2, 0, 0]) cylinder(d = MICROSWITCH_HOLE_DIAM, h = Z_MOTOR_HOLDER_ES_WIDTH);
             }
     }
     /* Support + Hole for cable */
@@ -1078,7 +1078,7 @@ LASER_MODULE_Y_OFFSET = 5;
 LASER_SUPPORT_THICKNESS = 4;
 LASER_SUPPORT_WIDTH = ZTS_WIDTH;
 LASER_SUPPORT_HEIGHT = ZTS_HEIGHT;
-
+    
 module laser_holes() 
 {
     translate([0, 0, LASER_SUPPORT_THICKNESS]) mirror([0, 0, 1]) {
@@ -1099,4 +1099,63 @@ module laser_tool_support()
     
     translate([0, ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 180, 90]) sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
     translate([0, ZTS_HEIGHT - ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 180, 90]) sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
+}
+
+X_PULLEY_IDLER_BEARING_THICKNESS = 16;
+X_PULLEY_IDLER_OUTER_THICKNESS = 3;
+X_PULLEY_IDLER_INNER_THICKNESS = 2;
+X_PULLEY_IDLER_TOP_THICKNESS = 6;
+X_PULLEY_IDLER_OVERHANG = 15;
+X_PULLEY_HEIGHT = GANTRY_TOP_WIDTH + X_PULLEY_IDLER_TOP_THICKNESS;
+X_PULLEY_CAGE_DIAM = X_PULLEY_IDLER_OVERHANG + 5;
+
+module x_pulley_idler_gantry_link()
+{
+    /* Upper part connection */
+    translate([X_PULLEY_IDLER_OVERHANG, 0, 0]) {
+        difference() {
+            cube([GANTRY_THICKNESS, X_PULLEY_IDLER_TOP_THICKNESS, X_PULLEY_IDLER_BEARING_THICKNESS + X_PULLEY_IDLER_OUTER_THICKNESS + GANTRY_WIDTH]);
+            translate([GANTRY_THICKNESS/2, X_PULLEY_IDLER_TOP_THICKNESS,  X_PULLEY_IDLER_BEARING_THICKNESS + X_PULLEY_IDLER_OUTER_THICKNESS])  {
+                translate([0, 0, GANTRY_WIDTH/4]) rotate([90, 0, 0]) m3_with_head(X_PULLEY_IDLER_TOP_THICKNESS);
+                translate([0, 0, GANTRY_WIDTH/4 * 3]) rotate([90, 0, 0]) m3_with_head(X_PULLEY_IDLER_TOP_THICKNESS);
+            }
+        }
+    }
+    /* Lower part connection */
+    translate([X_PULLEY_IDLER_OVERHANG, X_PULLEY_HEIGHT - GANTRY_NEMA17_HOLE_Z_OFFSET, X_PULLEY_IDLER_BEARING_THICKNESS + X_PULLEY_IDLER_OUTER_THICKNESS - X_PULLEY_IDLER_TOP_THICKNESS]) difference() {
+        union() {
+            cube([GANTRY_THICKNESS + NEMA17_ATTACHMENT_LENGTH, GANTRY_NEMA17_HOLE_Z_OFFSET, X_PULLEY_IDLER_TOP_THICKNESS]);
+            translate([GANTRY_THICKNESS + NEMA17_ATTACHMENT_LENGTH, GANTRY_NEMA17_HOLE_Z_OFFSET/2, 0]) cylinder(d = GANTRY_NEMA17_HOLE_Z_OFFSET, h = X_PULLEY_IDLER_TOP_THICKNESS);
+        }
+        translate([GANTRY_THICKNESS + NEMA17_ATTACHMENT_LENGTH, GANTRY_NEMA17_HOLE_Z_OFFSET/2, X_PULLEY_IDLER_TOP_THICKNESS]) #mirror([0, 0, 1])m3_with_head(X_PULLEY_IDLER_TOP_THICKNESS);
+    }
+}
+
+module x_pulley_idler()
+{
+ROUND = 3;
+    /* Outer Pulley shell */
+    difference() {
+        union() {
+             roundedcube([X_PULLEY_IDLER_OVERHANG, X_PULLEY_HEIGHT,  X_PULLEY_IDLER_BEARING_THICKNESS + X_PULLEY_IDLER_OUTER_THICKNESS], false, ROUND, "z");
+             translate([ROUND, 0, 0]) cube([X_PULLEY_IDLER_OVERHANG - ROUND, X_PULLEY_HEIGHT,  X_PULLEY_IDLER_BEARING_THICKNESS + X_PULLEY_IDLER_OUTER_THICKNESS]);
+        }
+       translate([X_PULLEY_IDLER_OVERHANG, X_PULLEY_HEIGHT/2 + X_PULLEY_IDLER_TOP_THICKNESS / 2, X_PULLEY_IDLER_OUTER_THICKNESS]) cylinder(d = X_PULLEY_CAGE_DIAM, h = X_PULLEY_IDLER_BEARING_THICKNESS + X_PULLEY_IDLER_OUTER_THICKNESS);
+    }
+    /* Top connection with gantry */
+    x_pulley_idler_gantry_link();
+
+    /* Pulley hole for screw */
+    translate([X_PULLEY_IDLER_OVERHANG, X_PULLEY_HEIGHT/2 + X_PULLEY_IDLER_TOP_THICKNESS/2, 0]) {
+        difference() {
+            union() {
+                translate([0, -BELT_PULLEY_DIAM/2, 0]) cube([GANTRY_THICKNESS / 2, BELT_PULLEY_DIAM, X_PULLEY_IDLER_OUTER_THICKNESS]);
+                translate([GANTRY_THICKNESS/2, 0, 0]) cylinder(d = BELT_PULLEY_DIAM, h = X_PULLEY_IDLER_OUTER_THICKNESS);
+            }
+            translate([GANTRY_THICKNESS/2, 0, 0]) {
+                cylinder(d = M3_DIAM, h = X_PULLEY_IDLER_OUTER_THICKNESS);
+                cylinder(d = M3_HEAD_DIAM, h = 1);
+            }
+        }
+    }
 }
