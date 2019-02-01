@@ -1159,9 +1159,13 @@ module cable_holder()
     }  
 }
 
+XPI_CLIPING_HOLE_WIDTH = 10;
+XPI_CLIPING_HOLE_HEIGHT = 3;
+XPI_CLIPING_HOLE_DEPTH = 0.5;
+
 module x_pulley_idler()
 {
-    ROUND = 1;
+    ROUND = 2;
     /* Outer Pulley shell */
     difference() {
         union() {
@@ -1170,9 +1174,12 @@ module x_pulley_idler()
         }
        translate([X_PULLEY_IDLER_OVERHANG, X_PULLEY_HEIGHT/2 + X_PULLEY_IDLER_TOP_THICKNESS / 2, X_PULLEY_IDLER_OUTER_THICKNESS]) scale([1, 1.4, 1]) cylinder(d = X_PULLEY_CAGE_DIAM, h = X_PULLEY_IDLER_BEARING_THICKNESS);
         translate([0, 0, XPI_CABLE_HOLDER_HEIGHT]) {
-            translate([0, X_PULLEY_HEIGHT/4, 0]) rotate([0, 0, -90])  sliding_rails(XPI_SLIDE_RAIL_WIDTH_BOTTOM, XPI_SLIDE_RAIL_WIDTH_TOP, XPI_SLIDE_RAIL_HEIGHT, XPI_FULL_HEIGHT);
-            translate([0, X_PULLEY_HEIGHT/4 * 3, 0]) rotate([0, 0, -90])  sliding_rails(XPI_SLIDE_RAIL_WIDTH_BOTTOM, XPI_SLIDE_RAIL_WIDTH_TOP, XPI_SLIDE_RAIL_HEIGHT, XPI_FULL_HEIGHT);
+            translate([0, X_PULLEY_HEIGHT/5, 0]) rotate([0, 0, -90])  sliding_rails(XPI_SLIDE_RAIL_WIDTH_BOTTOM, XPI_SLIDE_RAIL_WIDTH_TOP, XPI_SLIDE_RAIL_HEIGHT, XPI_FULL_HEIGHT);
+            translate([0, X_PULLEY_HEIGHT/5 * 4, 0]) rotate([0, 0, -90])  sliding_rails(XPI_SLIDE_RAIL_WIDTH_BOTTOM, XPI_SLIDE_RAIL_WIDTH_TOP, XPI_SLIDE_RAIL_HEIGHT, XPI_FULL_HEIGHT);
         }
+
+        /* Cliping hole */
+        translate([0, X_PULLEY_HEIGHT/2 - XPI_CLIPING_HOLE_WIDTH/2, XPI_CABLE_HOLDER_HEIGHT/2]) cube([XPI_CLIPING_HOLE_DEPTH, XPI_CLIPING_HOLE_WIDTH, XPI_CLIPING_HOLE_HEIGHT]);
     }
     /* Cable holder on side */
     translate([0, XPI_CABLE_HOLDER_SIDE_OFFSET , 0]) rotate([0, -90, -90]) cable_holder();
