@@ -273,7 +273,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //z_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
-x_pulley_idler();
+//x_pulley_idler();
+gantry_cable_holder();
 
 module sliding_rails(width1, width2, height, thickness) {
     linear_extrude(height = thickness)  polygon(points = [[-width1/2, 0],[width1/2, 0],[width2/2, height],[-width2/2, height]]);
@@ -1151,7 +1152,7 @@ XPI_CABLE_HOLDER_SIDE_OFFSET = 3;
 
 module cable_holder()
 {
-    scale([1, 0.8, 1]) 
+    scale([1, 0.9, 1]) 
     translate([0, - (XPI_CABLE_HOLDER_BOTTOM_THICKNESS + XPI_HOLE_DIAM/2), 0])
     difference() {
         union() {
@@ -1160,8 +1161,8 @@ module cable_holder()
         }
         translate([XPI_CABLE_HOLDER_HEIGHT /2, 0, 0]) cylinder(d = XPI_HOLE_DIAM , h = XPI_CABLE_HOLDER_THICKNESS);
         translate([XPI_CABLE_HOLDER_HEIGHT /2, 0, XPI_CABLE_HOLDER_THICKNESS/2 - ZIPTIE_WIDTH/2]) difference() {
-             cylinder(d = XPI_HOLE_DIAM +  2 * XPI_CABLE_HOLDER_BORDER_THICKNESS - 0.8 , h = ZIPTIE_WIDTH);
-             cylinder(d = XPI_HOLE_DIAM+ 0.8 , h = ZIPTIE_WIDTH);
+             cylinder(d = XPI_HOLE_DIAM +  2 * XPI_CABLE_HOLDER_BORDER_THICKNESS - 1 , h = ZIPTIE_WIDTH);
+             cylinder(d = XPI_HOLE_DIAM + 1.5 , h = ZIPTIE_WIDTH);
             
         }
         translate([0, -(XPI_HOLE_DIAM/2 + XPI_CABLE_HOLDER_BORDER_THICKNESS), 0]) cube([XPI_CABLE_HOLDER_HEIGHT, XPI_HOLE_DIAM/2 + XPI_CABLE_HOLDER_BORDER_THICKNESS, XPI_CABLE_HOLDER_THICKNESS]);
@@ -1210,4 +1211,20 @@ module x_pulley_idler()
             }
         }
     }
+}
+
+GCH_THICKNESS = 4;
+GCH_SIDE_THICKNESS = 2;
+GCH_WIDTH = MGN9C_HOLE_X_OFFSET + M3_HEAD_DIAM + 2 * GCH_SIDE_THICKNESS;
+GCH_HEIGHT = M3_HEAD_DIAM + XPI_CABLE_HOLDER_THICKNESS + 2 * GCH_SIDE_THICKNESS;
+
+module gantry_cable_holder()
+{
+    difference() {
+        translate([0, 0, 0]) cube([GCH_WIDTH, GCH_THICKNESS, GCH_HEIGHT]);
+    
+        translate([M3_HEAD_DIAM/2 + GCH_SIDE_THICKNESS, GCH_THICKNESS, GCH_HEIGHT - M3_HEAD_DIAM/2 - GCH_SIDE_THICKNESS]) rotate([90, 0, 0]) m3_with_head(M3_HEAD_THICKNESS + GCH_THICKNESS);
+        translate([GCH_WIDTH - M3_HEAD_DIAM/2 - GCH_SIDE_THICKNESS, GCH_THICKNESS, GCH_HEIGHT - M3_HEAD_DIAM/2 - GCH_SIDE_THICKNESS]) rotate([90, 0, 0]) m3_with_head(M3_HEAD_THICKNESS + GCH_THICKNESS);
+    }
+    translate([GCH_WIDTH/2- XPI_CABLE_HOLDER_HEIGHT/2, 0, 0]) cable_holder();
 }
