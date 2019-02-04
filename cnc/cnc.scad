@@ -274,7 +274,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //x_endstop_holder();
 //y_pulley_idler();
 //x_pulley_idler();
-gantry_cable_holder();
+//gantry_side_cable_holder();
+flat_al_cable_holder();
 
 module sliding_rails(width1, width2, height, thickness) {
     linear_extrude(height = thickness)  polygon(points = [[-width1/2, 0],[width1/2, 0],[width2/2, height],[-width2/2, height]]);
@@ -1218,7 +1219,7 @@ GCH_SIDE_THICKNESS = 2;
 GCH_WIDTH = MGN9C_HOLE_X_OFFSET + M3_HEAD_DIAM + 2 * GCH_SIDE_THICKNESS;
 GCH_HEIGHT = M3_HEAD_DIAM + XPI_CABLE_HOLDER_THICKNESS + 2 * GCH_SIDE_THICKNESS;
 
-module gantry_cable_holder()
+module gantry_side_cable_holder()
 {
     difference() {
         translate([0, 0, 0]) cube([GCH_WIDTH, GCH_THICKNESS, GCH_HEIGHT]);
@@ -1227,4 +1228,20 @@ module gantry_cable_holder()
         translate([GCH_WIDTH - M3_HEAD_DIAM/2 - GCH_SIDE_THICKNESS, GCH_THICKNESS, GCH_HEIGHT - M3_HEAD_DIAM/2 - GCH_SIDE_THICKNESS]) rotate([90, 0, 0]) m3_with_head(M3_HEAD_THICKNESS + GCH_THICKNESS);
     }
     translate([GCH_WIDTH/2- XPI_CABLE_HOLDER_HEIGHT/2, 0, 0]) cable_holder();
+}
+
+GBCH_THICKNESS = 1.5;
+GBCH_WIDTH = FLAT_AL_STRIP_WIDTH + GBCH_THICKNESS * 2;
+GBCH_CLIP_THICKNESS = 1;
+GBCH_CLIP_DEPTH = 0.5;
+
+module flat_al_cable_holder()
+{
+    
+    difference() {
+        cube([GBCH_WIDTH , GBCH_THICKNESS + FLAT_AL_STRIP_THICKNESS + GBCH_CLIP_THICKNESS, XPI_CABLE_HOLDER_THICKNESS]);
+        translate([GBCH_WIDTH/2 - FLAT_AL_STRIP_WIDTH/2, GBCH_THICKNESS, 0]) cube([FLAT_AL_STRIP_WIDTH, FLAT_AL_STRIP_THICKNESS, XPI_CABLE_HOLDER_THICKNESS]);
+        translate([GBCH_WIDTH/2 - FLAT_AL_STRIP_WIDTH/2 + GBCH_CLIP_DEPTH, GBCH_THICKNESS + FLAT_AL_STRIP_THICKNESS, 0]) cube([FLAT_AL_STRIP_WIDTH - 2 * GBCH_CLIP_DEPTH, FLAT_AL_STRIP_THICKNESS, XPI_CABLE_HOLDER_THICKNESS]);
+    }
+    translate([GBCH_WIDTH/2- XPI_CABLE_HOLDER_HEIGHT/2, 0, 0])  cable_holder();
 }
