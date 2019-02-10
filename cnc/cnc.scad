@@ -275,7 +275,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //y_pulley_idler();
 //x_pulley_idler();
 //gantry_side_cable_holder();
-flat_al_cable_holder();
+gantry_side_90_cable_holder();
+//flat_al_cable_holder();
 
 module sliding_rails(width1, width2, height, thickness) {
     linear_extrude(height = thickness)  polygon(points = [[-width1/2, 0],[width1/2, 0],[width2/2, height],[-width2/2, height]]);
@@ -1230,17 +1231,34 @@ module gantry_side_cable_holder()
     translate([GCH_WIDTH/2- XPI_CABLE_HOLDER_HEIGHT/2, 0, 0]) cable_holder();
 }
 
+GS90CH_HEIGHT = XPI_CABLE_HOLDER_HEIGHT + M3_HEAD_DIAM + 2 * GCH_SIDE_THICKNESS;
+
+module gantry_side_90_cable_holder()
+{
+    difference() {
+        translate([0, 0, 0]) cube([GCH_WIDTH, GCH_THICKNESS, GS90CH_HEIGHT]);
+    
+        translate([0, GCH_THICKNESS/2, -XPI_CABLE_HOLDER_THICKNESS]) rotate([0, -45, 0]) #cube([XPI_CABLE_HOLDER_HEIGHT * 2, GCH_THICKNESS, XPI_CABLE_HOLDER_HEIGHT * 2], center = true);
+        translate([0, 0, GS90CH_HEIGHT - M3_HEAD_DIAM/2 - GCH_SIDE_THICKNESS]) {
+            translate([M3_HEAD_DIAM/2 + GCH_SIDE_THICKNESS, GCH_THICKNESS, 0]) rotate([90, 0, 0]) m3_with_head(M3_HEAD_THICKNESS + GCH_THICKNESS);
+            translate([GCH_WIDTH - M3_HEAD_DIAM/2 - GCH_SIDE_THICKNESS, GCH_THICKNESS, 0]) rotate([90, 0, 0]) m3_with_head(M3_HEAD_THICKNESS + GCH_THICKNESS);
+        }
+    }
+    translate([GCH_WIDTH, 0, 0]) rotate([0, -90, 0])  cable_holder();
+}
+
 GBCH_THICKNESS = 1.5;
 GBCH_WIDTH = FLAT_AL_STRIP_WIDTH + GBCH_THICKNESS * 2;
 GBCH_CLIP_THICKNESS = 1;
-GBCH_CLIP_DEPTH = 0.5;
+GBCH_CLIP_DEPTH = 1;
+FLAT_AL_STRIP_TOLERANCY = 0.6;
 
 module flat_al_cable_holder()
 {
     
     difference() {
         cube([GBCH_WIDTH , GBCH_THICKNESS + FLAT_AL_STRIP_THICKNESS + GBCH_CLIP_THICKNESS, XPI_CABLE_HOLDER_THICKNESS]);
-        translate([GBCH_WIDTH/2 - FLAT_AL_STRIP_WIDTH/2, GBCH_THICKNESS, 0]) cube([FLAT_AL_STRIP_WIDTH, FLAT_AL_STRIP_THICKNESS, XPI_CABLE_HOLDER_THICKNESS]);
+        translate([GBCH_WIDTH/2 - (FLAT_AL_STRIP_WIDTH - FLAT_AL_STRIP_TOLERANCY)/2, GBCH_THICKNESS, 0]) cube([FLAT_AL_STRIP_WIDTH - FLAT_AL_STRIP_TOLERANCY, FLAT_AL_STRIP_THICKNESS, XPI_CABLE_HOLDER_THICKNESS]);
         translate([GBCH_WIDTH/2 - FLAT_AL_STRIP_WIDTH/2 + GBCH_CLIP_DEPTH, GBCH_THICKNESS + FLAT_AL_STRIP_THICKNESS, 0]) cube([FLAT_AL_STRIP_WIDTH - 2 * GBCH_CLIP_DEPTH, FLAT_AL_STRIP_THICKNESS, XPI_CABLE_HOLDER_THICKNESS]);
     }
     translate([GBCH_WIDTH/2- XPI_CABLE_HOLDER_HEIGHT/2, 0, 0])  cable_holder();
