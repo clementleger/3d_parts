@@ -270,12 +270,13 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //z_carriage_moving_base();
 //z_carriage_tool_support();
 //laser_tool_support();
+pen_tool_support();
 //z_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
 //x_pulley_idler();
 //gantry_side_cable_holder();
-gantry_side_90_cable_holder();
+//gantry_side_90_cable_holder();
 //flat_al_cable_holder();
 
 module sliding_rails(width1, width2, height, thickness) {
@@ -1104,6 +1105,52 @@ module laser_tool_support()
     translate([0, ZTS_HEIGHT - ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 180, 90]) sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
 }
 
+module cable_holder(diam,  thickness, border_thickness, bottom_thickness)
+{
+    cable_holder_height = diam + 2 * border_thickness;
+
+    translate([0, - (bottom_thickness + diam/2), 0])
+    difference() {
+        union() {
+            cube([cable_holder_height, bottom_thickness + diam/2 , thickness]);
+            translate([cable_holder_height /2, 0, 0]) cylinder(d = cable_holder_height , h = thickness);
+        }
+        translate([cable_holder_height /2, 0, 0]) cylinder(d = diam , h = thickness);
+        translate([cable_holder_height /2, 0, thickness/2 - ZIPTIE_WIDTH/2]) difference() {
+             cylinder(d = diam +  2 * border_thickness - 1 , h = ZIPTIE_WIDTH);
+             cylinder(d = diam + 1.5 , h = ZIPTIE_WIDTH);
+            
+        }
+        translate([0, -(diam/2 + border_thickness), 0]) cube([cable_holder_height, diam/2 + border_thickness, thickness]);
+    }  
+}
+
+
+PTS_PEN_DIAM = 8;
+PTS_PEN_HOLDER_THICKNESS = 8;
+PTS_PEN_HOLDER_BORDER_THICKNESS = 3;
+PTS_PEN_HOLDER_BOTTOM_THICKNESS = 3;
+PTS_PEN_HOLDER_WIDTH = 2 * PTS_PEN_HOLDER_BORDER_THICKNESS + PTS_PEN_DIAM;
+PTS_HEIGHT = ZTS_HEIGHT;
+PTS_THICKNESS = ZTS_THICKNESS;
+
+module pen_tool_support()
+{
+    difference() {
+       roundedcube([PTS_PEN_HOLDER_WIDTH, PTS_HEIGHT, LASER_SUPPORT_THICKNESS], false, 2, "z");
+        translate([PTS_PEN_HOLDER_WIDTH/2 , ZTS_HOLES_TOP_OFFSET, 0 ]) cylinder(d = M3_DIAM, h = LASER_SUPPORT_THICKNESS);
+        translate([PTS_PEN_HOLDER_WIDTH/2 , ZTS_HOLES_BOTTOM_OFFSET, 0 ]) cylinder(d = M3_DIAM, h = LASER_SUPPORT_THICKNESS);
+    }
+    /* Pen holder with ziptie */
+    translate([0, ZTS_RAIL_OFFSET_FROM_SIDE - PTS_PEN_HOLDER_THICKNESS/2 , PTS_THICKNESS]) rotate([ -90, 0, 0]) cable_holder(PTS_PEN_DIAM, PTS_PEN_HOLDER_THICKNESS, PTS_PEN_HOLDER_BORDER_THICKNESS, PTS_PEN_HOLDER_BOTTOM_THICKNESS);
+
+    translate([0, ZTS_HEIGHT - ZTS_RAIL_OFFSET_FROM_SIDE - PTS_PEN_HOLDER_THICKNESS/2, PTS_THICKNESS]) rotate([ -90, 0, 0]) cable_holder(PTS_PEN_DIAM, PTS_PEN_HOLDER_THICKNESS, PTS_PEN_HOLDER_BORDER_THICKNESS, PTS_PEN_HOLDER_BOTTOM_THICKNESS);
+
+    /* Rails */
+    translate([0, ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 180, 90]) sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, PTS_PEN_HOLDER_WIDTH);
+    translate([0, ZTS_HEIGHT - ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 180, 90]) sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, PTS_PEN_HOLDER_WIDTH);
+}
+
 X_PULLEY_IDLER_BEARING_THICKNESS = 13;
 X_PULLEY_IDLER_OUTER_THICKNESS = 3;
 X_PULLEY_IDLER_INNER_THICKNESS = 2;
@@ -1146,34 +1193,20 @@ XPI_CABLE_HOLDER_THICKNESS = 5;
 XPI_HOLE_DIAM = 8;
 XPI_CABLE_HOLDER_BORDER_THICKNESS = 3;
 XPI_CABLE_HOLDER_BOTTOM_THICKNESS = 4;
+XPI_CABLE_HOLDER_HEIGHT = 2 * XPI_CABLE_HOLDER_BORDER_THICKNESS + XPI_HOLE_DIAM; 
 
-XPI_CABLE_HOLDER_HEIGHT = XPI_HOLE_DIAM + 2 * XPI_CABLE_HOLDER_BORDER_THICKNESS;
-
-/* Cable holder offset from side*/
-XPI_CABLE_HOLDER_SIDE_OFFSET = 3;
-
-module cable_holder()
+module xpi_cable_holder()
 {
-    scale([1, 0.9, 1]) 
-    translate([0, - (XPI_CABLE_HOLDER_BOTTOM_THICKNESS + XPI_HOLE_DIAM/2), 0])
-    difference() {
-        union() {
-            cube([XPI_CABLE_HOLDER_HEIGHT, XPI_CABLE_HOLDER_BOTTOM_THICKNESS + XPI_HOLE_DIAM/2 , XPI_CABLE_HOLDER_THICKNESS]);
-            translate([XPI_CABLE_HOLDER_HEIGHT /2, 0, 0]) cylinder(d = XPI_CABLE_HOLDER_HEIGHT , h = XPI_CABLE_HOLDER_THICKNESS);
-        }
-        translate([XPI_CABLE_HOLDER_HEIGHT /2, 0, 0]) cylinder(d = XPI_HOLE_DIAM , h = XPI_CABLE_HOLDER_THICKNESS);
-        translate([XPI_CABLE_HOLDER_HEIGHT /2, 0, XPI_CABLE_HOLDER_THICKNESS/2 - ZIPTIE_WIDTH/2]) difference() {
-             cylinder(d = XPI_HOLE_DIAM +  2 * XPI_CABLE_HOLDER_BORDER_THICKNESS - 1 , h = ZIPTIE_WIDTH);
-             cylinder(d = XPI_HOLE_DIAM + 1.5 , h = ZIPTIE_WIDTH);
-            
-        }
-        translate([0, -(XPI_HOLE_DIAM/2 + XPI_CABLE_HOLDER_BORDER_THICKNESS), 0]) cube([XPI_CABLE_HOLDER_HEIGHT, XPI_HOLE_DIAM/2 + XPI_CABLE_HOLDER_BORDER_THICKNESS, XPI_CABLE_HOLDER_THICKNESS]);
-    }  
+    scale([1, 0.9, 1])
+    cable_holder(diam = XPI_HOLE_DIAM, thickness = XPI_CABLE_HOLDER_THICKNESS, border_thickness = XPI_CABLE_HOLDER_BORDER_THICKNESS, bottom_thickness = XPI_CABLE_HOLDER_BOTTOM_THICKNESS);
 }
 
 XPI_CLIPING_HOLE_WIDTH = 10;
 XPI_CLIPING_HOLE_HEIGHT = 3;
 XPI_CLIPING_HOLE_DEPTH = 0.5;
+
+/* Cable holder offset from side*/
+XPI_CABLE_HOLDER_SIDE_OFFSET = 3;
 
 module x_pulley_idler()
 {
@@ -1194,8 +1227,8 @@ module x_pulley_idler()
         translate([0, X_PULLEY_HEIGHT/2 - XPI_CLIPING_HOLE_WIDTH/2, XPI_CABLE_HOLDER_HEIGHT/2]) cube([XPI_CLIPING_HOLE_DEPTH, XPI_CLIPING_HOLE_WIDTH, XPI_CLIPING_HOLE_HEIGHT]);
     }
     /* Cable holder on side */
-    translate([0, XPI_CABLE_HOLDER_SIDE_OFFSET , 0]) rotate([0, -90, -90]) cable_holder();
-    translate([0, X_PULLEY_HEIGHT - XPI_CABLE_HOLDER_SIDE_OFFSET  - XPI_CABLE_HOLDER_THICKNESS, 0]) rotate([0, -90, -90]) cable_holder();
+    translate([0, XPI_CABLE_HOLDER_SIDE_OFFSET , 0]) rotate([0, -90, -90]) xpi_cable_holder();
+    translate([0, X_PULLEY_HEIGHT - XPI_CABLE_HOLDER_SIDE_OFFSET  - XPI_CABLE_HOLDER_THICKNESS, 0]) rotate([0, -90, -90]) xpi_cable_holder();
     
     /* Top connection with gantry */
     x_pulley_idler_gantry_link();
@@ -1228,7 +1261,7 @@ module gantry_side_cable_holder()
         translate([M3_HEAD_DIAM/2 + GCH_SIDE_THICKNESS, GCH_THICKNESS, GCH_HEIGHT - M3_HEAD_DIAM/2 - GCH_SIDE_THICKNESS]) rotate([90, 0, 0]) m3_with_head(M3_HEAD_THICKNESS + GCH_THICKNESS);
         translate([GCH_WIDTH - M3_HEAD_DIAM/2 - GCH_SIDE_THICKNESS, GCH_THICKNESS, GCH_HEIGHT - M3_HEAD_DIAM/2 - GCH_SIDE_THICKNESS]) rotate([90, 0, 0]) m3_with_head(M3_HEAD_THICKNESS + GCH_THICKNESS);
     }
-    translate([GCH_WIDTH/2- XPI_CABLE_HOLDER_HEIGHT/2, 0, 0]) cable_holder();
+    translate([GCH_WIDTH/2- XPI_CABLE_HOLDER_HEIGHT/2, 0, 0]) xpi_cable_holder();
 }
 
 GS90CH_HEIGHT = XPI_CABLE_HOLDER_HEIGHT + M3_HEAD_DIAM + 2 * GCH_SIDE_THICKNESS;
@@ -1244,7 +1277,7 @@ module gantry_side_90_cable_holder()
             translate([GCH_WIDTH - M3_HEAD_DIAM/2 - GCH_SIDE_THICKNESS, GCH_THICKNESS, 0]) rotate([90, 0, 0]) m3_with_head(M3_HEAD_THICKNESS + GCH_THICKNESS);
         }
     }
-    translate([GCH_WIDTH, 0, 0]) rotate([0, -90, 0])  cable_holder();
+    translate([GCH_WIDTH, 0, 0]) rotate([0, -90, 0])  xpi_cable_holder();
 }
 
 GBCH_THICKNESS = 1.5;
@@ -1261,5 +1294,5 @@ module flat_al_cable_holder()
         translate([GBCH_WIDTH/2 - (FLAT_AL_STRIP_WIDTH - FLAT_AL_STRIP_TOLERANCY)/2, GBCH_THICKNESS, 0]) cube([FLAT_AL_STRIP_WIDTH - FLAT_AL_STRIP_TOLERANCY, FLAT_AL_STRIP_THICKNESS, XPI_CABLE_HOLDER_THICKNESS]);
         translate([GBCH_WIDTH/2 - FLAT_AL_STRIP_WIDTH/2 + GBCH_CLIP_DEPTH, GBCH_THICKNESS + FLAT_AL_STRIP_THICKNESS, 0]) cube([FLAT_AL_STRIP_WIDTH - 2 * GBCH_CLIP_DEPTH, FLAT_AL_STRIP_THICKNESS, XPI_CABLE_HOLDER_THICKNESS]);
     }
-    translate([GBCH_WIDTH/2- XPI_CABLE_HOLDER_HEIGHT/2, 0, 0])  cable_holder();
+    translate([GBCH_WIDTH/2- XPI_CABLE_HOLDER_HEIGHT/2, 0, 0])  xpi_cable_holder();
 }
