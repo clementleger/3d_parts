@@ -9,7 +9,7 @@ BOX_THICKNESS = 40;
 BOX_SIDE_THICKNESS = 3;
 BOX_TOP_THICKNESS = 5;
 BOX_SIDE_SPACING = 15;
-BOX_BUTTON_TOP_SPACING = 20;
+BOX_BUTTON_TOP_SPACING = 25;
 BOX_BUTTON_BOTTOM_SPACING = 10;
 BOX_BUTTON_SPACING = 12;
 
@@ -40,6 +40,10 @@ SIDE_BRACKET_THICKNESS = 3;
 SIDE_BRACKET_LENGTH = 10;
 SIDE_BRACKET_WIDTH = 20;
 SIDE_BRACKET_HEIGHT = 20;
+
+TEXT_PLATE_WIDTH = BOX_FULL_WIDTH - 10;
+TEXT_PLATE_HEIGHT = 15;
+TEXT_PLATE_THICKNESS = 2;
 
 module side_bracket(w, d, h, t, hole_diam = 3)
 {
@@ -76,6 +80,9 @@ module button_box_enclosure() {
         }    
         /* Cable hole */
         translate([0, 0, -BOX_THICKNESS/2 + CABLE_DIAMETER  + CABLE_BOTTOM_OFFSET]) rotate([-90, 0, 0]) cylinder(d = CABLE_DIAMETER , h = BOX_FULL_HEIGHT);
+
+        /* Test plate button */
+        translate([0, BOX_FULL_HEIGHT/2 - TEXT_PLATE_HEIGHT/2 - 5, BOX_THICKNESS/2 - BOX_PANEL_OFFSET/4]) rotate([BOX_PANEL_ANGLE, 0, 0])# roundedcube([TEXT_PLATE_WIDTH, TEXT_PLATE_HEIGHT, TEXT_PLATE_THICKNESS], true, 1, "z");
     }
 }
 
