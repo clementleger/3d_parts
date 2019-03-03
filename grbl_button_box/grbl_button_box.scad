@@ -63,6 +63,28 @@ module side_bracket(w, d, h, t, hole_diam = 3)
     }
 }
 
+EMERGENCY_X_OFFSET = - BOX_FULL_WIDTH/2 + EMERGENCY_BUTTON_DIAM/2 + BOX_SIDE_SPACING;
+ABORT_X_OFFSET = - BOX_FULL_WIDTH/2 + EMERGENCY_BUTTON_DIAM + BOX_SIDE_SPACING +  BOX_BUTTON_SPACING + ABORT_BUTTON_DIAM/2;
+HOLD_X_OFFSET = - BOX_FULL_WIDTH/2 + EMERGENCY_BUTTON_DIAM + BOX_SIDE_SPACING +  BOX_BUTTON_SPACING + ABORT_BUTTON_DIAM +  BOX_BUTTON_SPACING + HOLD_BUTTON_DIAM/2;
+RESUME_X_OFFSET = - BOX_FULL_WIDTH/2 + EMERGENCY_BUTTON_DIAM + BOX_SIDE_SPACING +  BOX_BUTTON_SPACING + ABORT_BUTTON_DIAM +  BOX_BUTTON_SPACING + HOLD_BUTTON_DIAM +  BOX_BUTTON_SPACING + RESUME_BUTTON_DIAM/2;
+
+TEXT_THICKNESS = 1;
+
+module text_plate(delta)
+{
+    roundedcube([TEXT_PLATE_WIDTH, TEXT_PLATE_HEIGHT, TEXT_PLATE_THICKNESS], true, 1, "z");
+    /* Emergency text */
+    translate([EMERGENCY_X_OFFSET, 0, TEXT_PLATE_THICKNESS/2]) linear_extrude(height = TEXT_THICKNESS) text(text = "Emergency", size = 5, halign= "center", valign= "center");
+    /* Abort */
+    translate([ABORT_X_OFFSET, 0, TEXT_PLATE_THICKNESS/2]) linear_extrude(height = TEXT_THICKNESS) text(text = "Abort", size = 5, halign= "center", valign= "center");
+    /* Hold */
+    translate([HOLD_X_OFFSET, 0, TEXT_PLATE_THICKNESS/2]) linear_extrude(height = TEXT_THICKNESS) text(text = "Hold", size = 5, halign= "center", valign= "center");
+    /* Resume */
+    translate([RESUME_X_OFFSET, 0, TEXT_PLATE_THICKNESS/2]) linear_extrude(height = TEXT_THICKNESS) text(text = "Resume", size = 5, halign= "center", valign= "center");
+}
+
+//text_plate(-0.2);
+
 module button_box_enclosure() {
     difference() {
         button_box_block();
@@ -70,19 +92,19 @@ module button_box_enclosure() {
 
         translate([0, - BOX_FULL_HEIGHT/2 + EMERGENCY_BUTTON_DIAM/2 + BOX_BUTTON_BOTTOM_SPACING, BOX_THICKNESS/2 - BOX_PANEL_OFFSET/2]) { 
             /* Emergency button */
-            translate([- BOX_FULL_WIDTH/2 + EMERGENCY_BUTTON_DIAM/2 + BOX_SIDE_SPACING, 0, 0]) rotate([BOX_PANEL_ANGLE, 0, 0]) cylinder(d = EMERGENCY_BUTTON_DIAM, h = BOX_THICKNESS, center = true);
+            translate([EMERGENCY_X_OFFSET, 0, 0]) rotate([BOX_PANEL_ANGLE, 0, 0]) cylinder(d = EMERGENCY_BUTTON_DIAM, h = BOX_THICKNESS, center = true);
             /* Abort button */
-            translate([- BOX_FULL_WIDTH/2 + EMERGENCY_BUTTON_DIAM + BOX_SIDE_SPACING +  BOX_BUTTON_SPACING + ABORT_BUTTON_DIAM/2, 0, 0]) rotate([BOX_PANEL_ANGLE, 0, 0]) cylinder(d = ABORT_BUTTON_DIAM, h = BOX_THICKNESS, center = true);
+            translate([ABORT_X_OFFSET, 0, 0]) rotate([BOX_PANEL_ANGLE, 0, 0]) cylinder(d = ABORT_BUTTON_DIAM, h = BOX_THICKNESS, center = true);
             /* Hold button */
-            translate([- BOX_FULL_WIDTH/2 + EMERGENCY_BUTTON_DIAM + BOX_SIDE_SPACING +  BOX_BUTTON_SPACING + ABORT_BUTTON_DIAM +  BOX_BUTTON_SPACING + HOLD_BUTTON_DIAM/2, 0, 0]) rotate([BOX_PANEL_ANGLE, 0, 0]) cylinder(d = HOLD_BUTTON_DIAM, h = BOX_THICKNESS, center = true);
+            translate([HOLD_X_OFFSET, 0, 0]) rotate([BOX_PANEL_ANGLE, 0, 0]) cylinder(d = HOLD_BUTTON_DIAM, h = BOX_THICKNESS, center = true);
             /* Resume button */
-            translate([- BOX_FULL_WIDTH/2 + EMERGENCY_BUTTON_DIAM + BOX_SIDE_SPACING +  BOX_BUTTON_SPACING + ABORT_BUTTON_DIAM +  BOX_BUTTON_SPACING + HOLD_BUTTON_DIAM +  BOX_BUTTON_SPACING + RESUME_BUTTON_DIAM/2, 0, 0]) rotate([BOX_PANEL_ANGLE, 0, 0]) cylinder(d = RESUME_BUTTON_DIAM, h = BOX_THICKNESS, center = true);
+            translate([RESUME_X_OFFSET, 0, 0]) rotate([BOX_PANEL_ANGLE, 0, 0]) cylinder(d = RESUME_BUTTON_DIAM, h = BOX_THICKNESS, center = true);
         }    
         /* Cable hole */
         translate([0, 0, -BOX_THICKNESS/2 + CABLE_DIAMETER  + CABLE_BOTTOM_OFFSET]) rotate([-90, 0, 0]) cylinder(d = CABLE_DIAMETER , h = BOX_FULL_HEIGHT);
 
         /* Test plate button */
-        translate([0, BOX_FULL_HEIGHT/2 - TEXT_PLATE_HEIGHT/2 - 5, BOX_THICKNESS/2 - BOX_PANEL_OFFSET/4]) rotate([BOX_PANEL_ANGLE, 0, 0])# roundedcube([TEXT_PLATE_WIDTH, TEXT_PLATE_HEIGHT, TEXT_PLATE_THICKNESS], true, 1, "z");
+        translate([0, BOX_FULL_HEIGHT/2 - TEXT_PLATE_HEIGHT/2 - 5, BOX_THICKNESS/2 - BOX_PANEL_OFFSET/4]) rotate([BOX_PANEL_ANGLE, 0, 0])# text_plate(0.2);
     }
 }
 
