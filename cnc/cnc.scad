@@ -270,7 +270,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //z_carriage_moving_base();
 //z_carriage_tool_support();
 //laser_tool_support();
-pen_tool_support();
+//pen_tool_support();
+flex_dremel_support();
 //z_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
@@ -1135,7 +1136,7 @@ PTS_WIDTH = PTS_PEN_HOLDER_WIDTH;
 PTS_HEIGHT = ZTS_HEIGHT;
 PTS_THICKNESS = ZTS_THICKNESS;
 
-PEN_SPRING_HOLDER_HEIGHT = 35;
+PEN_SPRING_HOLDER_HEIGHT = 30;
 
 module pen_tool_support()
 {
@@ -1160,6 +1161,37 @@ module pen_tool_support()
     difference() {
     roundedcube([PTS_PEN_HOLDER_WIDTH, PEN_SPRING_HOLDER_HEIGHT, LASER_SUPPORT_THICKNESS + PTS_PEN_HOLDER_WIDTH], false, 2, "ymax");
         translate([PTS_PEN_HOLDER_WIDTH/2, 0, LASER_SUPPORT_THICKNESS + PTS_PEN_HOLDER_BOTTOM_THICKNESS + PTS_PEN_DIAM/2]) rotate([-90, 0, 0]) #cylinder(d = PTS_PEN_DIAM, h = PEN_SPRING_HOLDER_HEIGHT - 5);
+    }
+}
+
+FD_SUPPORT_WIDTH = ZTS_WIDTH;
+FD_SUPPORT_HEIGHT = 110;
+FD_SUPPORT_THICKNESS = 4;
+FD_HOLE_SPACING = 20;
+FD_HOLE_TOP_MARGIN = 10;
+FD_HOLE_BOTTOM_MARGIN = 10;
+
+FD_BASE_OFFSET = 15;
+
+module fd_holes()
+{
+    translate([0, 0, LASER_SUPPORT_THICKNESS]) mirror([0, 0, 1]) {
+        translate([FD_HOLE_SPACING/2, 0, 0]) m3_with_head(h = LASER_SUPPORT_THICKNESS);
+        translate([-FD_HOLE_SPACING/2, 0, 0]) m3_with_head(h = LASER_SUPPORT_THICKNESS);
+    }
+}
+
+module flex_dremel_support()
+{
+    difference() {
+       roundedcube([FD_SUPPORT_WIDTH, FD_SUPPORT_HEIGHT, FD_SUPPORT_THICKNESS], false, 2, "z");
+        translate([0, FD_BASE_OFFSET, 0]) zts_attachment_holes(nut = false, y_offset = ZTS_HOLES_TOP_OFFSET, h  = LASER_SUPPORT_THICKNESS);
+        translate([FD_SUPPORT_WIDTH /2, FD_HOLE_BOTTOM_MARGIN, 0]) fd_holes();
+        translate([FD_SUPPORT_WIDTH/2, FD_SUPPORT_HEIGHT - FD_HOLE_TOP_MARGIN, 0]) fd_holes();
+    }
+    translate([0, FD_BASE_OFFSET, 0]) {
+        translate([0, ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 180, 90]) sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
+        translate([0, ZTS_HEIGHT - ZTS_RAIL_OFFSET_FROM_SIDE, 0]) rotate([90, 180, 90]) sliding_rails(ZTS_SLIDE_RAIL_WIDTH_BOTTOM, ZTS_SLIDE_RAIL_WIDTH_TOP, ZTS_SLIDE_RAIL_HEIGHT, ZTS_WIDTH);
     }
 }
 
