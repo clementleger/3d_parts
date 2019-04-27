@@ -271,7 +271,8 @@ ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
 //z_carriage_tool_support();
 //laser_tool_support();
 //pen_tool_support();
-flex_dremel_support();
+//flex_dremel_support();
+flex_dremel_mount_blocks();
 //z_carriage_motor_holder();
 //x_endstop_holder();
 //y_pulley_idler();
@@ -1185,7 +1186,7 @@ module flex_dremel_support()
 {
     difference() {
        roundedcube([FD_SUPPORT_WIDTH, FD_SUPPORT_HEIGHT, FD_SUPPORT_THICKNESS], false, 2, "z");
-        translate([0, FD_BASE_OFFSET, 0]) zts_attachment_holes(nut = false, y_offset = ZTS_HOLES_TOP_OFFSET, h  = LASER_SUPPORT_THICKNESS);
+        translate([0, FD_BASE_OFFSET, 0]) zts_attachment_holes(nut = false);
         translate([FD_SUPPORT_WIDTH /2, FD_HOLE_BOTTOM_MARGIN, 0]) fd_holes();
         translate([FD_SUPPORT_WIDTH/2, FD_SUPPORT_HEIGHT - FD_HOLE_TOP_MARGIN, 0]) fd_holes();
     }
@@ -1197,23 +1198,80 @@ module flex_dremel_support()
 
 /* Flex dremel holder */
 
-FLEX_DREMEL_MIN_DIAM = 18;
-FLEX_DREMEL_MAX_DIAM = 22;
+FLEX_DREMEL_MIN_DIAM = 17;
+FLEX_DREMEL_MAX_DIAM = 21;
 
-FD_MOUNT_BLOCK_SIDE_THICKNESS = 6;
+FD_MOUNT_BLOCK_SIDE_THICKNESS = 8;
 FD_MOUNT_BLOCK_WIDTH = FLEX_DREMEL_MAX_DIAM + FD_MOUNT_BLOCK_SIDE_THICKNESS * 2;
-FD_MOUNT_BLOCK_HEIGHT = FLEX_DREMEL_MAX_DIAM/2 + 2;
-FD_MOUNT_BLOCK_THICKNESS = 10;
+FD_MOUNT_BLOCK_EXTRA_THICKNESS = 2;
+FD_MOUNT_BLOCK_HEIGHT = FLEX_DREMEL_MAX_DIAM/2 + FD_MOUNT_BLOCK_EXTRA_THICKNESS;
+FD_MOUNT_BLOCK_THICKNESS = 12;
+FD_MOUNT_BLOCK_HOLE_OFFSET_FROM_SIDE = 4;
 
-module flex_dremel_mount_block()
+module m3_with_nut(spacing, nut_offset)
+{
+    EXTRA_M3_NUT_DIAM = (FD_MOUNT_BLOCK_WIDTH - spacing) / 2;
+    NUT_X_OFFSET = (M3_NUT_DIAM + EXTRA_M3_NUT_DIAM)/2;
+    translate([ -spacing/2, 0, 0]) {
+        cylinder(d = M3_DIAM, h = FD_MOUNT_BLOCK_HEIGHT/2);
+        translate ([-NUT_X_OFFSET + M3_NUT_DIAM/2, 0, nut_offset]) cube([M3_NUT_DIAM + EXTRA_M3_NUT_DIAM, M3_NUT_DIAM, M3_NUT_THICKNESS], center = true); 
+    }
+    translate([ spacing/2, 0, 0]) {
+        cylinder(d = M3_DIAM, h = FD_MOUNT_BLOCK_HEIGHT/2);
+        translate ([NUT_X_OFFSET - M3_NUT_DIAM/2, 0, nut_offset]) cube([M3_NUT_DIAM + EXTRA_M3_NUT_DIAM, M3_NUT_DIAM, M3_NUT_THICKNESS], center = true); 
+    }   
+}
+
+module flex_dremel_mount_block_lower()
 {
     difference() {
         cube([FD_MOUNT_BLOCK_WIDTH, FD_MOUNT_BLOCK_THICKNESS, FD_MOUNT_BLOCK_HEIGHT]);
         translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS, FD_MOUNT_BLOCK_HEIGHT]) rotate([90, 0, 0]) cylinder(d1 = FLEX_DREMEL_MAX_DIAM, d2 = FLEX_DREMEL_MIN_DIAM, h = FD_MOUNT_BLOCK_THICKNESS);
+        
+        /* Bottom holes to attach the block on the mount */
+        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS/2, 0]) {
+            m3_with_nut(FD_HOLE_SPACING, FD_MOUNT_BLOCK_EXTRA_THICKNESS + M3_NUT_THICKNESS/2);
+        }
+
+        /* Bottom holes to attach the block on the mount */
+        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS/2, FD_MOUNT_BLOCK_HEIGHT - FD_MOUNT_BLOCK_HEIGHT/2]) {
+            m3_with_nut(FD_MOUNT_BLOCK_WIDTH - FD_MOUNT_BLOCK_HOLE_OFFSET_FROM_SIDE*2, FD_MOUNT_BLOCK_EXTRA_THICKNESS + M3_NUT_THICKNESS/2);
+        }
+
     }
 }
-translate([FD_SUPPORT_WIDTH/2 - FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS/2, FD_SUPPORT_THICKNESS]) 
-flex_dremel_mount_block();
+
+module m3_spaced_holes(spacing)
+{
+    translate([ -spacing/2, 0, 0]) {
+        cylinder(d = M3_DIAM, h = FD_MOUNT_BLOCK_HEIGHT);
+        cylinder(d = M3_HEAD_DIAM, h = M3_HEAD_THICKNESS);
+    }
+    translate([ spacing/2, 0, 0]) {
+        cylinder(d = M3_DIAM, h = FD_MOUNT_BLOCK_HEIGHT);
+        cylinder(d = M3_HEAD_DIAM, h = M3_HEAD_THICKNESS);
+    }   
+}
+
+module flex_dremel_mount_block_upper()
+{
+    difference() {
+        cube([FD_MOUNT_BLOCK_WIDTH, FD_MOUNT_BLOCK_THICKNESS, FD_MOUNT_BLOCK_HEIGHT]);
+        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS, FD_MOUNT_BLOCK_HEIGHT]) rotate([90, 0, 0]) cylinder(d1 = FLEX_DREMEL_MAX_DIAM, d2 = FLEX_DREMEL_MIN_DIAM, h = FD_MOUNT_BLOCK_THICKNESS);
+        
+        /* Bottom holes to attach the block on the mount */
+        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS/2, 0]) {
+            m3_spaced_holes(FD_MOUNT_BLOCK_WIDTH - FD_MOUNT_BLOCK_HOLE_OFFSET_FROM_SIDE*2);
+        }
+    }
+}
+
+
+module flex_dremel_mount_blocks()
+{
+    flex_dremel_mount_block_lower();
+    translate([0, 20, 0]) flex_dremel_mount_block_upper(); 
+}
 
 X_PULLEY_IDLER_BEARING_THICKNESS = 13;
 X_PULLEY_IDLER_OUTER_THICKNESS = 3;
