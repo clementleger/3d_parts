@@ -4,6 +4,31 @@ include <../common/threads.scad>
 include <../common/chamfers.scad>
 include <../common/timing_belts.scad>
 
+//y_endstop();
+//y_rail_support();
+//y_gantry_side();
+//mirror([1, 0, 0]) x_motor_holder();
+//x_gantry_middle_part();
+//y_belt_blocker();
+//y_motor_holder();
+//x_rail_stopper();
+//x_belt_attachment();
+//z_carriage_fixed_base();
+//z_carriage_moving_base();
+//z_carriage_tool_support();
+//laser_tool_support();
+laser_power_support();
+//pen_tool_support();
+//flex_dremel_support();
+//flex_dremel_mount_blocks();
+//flex_dremel_mount_bottom_block();
+//z_carriage_motor_holder();
+//x_endstop_holder();
+//y_pulley_idler();
+//x_pulley_idler();
+//gantry_side_cable_holder();
+//gantry_side_90_cable_holder();
+//flat_al_cable_holder();
 
 SMALL_TOLERANCY = 0.2;
 
@@ -256,30 +281,6 @@ ZIPTIE_MOUNT_HEIGHT = 6;
 ZIPTIE_MOUNT_ADD_THICKNESS = 1.5;
 /* Full ziptie mount thickness */
 ZIPTIE_MOUNT_THICKNESS = ZIPTIE_MOUNT_ADD_THICKNESS + ZIPTIE_THICKNESS;
-
-//y_endstop();
-//y_rail_support();
-//y_gantry_side();
-//mirror([1, 0, 0]) x_motor_holder();
-//x_gantry_middle_part();
-//y_belt_blocker();
-//y_motor_holder();
-//x_rail_stopper();
-//x_belt_attachment();
-//z_carriage_fixed_base();
-//z_carriage_moving_base();
-//z_carriage_tool_support();
-//laser_tool_support();
-//pen_tool_support();
-//flex_dremel_support();
-flex_dremel_mount_blocks();
-//z_carriage_motor_holder();
-//x_endstop_holder();
-//y_pulley_idler();
-//x_pulley_idler();
-//gantry_side_cable_holder();
-//gantry_side_90_cable_holder();
-//flat_al_cable_holder();
 
 module sliding_rails(width1, width2, height, thickness) {
     linear_extrude(height = thickness)  polygon(points = [[-width1/2, 0],[width1/2, 0],[width2/2, height],[-width2/2, height]]);
@@ -1197,14 +1198,13 @@ module flex_dremel_support()
 }
 
 /* Flex dremel holder */
-
-FLEX_DREMEL_MIN_DIAM = 17;
-FLEX_DREMEL_MAX_DIAM = 21;
+FLEX_DREMEL_TOP_MIN_DIAM = 19;
+FLEX_DREMEL_TOP_MAX_DIAM = 22;
 
 FD_MOUNT_BLOCK_SIDE_THICKNESS = 8;
-FD_MOUNT_BLOCK_WIDTH = FLEX_DREMEL_MAX_DIAM + FD_MOUNT_BLOCK_SIDE_THICKNESS * 2;
+FD_MOUNT_BLOCK_WIDTH = FLEX_DREMEL_TOP_MAX_DIAM + FD_MOUNT_BLOCK_SIDE_THICKNESS * 2;
 FD_MOUNT_BLOCK_EXTRA_THICKNESS = 2;
-FD_MOUNT_BLOCK_HEIGHT = FLEX_DREMEL_MAX_DIAM/2 + FD_MOUNT_BLOCK_EXTRA_THICKNESS;
+FD_MOUNT_BLOCK_HEIGHT = FLEX_DREMEL_TOP_MAX_DIAM/2 + FD_MOUNT_BLOCK_EXTRA_THICKNESS;
 FD_MOUNT_BLOCK_THICKNESS = 12;
 FD_MOUNT_BLOCK_HOLE_OFFSET_FROM_SIDE = 4;
 
@@ -1226,7 +1226,7 @@ module flex_dremel_mount_block_lower()
 {
     difference() {
         cube([FD_MOUNT_BLOCK_WIDTH, FD_MOUNT_BLOCK_THICKNESS, FD_MOUNT_BLOCK_HEIGHT]);
-        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS, FD_MOUNT_BLOCK_HEIGHT]) rotate([90, 0, 0]) cylinder(d1 = FLEX_DREMEL_MAX_DIAM, d2 = FLEX_DREMEL_MIN_DIAM, h = FD_MOUNT_BLOCK_THICKNESS);
+        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS, FD_MOUNT_BLOCK_HEIGHT]) rotate([90, 0, 0]) cylinder(d1 = FLEX_DREMEL_TOP_MAX_DIAM, d2 = FLEX_DREMEL_TOP_MIN_DIAM, h = FD_MOUNT_BLOCK_THICKNESS);
         
         /* Bottom holes to attach the block on the mount */
         translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS/2, 0]) {
@@ -1237,7 +1237,6 @@ module flex_dremel_mount_block_lower()
         translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS/2, FD_MOUNT_BLOCK_HEIGHT - FD_MOUNT_BLOCK_HEIGHT/2]) {
             m3_with_nut(FD_MOUNT_BLOCK_WIDTH - FD_MOUNT_BLOCK_HOLE_OFFSET_FROM_SIDE*2, FD_MOUNT_BLOCK_EXTRA_THICKNESS + M3_NUT_THICKNESS/2);
         }
-
     }
 }
 
@@ -1257,7 +1256,7 @@ module flex_dremel_mount_block_upper()
 {
     difference() {
         cube([FD_MOUNT_BLOCK_WIDTH, FD_MOUNT_BLOCK_THICKNESS, FD_MOUNT_BLOCK_HEIGHT]);
-        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS, FD_MOUNT_BLOCK_HEIGHT]) rotate([90, 0, 0]) cylinder(d1 = FLEX_DREMEL_MAX_DIAM, d2 = FLEX_DREMEL_MIN_DIAM, h = FD_MOUNT_BLOCK_THICKNESS);
+        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS, FD_MOUNT_BLOCK_HEIGHT]) rotate([90, 0, 0]) cylinder(d1 = FLEX_DREMEL_TOP_MAX_DIAM, d2 = FLEX_DREMEL_TOP_MIN_DIAM, h = FD_MOUNT_BLOCK_THICKNESS);
         
         /* Bottom holes to attach the block on the mount */
         translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS/2, 0]) {
@@ -1271,6 +1270,26 @@ module flex_dremel_mount_blocks()
 {
     flex_dremel_mount_block_lower();
     translate([0, 20, 0]) flex_dremel_mount_block_upper(); 
+}
+
+FD_MOUNT_BOTTOM_RADIUS = 4;
+FLEX_DREMEL_BOTTOM_MIN_DIAM = 17;
+FLEX_DREMEL_BOTTOM_MAX_DIAM = 21;
+
+module flex_dremel_mount_bottom_block()
+{
+        difference() {
+            union () {
+                cube([FLEX_DREMEL_BOTTOM_MAX_DIAM + FD_MOUNT_BLOCK_SIDE_THICKNESS * 2, FD_MOUNT_BLOCK_THICKNESS, FLEX_DREMEL_BOTTOM_MAX_DIAM ]);
+                roundedcube([FD_MOUNT_BLOCK_WIDTH, FD_MOUNT_BLOCK_THICKNESS, FLEX_DREMEL_BOTTOM_MAX_DIAM + FD_MOUNT_BOTTOM_RADIUS], false, FD_MOUNT_BOTTOM_RADIUS, "y" );
+            }
+        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS, FD_MOUNT_BLOCK_HEIGHT]) rotate([90, 0, 0]) cylinder(d1 = FLEX_DREMEL_BOTTOM_MAX_DIAM, d2 = FLEX_DREMEL_BOTTOM_MIN_DIAM, h = FD_MOUNT_BLOCK_THICKNESS);
+        
+        /* Bottom holes to attach the block on the mount */
+        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS/2, 0]) {
+            m3_with_nut(FD_HOLE_SPACING, FD_MOUNT_BLOCK_EXTRA_THICKNESS + M3_NUT_THICKNESS/2);
+        }
+    }
 }
 
 X_PULLEY_IDLER_BEARING_THICKNESS = 13;
@@ -1418,3 +1437,23 @@ module flat_al_cable_holder()
     }
     translate([GBCH_WIDTH/2- XPI_CABLE_HOLDER_HEIGHT/2, 0, 0])  xpi_cable_holder();
 }
+
+LPS_HOLE_SPACING = 60;
+LPS_HEIGHT = LPS_HOLE_SPACING + 10;
+LPS_WIDTH = 20;
+LPS_THICKNESS = 5;
+LPS_SLIDING_RAIL_SPACING = (X_PULLEY_HEIGHT / 5 * 4) - (X_PULLEY_HEIGHT / 5);
+
+module laser_power_support()
+{
+    difference()  {
+        roundedcube([LPS_WIDTH, LPS_HEIGHT, LPS_THICKNESS], false, 0.70, "zmin");
+    translate([LPS_WIDTH/2, LPS_HEIGHT/2 - LPS_HOLE_SPACING/2, 0]) m3_with_head(LPS_THICKNESS);
+    translate([LPS_WIDTH/2, LPS_HEIGHT/2 + LPS_HOLE_SPACING/2, 0]) m3_with_head(LPS_THICKNESS);
+        
+    }
+    translate([0, LPS_HEIGHT/2 - LPS_SLIDING_RAIL_SPACING/2, LPS_THICKNESS]) rotate([90, 0, 90]) sliding_rails(XPI_SLIDE_RAIL_WIDTH_BOTTOM - 0.1, XPI_SLIDE_RAIL_WIDTH_TOP - 0.1, XPI_SLIDE_RAIL_HEIGHT - 0.1, LPS_WIDTH);
+    translate([0, LPS_HEIGHT/2 + LPS_SLIDING_RAIL_SPACING/2, LPS_THICKNESS]) rotate([90, 0, 90]) sliding_rails(XPI_SLIDE_RAIL_WIDTH_BOTTOM - 0.1, XPI_SLIDE_RAIL_WIDTH_TOP - 0.1, XPI_SLIDE_RAIL_HEIGHT - 0.1, LPS_WIDTH);
+}
+
+
