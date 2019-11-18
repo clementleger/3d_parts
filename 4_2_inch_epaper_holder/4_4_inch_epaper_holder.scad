@@ -4,10 +4,10 @@ SCREEN_WIDTH = 86;
 SCREEN_HEIGHT  = 64;
 
 BOX_TOP_HEIGHT = 8;
-BOX_BOTTOM_HEIGHT = 26; 
+BOX_BOTTOM_HEIGHT = 24; 
 BOX_SIDE_WIDTH = 13;
 BOX_ANGLE = 7.5;
-BOX_DEPTH = 28;
+BOX_DEPTH = 32;
 
 BOX_FULL_HEIGHT =  SCREEN_HEIGHT + BOX_BOTTOM_HEIGHT + BOX_TOP_HEIGHT;
 BOX_FULL_WIDTH = SCREEN_WIDTH + 2 * BOX_SIDE_WIDTH;
@@ -39,17 +39,6 @@ module box_feet(rail_offset=0, thickness = FEET_THICKNESS) {
 }
 
 $fn = 30;
-module button_full(width, height, thickness) { 
-    cube([width, thickness, height/3 * 2]);
-    translate([width/2, 0, height/3 * 2]) rotate([-90, 0, 0]) cylinder(d = width, h = thickness);
-}
-
-module button_cut(width, height, thickness) {
-    difference() {
-        button_full(width, height, thickness);
-        translate([1/2, 1, 0]) button_full(width - 1, height - 0.5, thickness);
-    }
-}
 
 module main_box_case_without_rail () {
     roundedcube([BOX_FULL_WIDTH, BOX_BOTTOM_HEIGHT, BOX_THICKNESS], false, ROUNDING, "zmin");
@@ -77,17 +66,17 @@ BUTTON_HEIGHT = 15;
 BUTTON_THICKNESS = BOX_THICKNESS + 0.1;
 BUTTON_SPACING = 5;
 
-BUTTON_BOTTOM_OFFSET = BOX_FULL_HEIGHT/4;
+BUTTON_BOTTOM_OFFSET = BOX_FULL_HEIGHT/3;
+BUTTON_FRONT_OFFSET = BOX_DEPTH/2;
 
 module main_box_case () {
     difference() {
         main_box_case_without_rail();
         rotate([-BOX_ANGLE, 0, 0]) translate([0, -FEET_THICKNESS + ROUNDING, 0]) translate([0, 0, -ROUNDING]) box_feet(0, FEET_THICKNESS);
-
-        translate([BOX_THICKNESS, BUTTON_BOTTOM_OFFSET, BOX_THICKNESS * 4])  rotate([0, 0, 90]) button_cut(BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_THICKNESS);
-        translate([BOX_THICKNESS, BUTTON_BOTTOM_OFFSET + BUTTON_WIDTH + BUTTON_SPACING, BOX_THICKNESS * 4]) rotate([0, 0, 90]) button_cut(BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_THICKNESS);
-        translate([BOX_THICKNESS, BUTTON_BOTTOM_OFFSET + 2 * BUTTON_WIDTH + 2 * BUTTON_SPACING, BOX_THICKNESS * 4]) rotate([0, 0, 90]) button_cut(BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_THICKNESS);
-        translate([BOX_THICKNESS, BUTTON_BOTTOM_OFFSET + 3 * BUTTON_WIDTH + 3 * BUTTON_SPACING, BOX_THICKNESS * 4]) rotate([0, 0, 90]) button_cut(BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_THICKNESS);
+        translate([0, BUTTON_BOTTOM_OFFSET, BUTTON_FRONT_OFFSET])  rotate([0, 90, 0]) cylinder(d = BUTTON_WIDTH, h = BOX_THICKNESS);
+        translate([0, BUTTON_BOTTOM_OFFSET + BUTTON_WIDTH + BUTTON_SPACING, BUTTON_FRONT_OFFSET]) rotate([0, 90, 0]) cylinder(d = BUTTON_WIDTH, h = BOX_THICKNESS);
+        translate([0, BUTTON_BOTTOM_OFFSET + 2 * BUTTON_WIDTH + 2 * BUTTON_SPACING, BUTTON_FRONT_OFFSET]) rotate([0, 90, 0]) cylinder(d = BUTTON_WIDTH, h = BOX_THICKNESS);
+        translate([0, BUTTON_BOTTOM_OFFSET + 3 * BUTTON_WIDTH + 3 * BUTTON_SPACING, BUTTON_FRONT_OFFSET]) rotate([0, 90, 0]) cylinder(d = BUTTON_WIDTH, h = BOX_THICKNESS);
 
     }
 }
@@ -108,6 +97,6 @@ module back_cover (){
     translate([0, BACKCOVER_HEIGHT - BLOCKER_THICKNESS, BLOCKER_HEIGHT + BOX_THICKNESS + BLOCKER_THICKNESS/2]) rotate([0, 90, 0]) cylinder(d = BLOCKER_THICKNESS,h = BACKCOVER_WIDTH);
 }
 
-back_cover();
-//main_box_case();
+//back_cover();
+main_box_case();
 //box_feet(5);
