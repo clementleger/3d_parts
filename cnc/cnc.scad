@@ -17,10 +17,10 @@ include <../common/timing_belts.scad>
 //z_carriage_moving_base();
 //z_carriage_tool_support();
 //laser_tool_support();
-laser_power_support();
+//laser_power_support();
 //pen_tool_support();
 //flex_dremel_support();
-//flex_dremel_mount_blocks();
+flex_dremel_mount_blocks();
 //flex_dremel_mount_bottom_block();
 //z_carriage_motor_holder();
 //x_endstop_holder();
@@ -1208,16 +1208,16 @@ FD_MOUNT_BLOCK_HEIGHT = FLEX_DREMEL_TOP_MAX_DIAM/2 + FD_MOUNT_BLOCK_EXTRA_THICKN
 FD_MOUNT_BLOCK_THICKNESS = 12;
 FD_MOUNT_BLOCK_HOLE_OFFSET_FROM_SIDE = 4;
 
-module m3_with_nut(spacing, nut_offset)
+module m3_with_nut(spacing, nut_offset, length = FD_MOUNT_BLOCK_HEIGHT/2)
 {
     EXTRA_M3_NUT_DIAM = (FD_MOUNT_BLOCK_WIDTH - spacing) / 2;
     NUT_X_OFFSET = (M3_NUT_DIAM + EXTRA_M3_NUT_DIAM)/2;
     translate([ -spacing/2, 0, 0]) {
-        cylinder(d = M3_DIAM, h = FD_MOUNT_BLOCK_HEIGHT/2);
+        cylinder(d = M3_DIAM, h = length);
         translate ([-NUT_X_OFFSET + M3_NUT_DIAM/2, 0, nut_offset]) cube([M3_NUT_DIAM + EXTRA_M3_NUT_DIAM, M3_NUT_DIAM, M3_NUT_THICKNESS], center = true); 
     }
     translate([ spacing/2, 0, 0]) {
-        cylinder(d = M3_DIAM, h = FD_MOUNT_BLOCK_HEIGHT/2);
+        cylinder(d = M3_DIAM, h = length);
         translate ([NUT_X_OFFSET - M3_NUT_DIAM/2, 0, nut_offset]) cube([M3_NUT_DIAM + EXTRA_M3_NUT_DIAM, M3_NUT_DIAM, M3_NUT_THICKNESS], center = true); 
     }   
 }
@@ -1233,9 +1233,9 @@ module flex_dremel_mount_block_lower()
             m3_with_nut(FD_HOLE_SPACING, FD_MOUNT_BLOCK_EXTRA_THICKNESS + M3_NUT_THICKNESS/2);
         }
 
-        /* Bottom holes to attach the block on the mount */
-        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS/2, FD_MOUNT_BLOCK_HEIGHT - FD_MOUNT_BLOCK_HEIGHT/2]) {
-            m3_with_nut(FD_MOUNT_BLOCK_WIDTH - FD_MOUNT_BLOCK_HOLE_OFFSET_FROM_SIDE*2, FD_MOUNT_BLOCK_EXTRA_THICKNESS + M3_NUT_THICKNESS/2);
+        /* Top holes to attach the block on the mount */
+        translate([FD_MOUNT_BLOCK_WIDTH/2, FD_MOUNT_BLOCK_THICKNESS/2, FD_MOUNT_BLOCK_HEIGHT - FD_MOUNT_BLOCK_HEIGHT/2 - 1]) {
+            m3_with_nut(FD_MOUNT_BLOCK_WIDTH - FD_MOUNT_BLOCK_HOLE_OFFSET_FROM_SIDE*2, FD_MOUNT_BLOCK_EXTRA_THICKNESS + M3_NUT_THICKNESS/2, 10);
         }
     }
 }
