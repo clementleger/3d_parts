@@ -132,5 +132,5 @@ module bike_hook() {
 
 difference() {
     bike_hook();
-    translate([-(PLATE_HEIGHT / 2 + 5), 0, 0 ]) cube([10, 200, 200], center = true); 
+    translate([-(PLATE_HEIGHT / 2 + 5), 0, 0 ]) cube([10, 200, 300], center = true);
 }
