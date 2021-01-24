@@ -3,11 +3,11 @@
 //Use as you like, but give credit where credit is due.
 
 //Height of pulley
-height=10;
+height=8;
 //Overall Diameter of pulley
-OD=50;
+OD=48;
 //Bearing Overall Diameter
-Bearing_OD = 22;
+Bearing_OD = 22.2;
 Bearing_Flange_ID = Bearing_OD-4;
 //Bearing thickness.
 Bearing_Thickness = 7;

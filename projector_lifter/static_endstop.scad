@@ -1,0 +1,19 @@
+include <../common/roundedcube.scad>
+include <../common/chamfered_screw_hole.scad>
+
+ENDSTOP_WIDTH = 20;
+ENDSTOP_HEIGHT = 40;
+ENDSTOP_THICKNESS = 15;
+
+SCREW_HEAD_DIAM = 8;
+SCREW_DIAM = 4;
+SCREW_HEAD_THICKNESS = 2;
+SCREW_DEPTH = 4;
+
+$fn = 20;
+
+difference() {
+roundedcube([ENDSTOP_WIDTH, ENDSTOP_HEIGHT, ENDSTOP_THICKNESS], false, 2, "zmax");
+
+translate([ENDSTOP_WIDTH/2, ENDSTOP_HEIGHT/4, 0]) #chamfered_oblong_screw_hole(SCREW_DIAM, ENDSTOP_THICKNESS - SCREW_HEAD_THICKNESS - SCREW_DEPTH, SCREW_HEAD_DIAM, SCREW_HEAD_THICKNESS, ENDSTOP_HEIGHT/2, SCREW_DEPTH);
+}
