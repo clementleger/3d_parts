@@ -14,13 +14,13 @@ $fn = 100;
 difference() {
     union () {
         cylinder(d = FULL_DIAM, h =HEIGHT);
-        translate([-FULL_DIAM/2, 0, 0]) cube([FULL_DIAM, FULL_DIAM/2, HEIGHT]);
+        translate([-FULL_DIAM/2, 0, 0]) cube([FULL_DIAM, FULL_DIAM/3 * 2, HEIGHT]);
     }
     
     translate([0, 0, THICKNESS])  {
         cylinder(d = ROD_DIAM, h =HEIGHT);
-        translate([-ROD_DIAM/2, 0, 0]) cube([ROD_DIAM, FULL_DIAM/2, HEIGHT]);
+        translate([-ROD_DIAM/2, 0, 0]) cube([ROD_DIAM, FULL_DIAM/3 * 2, HEIGHT]);
     }
     
-    cylinder(d1 = SCREW_DIAM, d2 = SCREW_HEAD_DIAM, h = THICKNESS);
+    translate([0, FULL_DIAM/3, 0])cylinder(d1 = SCREW_DIAM, d2 = SCREW_HEAD_DIAM, h = THICKNESS);
 }
